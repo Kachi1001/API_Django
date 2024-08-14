@@ -28,27 +28,35 @@ SECRET_KEY = 'django-insecure-hss4fba%6y**i6$hkin&j@gp3h^^7r5*duji$-f1&(_#m6*gx#
 
 DEBUG = True
 
-ALLOWED_HOSTS = [config("DJ_HOST"), '127.0.0.1']
+ALLOWED_HOSTS = [config("DJ_HOST"), '127.0.0.1', '*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'API',
     'models.Lancamento_obra',
     'models.TI',
-    'models.Reservas'
+    'models.Reservas',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",  # Domínio que está fazendo a requisição
+    "http://10.0.0.139:8001", # Produção
+    "http://10.0.0.139:8002", # Teste
+    "http://10.0.0.211:8000", # Debug
 ]
 
 ROOT_URLCONF = 'Site_Django.urls'
