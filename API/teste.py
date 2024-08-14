@@ -2,7 +2,10 @@
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .models import *
+from django.views.decorators.csrf import csrf_exempt
 
+
+@csrf_exempt
 def server_side_data(request):
     draw = request.GET.get('draw')
     start = int(request.GET.get('start', 0))
