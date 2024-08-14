@@ -60,6 +60,7 @@ WSGI_APPLICATION = 'Site_Django.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+DATABASE_ROUTERS = ['Site_Django.routers.AppRouter']
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
