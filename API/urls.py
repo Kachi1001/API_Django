@@ -15,5 +15,5 @@ urlpatterns = [
 
     path('upload/', views.upload_file, name='upload_file'),
     
-    path('teste', teste, name='testes')
+    path('teste', teste.server_side_data, name='testes')
 ]
