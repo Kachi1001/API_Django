@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import teste
 
 urlpatterns = [
     path('executar_funcao_geraViewJunta', views.executar_funcao_geraViewJunta, name='executar_funcao_geraViewJunta'),
@@ -13,4 +14,6 @@ urlpatterns = [
     path('update', views.update, name='update'),
 
     path('upload/', views.upload_file, name='upload_file'),
+    
+    path('teste', teste, name='testes')
 ]

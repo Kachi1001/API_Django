@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
+    "localhost"
     "http://127.0.0.1:8000",  # Domínio que está fazendo a requisição
     "http://10.0.0.139:8001", # Produção
     "http://10.0.0.139:8002", # Teste
