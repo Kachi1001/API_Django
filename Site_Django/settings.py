@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'Home',
     'API',
     'Lancamento_obra',
     'TI',
@@ -69,21 +70,12 @@ WSGI_APPLICATION = 'Site_Django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASE_ROUTERS = ['Site_Django.routers.AppRouter']
-DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
-    },
-}
+DATABASES = {}
 x = 1
 for app in INSTALLED_APPS[2:]:
-    DATABASES[app] = {
+    DATABASES[app if app != 'Home' else 'default']  = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": app,
+        "NAME": app if app != 'Home' else config("DB_NAME"),
         "USER": config("DB_USER"),
         "PASSWORD": config("DB_PASSWORD"),
         "HOST": config("DB_HOST"),
