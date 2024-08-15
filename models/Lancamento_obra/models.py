@@ -149,7 +149,7 @@ class Lancamentos(models.Model):
     colaborador = models.CharField(max_length=255)
     dia = models.DateField()
     descricao = models.CharField(max_length=600, blank=True, null=True)
-    digito = models.IntegerField()
+    indice = models.IntegerField()
     diaseguinte = models.BooleanField()
     horaini1 = models.TimeField()
     horafim1 = models.TimeField()
@@ -162,9 +162,9 @@ class Lancamentos(models.Model):
     etapa1 = models.IntegerField(blank=True, null=True)
     etapa2 = models.IntegerField(blank=True, null=True)
     etapa3 = models.IntegerField(blank=True, null=True)
-    diario = models.CharField(max_length=30, blank=True, null=True)
     atividade = models.ForeignKey(Atividade, models.DO_NOTHING, db_column='atividade')
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
+    diario = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         managed = False
