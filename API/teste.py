@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from models.Lancamento_obra.models import *
-
+from django.db.models import Q
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -25,7 +25,10 @@ def server_side_data(request):
 
     # Filtragem
     if search_value:
-        queryset = queryset.filter(id__icontains=search_value)
+        query = Q()
+        for field in queryset.model._meta.fields:
+            query |= Q(**{f"{field.name}__icontains": search_value})
+        queryset = queryset.filter(query)
 
     # Paginação
     paginator = Paginator(queryset.order_by(order), length)
