@@ -1,3 +1,3 @@
-from models.Lancamento_obra.models import *
-from models.TI.models import *
-from models.Reservas.models import *
+from Lancamento_obra import models
+from TI import models
+from Reservas import models

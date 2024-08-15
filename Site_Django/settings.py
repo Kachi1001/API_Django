@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'API',
-    'models.Lancamento_obra',
-    'models.TI',
-    'models.Reservas',
+    'Lancamento_obra',
+    'TI',
+    'Reservas',
 ]
 
 MIDDLEWARE = [
@@ -79,18 +79,17 @@ DATABASES = {
         "PORT": config("DB_PORT"),
     },
 }
-app = 1
-while config('APP'+str(app), default=False):
-    a = config('APP'+str(app))
-    DATABASES[a] = {
+x = 1
+for app in INSTALLED_APPS[2:]:
+    DATABASES[app] = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": a,
+        "NAME": app,
         "USER": config("DB_USER"),
         "PASSWORD": config("DB_PASSWORD"),
         "HOST": config("DB_HOST"),
         "PORT": config("DB_PORT"),
     }
-    app = app + 1
+    x = x + 1
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
