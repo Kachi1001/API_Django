@@ -21,7 +21,7 @@ def server_side_data(request):
     if order_dir == 'desc':
         order = '-' + order
 
-    queryset = Lancamento_obra.objects.all()
+    queryset = Lancamentos.objects.all()
 
     # Filtragem
     if search_value:
