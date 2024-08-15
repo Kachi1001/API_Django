@@ -25,14 +25,11 @@ def server_side_data(request):
 
     # Filtragem
     if search_value:
-        query = Q()
-        for field in queryset.model._meta.fields:
-            if field.name == 'obra':
-                query |= Q(**{f"{field.name}__cr__icontains": search_value})
-            else:  
-                query |= Q(**{f"{field.name}__icontains": search_value})
-        queryset = queryset.filter(query)
-
+        queryset = queryset.filter(
+            Q(id__icontains=search_value) |
+            Q(colaborador__icontains=search_value) |  # supondo que 'nome' seja o campo relevante em colaborador
+            Q(obra__cr__icontains=search_value)  # supondo que 'nome' seja o campo relevante em obra
+        )
     # Paginação
     paginator = Paginator(queryset.order_by(order), length)
     page = paginator.get_page(start // length + 1)
