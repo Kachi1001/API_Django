@@ -1,7 +1,7 @@
 # myapp/views.py
 from django.http import JsonResponse
 from django.core.paginator import Paginator
-from models.Lancamento_obra.models import *
+from .models import Lancamentos
 from django.db.models import Q
 
 from django.views.decorators.csrf import csrf_exempt

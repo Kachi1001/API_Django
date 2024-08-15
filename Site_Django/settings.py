@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-hss4fba%6y**i6$hkin&j@gp3h^^7r5*duji$-f1&(_#m6*gx#
 
 DEBUG = True
 
-ALLOWED_HOSTS = [config("DJ_HOST"), '127.0.0.1', '*']
+ALLOWED_HOSTS = [config("DJ_HOST",), '127.0.0.1', '*']
 
 
 # Application definition
