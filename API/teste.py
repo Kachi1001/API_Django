@@ -25,7 +25,7 @@ def server_side_data(request):
 
     # Filtragem
     if search_value:
-        queryset = queryset.filter(name__icontains=search_value)
+        queryset = queryset.filter(id__icontains=search_value)
 
     # Paginação
     paginator = Paginator(queryset.order_by(order), length)
