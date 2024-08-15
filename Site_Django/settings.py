@@ -53,13 +53,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-    "localhost"
     "http://127.0.0.1:8000",  # Domínio que está fazendo a requisição
     "http://10.0.0.139:8001", # Produção
     "http://10.0.0.139:8002", # Teste
-    "http://10.0.0.211:8000", # Debug
+    "http://10.0.0.211:8000" # Debug
 ]
-
+CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'Site_Django.urls'
 
 TEMPLATES = []

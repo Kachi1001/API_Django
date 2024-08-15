@@ -12,8 +12,8 @@ def server_side_data(request):
     draw = request.GET.get('draw')
     start = int(request.GET.get('start', 0))
     length = int(request.GET.get('length', 10))
-    order_column = request.GET.get('order[0][column]')
-    order = request.GET.get(f'columns[{order_column}][data]')
+    order_column = request.GET.get('order[0][column]') or 0
+    order = request.GET.get(f'columns[{order_column}][data]') 
     order_dir = request.GET.get('order[0][dir]')
     search_value = request.GET.get('search[value]', '')
 
