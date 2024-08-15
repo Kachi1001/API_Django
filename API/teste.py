@@ -27,7 +27,10 @@ def server_side_data(request):
     if search_value:
         query = Q()
         for field in queryset.model._meta.fields:
-            query |= Q(**{f"{field.name}__icontains": search_value})
+            if field.name == 'obra':
+                query |= Q(**{f"{field.name}__cr__icontains": search_value})
+            else:  
+                query |= Q(**{f"{field.name}__icontains": search_value})
         queryset = queryset.filter(query)
 
     # Paginação
