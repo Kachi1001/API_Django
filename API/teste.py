@@ -36,7 +36,7 @@ def server_side_data(request):
         data.append({
             'id': obj.id,
             'colaborador': obj.colaborador,
-            'obra': obj.obra,
+            'obra': obj.obra.cr,
         })
 
     response = {
