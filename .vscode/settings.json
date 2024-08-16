@@ -2,5 +2,6 @@
     "cSpell.words": [
         "csrftoken",
         "psycopg"
-    ]
+    ],
+    "python.REPL.enableREPLSmartSend": false
 }

@@ -91,19 +91,36 @@ def deletar(request):
     
 @api_view(['POST'])
 def salas(request):
-    id = request.POST.get('id')
     metodo = request.POST.get('metodo')
-    x = AgendaSalas.objects.get(id=id)
-    if metodo == "deletar":
-        x.delete()
-        return Response({'message':'Deletado com sucesso'})
-    elif metodo == 'editar':
-        x.responsavel = request.POST.get('responsavel')
-        x.descricao = request.POST.get('descricao')
-        x.save()
-        return Response({'message':'Editado com sucesso'})
+    parametro = json.loads(request.POST.get('parametro'))
+    horas = json.loads(parametro.get('horarios'))
+    if metodo == 'reservar_multi':
+        conflito = []
+        reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
+        for x in horas:
+            for y in reservas:
+                if x == y.hora:
+                    conflito.append(x)
+        if len(conflito) > 0:
+            return Response({'message':'Houve algum problema'})
+        else:
+            for a in horas:
+                z = AgendaSalas(hora=a, data=parametro.get('data'), responsavel=parametro.get('responsavel'), sala=parametro.get('sala'), descricao=parametro.get('descricao'),reservado='checked disabled')
+                z.save()
+            return Response({'message':'Sucesso'})
     else:
-        return Response({'message':'Houve algum problema'})
+        x = AgendaSalas.objects.get(id=parametro.id)
+        if metodo == "deletar":
+            x.delete()
+            return Response({'message':'Deletado com sucesso'})
+        elif metodo == 'editar':
+            x.responsavel = parametro.responsavel
+            x.descricao = parametro.descricao
+            x.save()
+            return Response({'message':'Editado com sucesso'})
+        else:
+            return Response({'message':'Houve algum problema'})
+                
 
 @api_view(['GET'])
 def get_table(request):
@@ -159,8 +176,7 @@ def update_supervisor_status(request):
     try:
         supervisor_name = request.POST.get('supervisor')
         ativo = request.POST.get('ativo') == 'true'
-        supervisor = Supervisor.objects.get(supervisor=supervisor_name)
-        supervisor.ativo = ativo
+        supervisor = Supervisor.objects.get(supervisor=supervisor_name, ativo=ativo)
         supervisor.save()
         return Response({'message': 'Status atualizado com sucesso'})
     except Supervisor.DoesNotExist:
