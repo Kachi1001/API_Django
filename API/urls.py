@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from . import teste
+from . import tables
 
 urlpatterns = [
     path('executar_funcao_geraViewJunta', views.executar_funcao_geraViewJunta, name='executar_funcao_geraViewJunta'),
@@ -15,5 +15,5 @@ urlpatterns = [
 
     path('upload/', views.upload_file, name='upload_file'),
     
-    path('teste', teste.server_side_data, name='testes')
+    path('tabela/<str:table>', tables.tabela, name='tabela')
 ]

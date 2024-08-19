@@ -93,8 +93,10 @@ def deletar(request):
 def salas(request):
     metodo = request.POST.get('metodo')
     parametro = json.loads(request.POST.get('parametro'))
-    horas = json.loads(parametro.get('horarios'))
     if metodo == 'reservar_multi':
+        if parametro.get('responsavel') == '' or parametro.get('data') == '':
+            return Response({'message':'Precisa informar uma data e um responsável para reservar a sala'},status=400)
+        horas = json.loads(parametro.get('horarios'))
         conflito = []
         reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
         for x in horas:
@@ -102,20 +104,20 @@ def salas(request):
                 if x == y.hora:
                     conflito.append(x)
         if len(conflito) > 0:
-            return Response({'message':'Houve algum problema'})
+            return Response({'message':'Esses seguintes horários ja estão reservados '+str(conflito)},status=406)
         else:
             for a in horas:
                 z = AgendaSalas(hora=a, data=parametro.get('data'), responsavel=parametro.get('responsavel'), sala=parametro.get('sala'), descricao=parametro.get('descricao'),reservado='checked disabled')
                 z.save()
             return Response({'message':'Sucesso'})
     else:
-        x = AgendaSalas.objects.get(id=parametro.id)
+        x = AgendaSalas.objects.get(id=parametro.get('id'))
         if metodo == "deletar":
             x.delete()
             return Response({'message':'Deletado com sucesso'})
         elif metodo == 'editar':
-            x.responsavel = parametro.responsavel
-            x.descricao = parametro.descricao
+            x.responsavel = parametro.get('responsavel')
+            x.descricao = parametro.get('descricao')
             x.save()
             return Response({'message':'Editado com sucesso'})
         else:
@@ -140,34 +142,36 @@ def get_table(request):
 @api_view(['GET'])
 def get_data(request):
     metodo = request.GET.get('metodo')
+    id = request.GET.get('id')
     if metodo == 'colab':
         try:
-            mymodel = Colaborador.objects.get(id=request.GET.get('id'))
+            mymodel = Colaborador.objects.get(id=id)
             serializer = ColaboradorSerializer(mymodel)
             return Response(serializer.data)
         except Colaborador.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({'message':'teste'}, status=400)
     elif metodo == 'Obra':
         try:
             mymodel = Obra.objects.get(cr=request.GET.get('id'))
             serializer = ObraSerializer(mymodel)
             return Response(serializer.data)
-        except Colaborador.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Obra.DoesNotExist:
+            return Response(status=400)
     elif metodo == 'Lancamentos':
         try:
             mymodel = Lancamentos.objects.get(id=request.GET.get('id'))
             serializer = LancamentosSerializer(mymodel)
             return Response(serializer.data)
-        except Colaborador.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Lancamentos.DoesNotExist:
+            return Response(status=400)
     elif metodo == 'Carro':
         try:
             mymodel = Carros.objects.get(placa=request.GET.get('id'))
             serializer = CarrosSerializer(mymodel)
             return Response(serializer.data)
         except Carros.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=400)
+            
     else:
         return Response({'message':'Houve algum problema'}, status=404)
 

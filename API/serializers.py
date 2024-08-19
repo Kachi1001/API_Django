@@ -25,13 +25,13 @@ class SerializerTipo(serializers.Serializer):
 class ColaboradorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Colaborador
-        fields = '__all__'  # Ou liste os campos que deseja expor na API
-        
+        fields = '__all__'  # Ou liste os campos que deseja expor na API     
         
 class ObraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Obra
         fields = '__all__'  # Ou liste os campos que deseja expor na API
+        
 class LancamentosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lancamentos

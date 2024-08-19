@@ -55,12 +55,11 @@ class DjangoMigrations(models.Model):
 
 
 class Equipamentos(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    tipo = models.CharField(max_length=255)
+    tipo = models.CharField(max_length=50)
     tag = models.CharField(blank=True, null=True)
     aquisicao = models.DateField(blank=True, null=True)
-    marca = models.CharField(blank=True, null=True)
-    modelo = models.CharField(max_length=255, blank=True, null=True)
+    marca = models.CharField(max_length=50, blank=True, null=True)
+    modelo = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -68,11 +67,11 @@ class Equipamentos(models.Model):
 
 
 class Estoque(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    produto = models.CharField()
-    quantidade = models.DateField(blank=True, null=True)
-    valor_total = models.CharField()
     lote = models.CharField()
+    quantidade = models.FloatField()
+    valor_total = models.TextField()  # This field type is a guess.
+    valor_unitario = models.TextField()  # This field type is a guess.
+    produto = models.ForeignKey('Produtos', models.DO_NOTHING, db_column='produto')
 
     class Meta:
         managed = False
@@ -93,11 +92,11 @@ class Padrao(models.Model):
 class Produtos(models.Model):
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField()
-    marca = models.DateField(blank=True, null=True)
     descricao = models.CharField()
-    equipamento = models.CharField()
-    unidade = models.CharField()
-    estoque_min = models.CharField()
+    equipamento = models.ForeignKey(Equipamentos, models.DO_NOTHING, db_column='equipamento')
+    unidade = models.CharField(max_length=30)
+    estoque_min = models.FloatField()
+    marca = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         managed = False

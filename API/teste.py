@@ -6,7 +6,6 @@ from django.db.models import Q
 
 from django.views.decorators.csrf import csrf_exempt
 
-
 @csrf_exempt
 def server_side_data(request):
     draw = request.GET.get('draw')
@@ -39,6 +38,16 @@ def server_side_data(request):
         data.append({
             'id': obj.id,
             'colaborador': obj.colaborador,
+            'dia': obj.dia,
+            'descricao': obj.descricao,
+            'horaini1': obj.horaini1,
+            'horafim1': obj.horafim1,
+            'horaini2': obj.horaini2,
+            'horafim2': obj.horafim2,
+            'horaini3': obj.horaini3,
+            'horafim3': obj.horafim3,
+            'atividade': obj.atividade.tipo,
+            'diario': obj.diario,
             'obra': obj.obra.cr,
         })
 
