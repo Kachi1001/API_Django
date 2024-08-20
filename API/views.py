@@ -199,5 +199,5 @@ def upload_file(request):
             return JsonResponse({'message': 'Upload com sucesso'}, status=200)
         return JsonResponse({'error': 'Nenhum arquivo enviado'}, status=400)
     elif metodo == 'diario':
-        
+        return False
     
