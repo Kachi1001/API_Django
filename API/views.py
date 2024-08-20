@@ -107,7 +107,7 @@ def salas(request):
                     conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
         
         if len(conflito) > 0:
-            return Response({'message':'Esses seguintes horários ja estão reservados '+str(conflito)},status=406)
+            return Response({'message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
         else:
             for a in horas:
                 z = AgendaSalas(hora=a, data=parametro.get('data'), responsavel=parametro.get('responsavel'), sala=parametro.get('sala'), descricao=parametro.get('descricao'),reservado='checked disabled')
@@ -125,7 +125,7 @@ def salas(request):
                     conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
                     
         if len(conflito) > 0:
-            return Response({'message':'Esses seguintes horários ja estão reservados '+str(conflito)},status=406)
+            return Response({'message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
         else:
             for a in horas:
                 z = AgendaSalas(hora=a.get('hora'), data=parametro.get('data'), responsavel=a.get('responsavel'), sala=parametro.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
