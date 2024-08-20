@@ -27,7 +27,7 @@ def getFilter(table, value):
         
 def tabela(request, table):
     search_value = request.GET.get('search', '').strip()
-    sort_order = request.GET.get('order', 'asc')
+    sort_order = request.GET.get('order', 'desc')
     sort_field = request.GET.get('sort', 'id') 
     page_number = int(request.GET.get('offset', 1))
     queryset = getObjects(table)
