@@ -96,13 +96,16 @@ def salas(request):
     if metodo == 'reservar_multi':
         if parametro.get('responsavel') == '' or parametro.get('data') == '':
             return Response({'message':'Precisa informar uma data e um responsável para reservar a sala'},status=400)
+        
         horas = json.loads(parametro.get('horarios'))
+        
         conflito = []
         reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
         for x in horas:
             for y in reservas:
                 if x == y.hora:
-                    conflito.append(x)
+                    conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
+        
         if len(conflito) > 0:
             return Response({'message':'Esses seguintes horários ja estão reservados '+str(conflito)},status=406)
         else:
@@ -110,6 +113,26 @@ def salas(request):
                 z = AgendaSalas(hora=a, data=parametro.get('data'), responsavel=parametro.get('responsavel'), sala=parametro.get('sala'), descricao=parametro.get('descricao'),reservado='checked disabled')
                 z.save()
             return Response({'message':'Sucesso'})
+        
+    elif metodo == 'reservar_simples':
+        horas = json.loads(parametro.get('reservas'))
+        
+        conflito = []
+        reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
+        for x in horas:
+            for y in reservas:
+                if x.get('hora') == y.hora:
+                    conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
+                    
+        if len(conflito) > 0:
+            return Response({'message':'Esses seguintes horários ja estão reservados '+str(conflito)},status=406)
+        else:
+            for a in horas:
+                z = AgendaSalas(hora=a.get('hora'), data=parametro.get('data'), responsavel=a.get('responsavel'), sala=parametro.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
+                z.save()
+            return Response({'message':'Sucesso'})
+    
+    
     else:
         x = AgendaSalas.objects.get(id=parametro.get('id'))
         if metodo == "deletar":
