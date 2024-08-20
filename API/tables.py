@@ -19,7 +19,7 @@ def getFilter(table, value):
         filter = Q(id__icontains=value) | Q(colaborador__icontains=value) | Q(obra__cr__icontains=value) | Q(descricao__icontains=value)
     if table == 'colaborador':
         filter = Q(nome__icontains=value) | Q(funcao__icontains=value)
-    if table == 'obr a':
+    if table == 'obra':
         filter = Q(empresa__icontains=value)
     if table == 'diario':
         filter = Q(id__icontains=value)
@@ -28,7 +28,7 @@ def getFilter(table, value):
 def tabela(request, table):
     search_value = request.GET.get('search', '').strip()
     sort_order = request.GET.get('order', 'asc')
-    sort_field = request.GET.get('sort', 'id')
+    sort_field = request.GET.get('sort', 'id') 
     page_number = int(request.GET.get('offset', 1))
     queryset = getObjects(table)
     
