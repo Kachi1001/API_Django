@@ -36,8 +36,3 @@ class LancamentosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lancamentos
         fields = '__all__'  # Ou liste os campos que deseja expor na API
-
-class CarrosSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Carros
-        fields = '__all__'  # Ou liste os campos que deseja expor na API

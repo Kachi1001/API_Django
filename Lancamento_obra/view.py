@@ -1,18 +1,17 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
-import json   
+import json
 from django.http import JsonResponse
 from .mani import *
 from .serializers import *
 from PIL import Image
 import os
 from pathlib import Path 
-
+from .tables import buildTable
 # Configurações de conexão com o banco de dados PostgreSQL
 dbname = settings.DATABASES['default']['NAME']
 user = settings.DATABASES['default']['USER']
@@ -88,65 +87,7 @@ def deletar(request):
         return Delete.Obra(owner, id)
     elif metodo == 'Lancamentos':
         return Delete.Lancamentos(owner, id)
-    
-@api_view(['POST'])
-def salas(request):
-    metodo = request.POST.get('metodo')
-    parametro = json.loads(request.POST.get('parametro'))
-    if metodo == 'reservar_multi':
-        if parametro.get('responsavel') == '' or parametro.get('data') == '':
-            return Response({'message':'Precisa informar uma data e um responsável para reservar a sala'},status=400)
-        
-        horas = json.loads(parametro.get('horarios'))
-        
-        conflito = []
-        reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
-        for x in horas:
-            for y in reservas:
-                if x == y.hora:
-                    conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
-        
-        if len(conflito) > 0:
-            return Response({'message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
-        else:
-            for a in horas:
-                z = AgendaSalas(hora=a, data=parametro.get('data'), responsavel=parametro.get('responsavel'), sala=parametro.get('sala'), descricao=parametro.get('descricao'),reservado='checked disabled')
-                z.save()
-            return Response({'message':'Sucesso'})
-        
-    elif metodo == 'reservar_simples':
-        horas = json.loads(parametro.get('reservas'))
-        
-        conflito = []
-        reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
-        for x in horas:
-            for y in reservas:
-                if x.get('hora') == y.hora:
-                    conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
-                    
-        if len(conflito) > 0:
-            return Response({'message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
-        else:
-            for a in horas:
-                z = AgendaSalas(hora=a.get('hora'), data=parametro.get('data'), responsavel=a.get('responsavel'), sala=parametro.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
-                z.save()
-            return Response({'message':'Sucesso'})
-    
-    
-    else:
-        x = AgendaSalas.objects.get(id=parametro.get('id'))
-        if metodo == "deletar":
-            x.delete()
-            return Response({'message':'Deletado com sucesso'})
-        elif metodo == 'editar':
-            x.responsavel = parametro.get('responsavel')
-            x.descricao = parametro.get('descricao')
-            x.save()
-            return Response({'message':'Editado com sucesso'})
-        else:
-            return Response({'message':'Houve algum problema'})
                 
-
 @api_view(['GET'])
 def get_table(request):
     table = request.GET.get('tableDB')
@@ -163,6 +104,10 @@ def get_table(request):
     return JsonResponse(list(value), safe=False)
 
 @api_view(['GET'])
+def tabela(request, table):
+    return JsonResponse(buildTable(request, table), safe=False)
+
+@api_view(['GET'])
 def get_data(request):
     metodo = request.GET.get('metodo')
     id = request.GET.get('id')
@@ -175,7 +120,7 @@ def get_data(request):
             return Response({'message':'teste'}, status=400)
     elif metodo == 'Obra':
         try:
-            mymodel = Obra.objects.get(cr=request.GET.get('id'))
+            mymodel = Obra.objects.get(id=request.GET.get('id'))
             serializer = ObraSerializer(mymodel)
             return Response(serializer.data)
         except Obra.DoesNotExist:
@@ -187,14 +132,6 @@ def get_data(request):
             return Response(serializer.data)
         except Lancamentos.DoesNotExist:
             return Response(status=400)
-    elif metodo == 'Carro':
-        try:
-            mymodel = Carros.objects.get(placa=request.GET.get('id'))
-            serializer = CarrosSerializer(mymodel)
-            return Response(serializer.data)
-        except Carros.DoesNotExist:
-            return Response(status=400)
-            
     else:
         return Response({'message':'Houve algum problema'}, status=404)
 
@@ -210,17 +147,4 @@ def update_supervisor_status(request):
         return Response({'message': 'Supervisor não encontrado'}, status=404)
     except Exception as e:
         return Response({'message': f'Erro ao atualizar status: {str(e)}'}, status=400)
-    
-@api_view(['POST'])
-def upload_file(request):
-    metodo = request.POST.get('metodo')
-    if metodo == 'carro':
-        if request.FILES.get('file'):
-            img = Image.open(request.FILES.get('file'))
-            path = os.path.join(settings.MEDIA_ROOT, f'reservas/carros/{request.POST.get('placa')}.jpg')
-            img = img.save(path) 
-            return JsonResponse({'message': 'Upload com sucesso'}, status=200)
-        return JsonResponse({'error': 'Nenhum arquivo enviado'}, status=400)
-    elif metodo == 'diario':
-        return False
     

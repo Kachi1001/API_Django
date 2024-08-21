@@ -185,7 +185,7 @@ class Localizacaoprogramada(models.Model):
 
 
 class Obra(models.Model):
-    cr = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     orcamento = models.CharField(max_length=20)
     retrabalho = models.CharField(max_length=20, blank=True, null=True)
     empresa = models.CharField(max_length=100)

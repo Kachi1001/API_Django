@@ -25,7 +25,7 @@ def getFilter(table, value):
         filter = Q(id__icontains=value)
     return filter
         
-def tabela(request, table):
+def buildTable(request, table):
     search_value = request.GET.get('search', '').strip()
     sort_order = request.GET.get('order', 'desc')
     sort_field = request.GET.get('sort', 'id') 
@@ -49,7 +49,7 @@ def tabela(request, table):
 
     data = {
         'total': paginator.count,
-        'rows': list(page_obj.object_list.values( ))  # Ajuste os campos conforme necessário
+        'rows': list(page_obj.object_list.values())  # Ajuste os campos conforme necessário
     }
 
-    return JsonResponse(data, safe=False)
+    return data
