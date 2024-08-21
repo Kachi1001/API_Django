@@ -16,7 +16,7 @@ def getObjects(table):
 
 def getFilter(table, value):
     if table == 'lancamentos':
-        filter = Q(id__icontains=value) | Q(colaborador__icontains=value) | Q(obra__cr__icontains=value) | Q(descricao__icontains=value)
+        filter = Q(id__icontains=value) | Q(colaborador__icontains=value) | Q(obra__id__icontains=value) | Q(descricao__icontains=value)
     if table == 'colaborador':
         filter = Q(nome__icontains=value) | Q(funcao__icontains=value)
     if table == 'obra':
