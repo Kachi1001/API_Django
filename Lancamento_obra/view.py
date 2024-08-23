@@ -48,27 +48,29 @@ def cadastrar(request):
     parametro = json.loads(request.POST.get('parametro'))
     metodo = request.POST.get('metodo')
     owner = request.POST.get('user') 
-    if metodo == 'Funcao':
+    if metodo == 'funcao':
         return Register.Funcao(owner, parametro)
-    elif metodo == 'Colaborador':
+    elif metodo == 'colaborador':
         return Register.Colaborador(owner, parametro)
     elif metodo == 'Historico':
         return Register.Historico("1",'teste','create','teste')
-    elif metodo == 'Supervisor':
+    elif metodo == 'supervisor':
         return Register.Supervisor(owner, parametro)
     elif metodo == "Carro":
         return Register.Carro(owner, parametro)
+    return Response({'message':'Houve algum problema, não encontramos o metodo'}, status=400)
+    
 
 @api_view(['POST'])
 def update(request):
     metodo = request.POST.get('metodo')
     parametro = json.loads(request.POST.get('parametro'))
     owner = request.POST.get('user')
-    if metodo == 'Colaborador':
+    if metodo == 'colaborador':
         return Edit.Colaborador(owner, parametro) 
-    elif metodo == 'Obra':
+    elif metodo == 'obra':
         return Edit.Obra(owner, parametro)
-    elif metodo == 'Lancamentos':
+    elif metodo == 'lancamento':
         return Edit.Lancamentos(owner, parametro)
     return Response({'message':'Houve algum problema, não encontramos o metodo'}, status=400)
 
@@ -77,31 +79,43 @@ def deletar(request):
     metodo = request.POST.get('metodo')
     id = request.POST.get('parametro')
     owner = request.POST.get('user')
-    if metodo == 'Colaborador':
+    if metodo == 'colaborador':
         return Delete.Colaborador(owner, id) 
-    elif metodo == 'Funcao':
+    elif metodo == 'funcao':
         return Delete.Funcao(owner, id)
-    elif metodo == 'Supervisor':
+    elif metodo == 'supervisor':
         return Delete.Supervisor(owner, id)
-    elif metodo == 'Obra':
+    elif metodo == 'obra':
         return Delete.Obra(owner, id)
-    elif metodo == 'Lancamentos':
+    elif metodo == 'lancamento':
         return Delete.Lancamentos(owner, id)
-                
+    return Response({'message':'Houve algum problema, não encontramos o metodo'}, status=400)
+
 @api_view(['GET'])
 def get_table(request):
-    table = request.GET.get('tableDB')
-    if table == 'funcao':
-        value = Funcao.objects.all().values('funcao', 'grupo')
-    elif table == 'supervisor':
-        value = Supervisor.objects.all().values('supervisor', 'ativo')
-    elif table == 'atividade':
-        value = Atividade.objects.all().values('tipo')
-    elif table == 'obra':
-        value = Obra.objects.all().values('cr', 'empresa', 'cidade')
-    elif table == 'colaborador':
-        value = Colaborador.objects.all().values('id', 'nome')
-    return JsonResponse(list(value), safe=False)
+    metodo = request.GET.get('metodo')
+    parametro = request.GET.get('parametro')
+    value = None
+    if metodo == 'select':
+        if parametro == 'selectFuncao':
+            value = Funcao.objects.all().values('funcao')
+        if parametro == 'selectSupervisor':
+            value = Supervisor.objects.all().values('supervisor', 'ativo')
+        if parametro == 'selectAtividade':
+            value = Atividade.objects.all().values('tipo')
+        if parametro == 'selectObra':
+            value = Obra.objects.all().values('id', 'empresa', 'cidade')
+        if parametro == 'selectColaborador':
+            value = Colaborador.objects.all().values('id', 'nome')
+    elif metodo == 'table':
+        if parametro == 'funcao':
+            value = Funcao.objects.all().values('funcao')
+        if parametro == 'supervisor':
+            value = Supervisor.objects.all().values('supervisor', 'ativo')
+    if value == None:
+        return Response({'message':'Metodo não encontrado'}, status=400)
+    else:
+        return JsonResponse(list(value), safe=False) 
 
 @api_view(['GET'])
 def tabela(request, table):
@@ -110,37 +124,38 @@ def tabela(request, table):
 @api_view(['GET'])
 def get_data(request):
     metodo = request.GET.get('metodo')
-    id = request.GET.get('id')
-    if metodo == 'colab':
+    id = request.GET.get('parametro')
+    if metodo == 'colaborador':
         try:
             mymodel = Colaborador.objects.get(id=id)
             serializer = ColaboradorSerializer(mymodel)
             return Response(serializer.data)
         except Colaborador.DoesNotExist:
-            return Response({'message':'teste'}, status=400)
-    elif metodo == 'Obra':
+            return Response({'message':'Colaborador não existe'}, status=400)
+    elif metodo == 'obra':
         try:
-            mymodel = Obra.objects.get(id=request.GET.get('id'))
+            mymodel = Obra.objects.get(id=id)
             serializer = ObraSerializer(mymodel)
             return Response(serializer.data)
         except Obra.DoesNotExist:
-            return Response(status=400)
-    elif metodo == 'Lancamentos':
+            return Response({'message':'Obra não encontrada'}, status=400)
+    elif metodo == 'lancamento':
         try:
-            mymodel = Lancamentos.objects.get(id=request.GET.get('id'))
+            mymodel = Lancamentos.objects.get(id=id)
             serializer = LancamentosSerializer(mymodel)
             return Response(serializer.data)
         except Lancamentos.DoesNotExist:
-            return Response(status=400)
+            return Response({'message':'Lançamento não encontrada'},status=400)
     else:
-        return Response({'message':'Houve algum problema'}, status=404)
+        return Response({'message':'Método não encontrado'}, status=404)
 
 @api_view(['POST'])
 def update_supervisor_status(request):
-    try:
-        supervisor_name = request.POST.get('supervisor')
-        ativo = request.POST.get('ativo') == 'true'
-        supervisor = Supervisor.objects.get(supervisor=supervisor_name, ativo=ativo)
+    name = request.POST.get('supervisor')
+    ativo = True if request.POST.get('ativo') == 'true' else False
+    try: 
+        supervisor = Supervisor.objects.get(supervisor=name)
+        supervisor.ativo = ativo
         supervisor.save()
         return Response({'message': 'Status atualizado com sucesso'})
     except Supervisor.DoesNotExist:

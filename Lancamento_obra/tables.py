@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from .models import *
 from django.core.paginator import Paginator
+import json
 from django.db.models import Q
 
 def getObjects(table):
@@ -31,7 +32,7 @@ def buildTable(request, table):
     sort_field = request.GET.get('sort', 'id') 
     page_number = int(request.GET.get('offset', 1))
     queryset = getObjects(table)
-    
+    # print(json.loads(request.GET.get('filter',))) 
     page_size = int(request.GET.get('limit', 10)) if request.GET.get('limit') else len(queryset)
     # Filtrando com base na busca
     if search_value:

@@ -10,7 +10,7 @@ urlpatterns = [
     path('get_table', Lancamento_obra .get_table, name='get_table'),
     path('get_data', Lancamento_obra.get_data, name='get_data'),
     path('deletar', Lancamento_obra.deletar, name='deletar'),
-    path('update-supervisor-status/', Lancamento_obra.update_supervisor_status, name='update_supervisor_status'),
+    path('update_supervisor_status', Lancamento_obra.update_supervisor_status),
     path('update', Lancamento_obra.update, name='update'),
 
     path('upload/', media.upload_file, name='upload_file'),
