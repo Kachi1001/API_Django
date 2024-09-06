@@ -32,7 +32,11 @@ class ObraSerializer(serializers.ModelSerializer):
         model = Obra
         fields = '__all__'  # Ou liste os campos que deseja expor na API
         
-class LancamentosSerializer(serializers.ModelSerializer):
+class AtividadeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Lancamentos
+        model = Atividade
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+class DiarioobraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Diarioobra
         fields = '__all__'  # Ou liste os campos que deseja expor na API

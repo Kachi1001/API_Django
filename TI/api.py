@@ -12,43 +12,13 @@ from PIL import Image
 import os
 from pathlib import Path 
 from .tables import buildTable
-# Configurações de conexão com o banco de dados PostgreSQL
-dbname = settings.DATABASES['default']['NAME']
-user = settings.DATABASES['default']['USER']
-password = settings.DATABASES['default']['PASSWORD']
-host = settings.DATABASES['default']['HOST']
-port = settings.DATABASES['default']['PORT']
 
 @api_view(['POST'])
-def executar_funcao_geraViewJunta(request): 
-    # Parâmetro passado pelo front end
-    parametro = request.GET.get('parametro')
-
-    # Conectando ao banco de dados
-    conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
-    cursor = conn.cursor()
-    
-    try:
-        # Executando a função
-        cursor.execute("SELECT gera_view_junta()")
-        conn.commit()
-
-        # Retornando uma resposta de sucesso
-        return Response({'message': 'Tabela criada com sucesso'})
-
-    except psycopg2.Error as e:
-        return Response({'error': str(e)}, status=400)
-
-    finally:
-        cursor.close()
-        conn.close()
-
-@api_view(['POST'])
-def cadastrar(request):
+def cadastrar(request): 
     parametro = json.loads(request.POST.get('parametro'))
     metodo = request.POST.get('metodo')
     owner = request.POST.get('user') 
-    if metodo == 'funcao':
+    if metodo == 'computador':
         return Register.Funcao(owner, parametro)
     elif metodo == 'colaborador':
         return Register.Colaborador(owner, parametro)

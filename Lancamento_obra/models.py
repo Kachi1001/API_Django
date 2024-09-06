@@ -9,11 +9,65 @@ from django.db import models
 
 
 class Atividade(models.Model):
-    tipo = models.CharField(primary_key=True, max_length=30)
+    id = models.BigAutoField(primary_key=True)
+    colaborador = models.CharField(max_length=255)
+    dia = models.DateField()
+    descricao = models.CharField(max_length=600, blank=True, null=True)
+    indice = models.IntegerField()
+    diaseguinte = models.BooleanField()
+    horaini1 = models.TimeField()
+    horafim1 = models.TimeField()
+    horaini2 = models.TimeField(blank=True, null=True)
+    horafim2 = models.TimeField(blank=True, null=True)
+    horaini3 = models.TimeField(blank=True, null=True)
+    horafim3 = models.TimeField(blank=True, null=True)
+    perdevale = models.BooleanField(blank=True, null=True)
+    revisaorh = models.CharField(max_length=255, blank=True, null=True)
+    etapa1 = models.IntegerField(blank=True, null=True)
+    etapa2 = models.IntegerField(blank=True, null=True)
+    etapa3 = models.IntegerField(blank=True, null=True)
+    atividade = models.ForeignKey('TipoAtividade', models.DO_NOTHING, db_column='atividade')
+    obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
+    diario = models.CharField(max_length=30, blank=True, null=True)
+    meiadiaria = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'atividade'
+
+
+class BaseTerceiros(models.Model):
+    dia = models.DateField(blank=True, null=True)
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    atestado = models.DurationField(blank=True, null=True)
+    atividade_obra = models.DurationField(blank=True, null=True)
+    dispensa = models.DurationField(blank=True, null=True)
+    falta = models.DurationField(blank=True, null=True)
+    ferias = models.DurationField(blank=True, null=True)
+    folga = models.DurationField(blank=True, null=True)
+    treinamento = models.DurationField(blank=True, null=True)
+    he100 = models.IntegerField(blank=True, null=True)
+    he50 = models.IntegerField(blank=True, null=True)
+    hn = models.IntegerField(blank=True, null=True)
+    obra = models.IntegerField(blank=True, null=True)
+    ate2 = models.DurationField(blank=True, null=True)
+    atv2 = models.DurationField(blank=True, null=True)
+    d2 = models.DurationField(blank=True, null=True)
+    fl2 = models.DurationField(blank=True, null=True)
+    fe2 = models.DurationField(blank=True, null=True)
+    fo2 = models.DurationField(blank=True, null=True)
+    tr2 = models.DurationField(blank=True, null=True)
+    totalmax = models.DurationField(blank=True, null=True)
+    totalparc = models.DurationField(blank=True, null=True)
+    uteis = models.DurationField(blank=True, null=True)
+    he_100 = models.DurationField(blank=True, null=True)
+    he_50 = models.DurationField(blank=True, null=True)
+    hesaldo = models.DurationField(blank=True, null=True)
+    dcid = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'base_terceiros'
 
 
 class Colaborador(models.Model):
@@ -21,7 +75,7 @@ class Colaborador(models.Model):
     nome = models.CharField(max_length=255)
     admissao = models.DateField(blank=True, null=True)
     demissao = models.DateField(blank=True, null=True)
-    diaria = models.TextField(blank=True, null=True)
+    diaria = models.IntegerField(blank=True, null=True)
     observacao = models.CharField(max_length=255, blank=True, null=True)
     funcao = models.CharField(max_length=100, blank=True, null=True)
     contrato = models.CharField(max_length=20)
@@ -43,14 +97,29 @@ class Dia(models.Model):
         db_table = 'dia'
 
 
+class Diarias(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    diaria = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    horas = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    valor_diarias = models.IntegerField(blank=True, null=True)
+    valor_horas = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'diarias'
+
+
 class Diarioobra(models.Model):
-    id = models.CharField(primary_key=True, max_length=50)
     data = models.DateField()
-    obra = models.IntegerField(blank=True, null=True)
+    obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
     encarregado = models.CharField(max_length=100, blank=True, null=True)
     climamanha = models.CharField(max_length=20, blank=True, null=True)
     climatarde = models.CharField(max_length=20, blank=True, null=True)
     imagem = models.CharField(max_length=255, blank=True, null=True)
+    diario = models.CharField(max_length=50)
+    indice = models.IntegerField()
+    descricao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -66,6 +135,23 @@ class DjangoMigrations(models.Model):
     class Meta:
         managed = False
         db_table = 'django_migrations'
+
+
+class Efetividade(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, primary_key=True)
+    dia = models.DateField(blank=True, null=True)
+    obra = models.IntegerField(blank=True, null=True)
+    descricao = models.TextField(blank=True, null=True)
+    horaini1 = models.TimeField(blank=True, null=True)
+    horafim1 = models.TimeField(blank=True, null=True)
+    horaini2 = models.TimeField(blank=True, null=True)
+    horafim2 = models.TimeField(blank=True, null=True)
+    horaini3 = models.TimeField(blank=True, null=True)
+    horafim3 = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'efetividade'
 
 
 class Etapa(models.Model):
@@ -97,86 +183,13 @@ class Indiceobra(models.Model):
         db_table = 'indiceobra'
 
 
-class JuntaPorDia(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    dia = models.DateField(blank=True, null=True)
-    colaborador = models.CharField(max_length=255, blank=True, null=True)
-    atestado = models.DurationField(blank=True, null=True)
-    atividade_obra = models.DurationField(blank=True, null=True)
-    dispensa = models.DurationField(blank=True, null=True)
-    falta = models.DurationField(blank=True, null=True)
-    ferias = models.DurationField(blank=True, null=True)
-    folga = models.DurationField(blank=True, null=True)
-    treinamento = models.DurationField(blank=True, null=True)
-    he100 = models.IntegerField(blank=True, null=True)
-    he50 = models.IntegerField(blank=True, null=True)
-    hn = models.IntegerField(blank=True, null=True)
-    obra = models.IntegerField(blank=True, null=True)
-    ate2 = models.DurationField(blank=True, null=True)
-    atv2 = models.DurationField(blank=True, null=True)
-    d2 = models.DurationField(blank=True, null=True)
-    fl2 = models.DurationField(blank=True, null=True)
-    fe2 = models.DurationField(blank=True, null=True)
-    fo2 = models.DurationField(blank=True, null=True)
-    tr2 = models.DurationField(blank=True, null=True)
-    totalmax = models.DurationField(blank=True, null=True)
-    totalparc = models.DurationField(blank=True, null=True)
-    uteis = models.DurationField(blank=True, null=True)
-    he_100 = models.DurationField(blank=True, null=True)
-    he_50 = models.DurationField(blank=True, null=True)
-    hesaldo = models.DurationField(blank=True, null=True)
-    dcid = models.TextField(blank=True, null=True)
-    iddcid = models.CharField(max_length=100, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'junta_por_dia'
-
-
-class LancIncompletos(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    dia = models.DateField(blank=True, null=True)
-    nome = models.CharField(max_length=255, blank=True, null=True)
-    total_horas = models.DurationField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'lanc_incompletos'
-
-
-class Lancamentos(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    colaborador = models.CharField(max_length=255)
-    dia = models.DateField()
-    descricao = models.CharField(max_length=600, blank=True, null=True)
-    indice = models.IntegerField()
-    diaseguinte = models.BooleanField()
-    horaini1 = models.TimeField()
-    horafim1 = models.TimeField()
-    horaini2 = models.TimeField(blank=True, null=True)
-    horafim2 = models.TimeField(blank=True, null=True)
-    horaini3 = models.TimeField(blank=True, null=True)
-    horafim3 = models.TimeField(blank=True, null=True)
-    perdevale = models.BooleanField(blank=True, null=True)
-    revisaorh = models.CharField(max_length=255, blank=True, null=True)
-    etapa1 = models.IntegerField(blank=True, null=True)
-    etapa2 = models.IntegerField(blank=True, null=True)
-    etapa3 = models.IntegerField(blank=True, null=True)
-    atividade = models.ForeignKey(Atividade, models.DO_NOTHING, db_column='atividade')
-    obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
-    diario = models.CharField(max_length=30, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'lancamentos'
-
-
 class Localizacaoprogramada(models.Model):
-    colaborador = models.CharField(primary_key=True, max_length=255)
+    colaborador = models.CharField(max_length=255)
     iniciosemana = models.DateField()
     encarregado = models.CharField(max_length=100, blank=True, null=True)
     observacao = models.CharField(max_length=255, blank=True, null=True)
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
+    id = models.CharField(primary_key=True)
 
     class Meta:
         managed = False
@@ -194,25 +207,25 @@ class Obra(models.Model):
     finalizada = models.BooleanField()
     indice = models.CharField(max_length=100)
     supervisor = models.ForeignKey('Supervisor', models.DO_NOTHING, db_column='supervisor', blank=True, null=True)
+    tecnicon = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'obra'
 
 
-class ResumoJunta(models.Model):
-    id = models.BigAutoField(primary_key=True)
+class RevisaoTerceiros(models.Model):
     dia = models.DateField(blank=True, null=True)
-    colaborador = models.CharField(max_length=255, blank=True, null=True)
-    obra = models.IntegerField(blank=True, null=True)
-    uteis = models.DurationField(blank=True, null=True)
-    naoutil = models.BigIntegerField(blank=True, null=True)
-    total_he50 = models.DurationField(blank=True, null=True)
-    total_he100 = models.DurationField(blank=True, null=True)
+    nome = models.CharField(max_length=255, blank=True, null=True)
+    diaria = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    horas = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    dispensa = models.DurationField(blank=True, null=True)
+    falta = models.DurationField(blank=True, null=True)
+    horas_lancadas = models.DurationField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'resumo_junta'
+        db_table = 'revisao_terceiros'
 
 
 class Supervisor(models.Model):
@@ -222,3 +235,12 @@ class Supervisor(models.Model):
     class Meta:
         managed = False
         db_table = 'supervisor'
+
+
+class TipoAtividade(models.Model):
+    tipo = models.CharField(primary_key=True, max_length=30)
+    indice = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tipo_atividade'

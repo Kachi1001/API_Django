@@ -39,6 +39,7 @@ class Carros(models.Model):
     placa = models.CharField(primary_key=True, max_length=9)
     marca = models.CharField(max_length=20, blank=True, null=True)
     modelo = models.CharField(max_length=30, blank=True, null=True)
+    imagem = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
