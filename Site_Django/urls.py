@@ -14,14 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.http import HttpResponse
 from django.urls import path , include
 from django.conf import settings
 from django.conf.urls.static import static
 
+def status(request):
+    return HttpResponse("Estamos online")
 
 urlpatterns = [
     path('reservas/' , include("Reservas.urls")),
     path('lancamento_obra/' , include("Lancamento_obra.urls")),
+    path("status/", status)
 ]
 
 
