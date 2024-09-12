@@ -8,7 +8,7 @@ def getTable(tabela, value):
     if tabela == 'atividade':
         retorno = {
             'data': Atividade.objects.all(),
-            'filter': Q(id__icontains=value) | Q(colaborador__icontains=value) | Q(obra__id__icontains=value) | Q(diario__icontains=value)
+            'filter': Q(id__icontains=value) | Q(colaborador__icontains=value) | Q(obra__id__icontains=value) | Q(diario__icontains=value)  
         }
     elif tabela == 'colaborador':
         retorno = {
@@ -23,7 +23,7 @@ def getTable(tabela, value):
     elif tabela == 'diario':
         retorno = {
         'data':Diarioobra.objects.all(),
-        'filter':Q(id__icontains=value)
+        'filter':Q(id__icontains=value) | Q(data__icontains=value) | Q(obra__id__icontains=value) | Q(encarregado__icontains=value)
         }
     elif tabela == 'incompletos':
         retorno = {
@@ -34,12 +34,27 @@ def getTable(tabela, value):
     elif tabela == 'hora_mes':
         retorno = {
         'data':HoraMes.objects.all(),
-        'filter':Q(colaborador__icontains=value) | Q(competencia__icontains=value)
+        'filter':Q(colaborador__icontains=value) | Q(competencia__icontains=value) | Q(contrato__icontains=value)
         }
     elif tabela == 'efetividade':
         retorno = {
         'data':Efetividade.objects.all(),
         'filter':''
+        }
+    elif tabela == 'programacao':
+        retorno = {
+        'data': Localizacaoprogramada.objects.all(),
+        'filter': Q(colaborador__icontains=value) | Q(obra__id__icontains=value) | Q(iniciosemana__icontains=value) | Q(encarregado__icontains=value)
+        }
+    elif tabela == 'descontos_resumo':
+        retorno = {
+        'data': DescontosResumo.objects.all(),
+        'filter':Q(encarregado__icontains=value) | Q(colaborador__icontains=value) | Q(dia__icontains=value)
+        }
+    elif tabela == 'diarias':
+        retorno = {
+        'data': Diarias.objects.all(),
+        'filter':Q(competencia__icontains=value) | Q(colaborador__icontains=value)
         }
     return retorno
 

@@ -12,6 +12,8 @@ def upload(metodo, file, fileName):
         caminho = 'reservas/carros/'
     elif metodo == 'diario':
         caminho = 'lancamento_obra/diarios/'
+    elif metodo == 'programacao':
+        caminho = 'lancamento_obra/programacao/'
     if caminho == None:
         return False
     else:

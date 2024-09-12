@@ -13,6 +13,7 @@ class Incompletos(models.Model):
         
 class HoraMes(models.Model):
     competencia = models.CharField(primary_key=True)
+    contrato = models.CharField()
     colaborador = models.CharField()
     folgas = models.DurationField()
     faltas = models.DurationField()
@@ -23,3 +24,16 @@ class HoraMes(models.Model):
     class Meta:
         managed = False
         db_table = 'horas_mes'
+
+class DescontosResumo(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    responsavel = models.CharField()
+    colaborador = models.CharField()
+    dia = models.DateField()
+    folgas = models.DurationField()
+    faltas = models.DurationField()
+    dispensas = models.DurationField()
+    
+    class Meta:
+        managed = False
+        db_table = 'descontos_resumo'

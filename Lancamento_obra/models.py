@@ -30,10 +30,29 @@ class Atividade(models.Model):
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
     diario = models.CharField(max_length=30, blank=True, null=True)
     meiadiaria = models.BooleanField(blank=True, null=True)
+    supervisor = models.CharField(max_length=100, blank=True, null=True)
+    motivo = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'atividade'
+
+
+class AtividadeHoras(models.Model):
+    id = models.IntegerField(primary_key=True)
+    colaborador = models.CharField(blank=True, null=True)
+    dia = models.DateField(blank=True, null=True)
+    obra = models.IntegerField(blank=True, null=True)
+    hn = models.TimeField(blank=True, null=True)
+    h50 = models.TimeField(blank=True, null=True)
+    h100 = models.TimeField(blank=True, null=True)
+    competencia = models.CharField(blank=True, null=True)
+    dispensa = models.TimeField(blank=True, null=True)
+    falta = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'atividade_horas'
 
 
 class BaseTerceiros(models.Model):
@@ -100,10 +119,11 @@ class Dia(models.Model):
 class Diarias(models.Model):
     colaborador = models.CharField(max_length=255, blank=True, null=True)
     competencia = models.TextField(blank=True, null=True)
-    diaria = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    diaria = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
     horas = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    valor_diarias = models.IntegerField(blank=True, null=True)
-    valor_horas = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_diarias = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    valor_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -138,7 +158,7 @@ class DjangoMigrations(models.Model):
 
 
 class Efetividade(models.Model):
-    colaborador = models.CharField(max_length=255, blank=True, primary_key=True)
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
     dia = models.DateField(blank=True, null=True)
     obra = models.IntegerField(blank=True, null=True)
     descricao = models.TextField(blank=True, null=True)
@@ -235,6 +255,46 @@ class Supervisor(models.Model):
     class Meta:
         managed = False
         db_table = 'supervisor'
+
+
+class Temp(models.Model):
+    idd = models.IntegerField(blank=True, null=True)
+    cr = models.IntegerField(blank=True, null=True)
+    hora = models.TimeField(blank=True, null=True)
+    total = models.TimeField(blank=True, null=True)
+    he50 = models.TimeField(blank=True, null=True)
+    dia = models.DateField(blank=True, null=True)
+    hn = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'temp'
+
+
+class Temp2(models.Model):
+    idd = models.IntegerField(blank=True, null=True)
+    cr = models.IntegerField(blank=True, null=True)
+    hora = models.TimeField(blank=True, null=True)
+    htot = models.TimeField(blank=True, null=True)
+    h50 = models.TimeField(blank=True, null=True)
+    hn = models.TimeField(blank=True, null=True)
+    dia = models.DateField(blank=True, null=True)
+    h100 = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'temp2'
+
+
+class Temp3(models.Model):
+    idd = models.IntegerField(blank=True, null=True)
+    h50 = models.DurationField(blank=True, null=True)
+    hn = models.DurationField(blank=True, null=True)
+    h100 = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'temp3'
 
 
 class TipoAtividade(models.Model):

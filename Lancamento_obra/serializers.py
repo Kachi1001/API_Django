@@ -40,3 +40,8 @@ class DiarioobraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Diarioobra
         fields = '__all__'  # Ou liste os campos que deseja expor na API
+        
+class ProgramacaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Localizacaoprogramada   
+        fields = '__all__'  # Ou liste os campos que deseja expor na API

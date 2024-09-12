@@ -1,16 +1,11 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import psycopg2
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
 from .models import *
 import json
 from django.http import JsonResponse
 from .mani import *
 from .serializers import *
-from PIL import Image
-import os
-from pathlib import Path 
+
 from .tables import buildTable
 
 @api_view(['POST'])

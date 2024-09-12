@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from .mani import *
 from .serializers import *
 from .tables import buildTable
-from Home.api import upload
+from media.api import upload
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -32,12 +32,15 @@ def funçãoSQL(funcao):
         cursor.execute(f"SELECT {funcao}")
         conn.commit()
         # Retornando uma resposta de sucesso
-        return retorno200
     except psycopg2.Error as e:
         return Response({'error': str(e)}, status=400)
+    else:
+        return Response({'method':'Atualizar','message':'Tabela atualizada com sucesso'}, status=200)
+
     finally:
         cursor.close()
         conn.close()
+        
 
 @api_view(['GET'])
 def funcao(request):
@@ -56,29 +59,46 @@ def funcao(request):
 def register(request):
     parametro = json.loads(request.POST.get('parametro'))
     metodo = request.POST.get('metodo')
-    owner = request.POST.get('user') 
+    owner = request.POST.get('user')
     if metodo == 'funcao':
-        return objFuncao(Funcao(), parametro)
+        x = objFuncao(Funcao(), parametro)
     elif metodo == 'colaborador':
-        return objColaborador(Colaborador(), parametro)
+        x = objColaborador(Colaborador(), parametro)
     elif metodo == 'atividade':
-        return objAtividade(Atividade(), parametro)
+        x = objAtividade(Atividade(), parametro)
     elif metodo == 'supervisor':
-        return objSupervisor(Supervisor(), parametro)
+        x = objSupervisor(Supervisor(), parametro)
     elif metodo == 'diario':
-        if upload('diario',request.FILES.get('file'),parametro.get('imagem')):
-            return objDiario(Diarioobra(), parametro)
+        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
+            x = objDiario(Diarioobra(), parametro)
         else: 
             return retorno400
     elif metodo == 'obra':
         try:
             Obra.objects.get(id=parametro.get('id'))
         except ObjectDoesNotExist:
-            return objObra(Obra(), parametro)
+            x = objObra(Obra(), parametro)
         else:
-            return Response({'message':'Houve algum problema, CR já existe'}, status=400)
-    return Response({'message':'Houve algum problema, não encontramos o metodo'}, status=400)
-    
+            return Response({'method':'Registro','message':'Houve algum problema, CR já existe'}, status=400)
+    elif metodo == 'programacao':
+        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
+            for a in json.loads(parametro.get('lanc')):
+                lanc = {
+                    'colaborador': a.get('colaborador'),
+                    'encarregado': a.get('encarregado'),
+                    'obra': a.get('obra'),
+                    'iniciosemana': parametro.get('iniciosemana')
+                    }
+                objProgramacao(Localizacaoprogramada(), lanc)    
+            x = True        
+        else: 
+            return Response({'method':'Registro','message':'Houve algum problema no upload da imagem'}, status=400)
+    else:
+        return Response({'method':'Registro','message':'Houve algum problema, não encontramos o metodo'}, status=400)
+    if x == True:
+        return Response({'method':'Registro','message':'Registro efetuado com sucesso!'}, status=200)
+    else:
+        return x
 
 @api_view(['POST'])
 def update(request):
@@ -87,42 +107,59 @@ def update(request):
     owner = request.POST.get('user')
     if metodo == 'colaborador':
         obj = Colaborador.objects.get(id=parametro.get('id'))
-        return objColaborador(obj, parametro) 
+        x = objColaborador(obj, parametro) 
     elif metodo == 'obra':
         obj = Obra.objects.get(id=parametro.get('id'))
-        return objObra(obj, parametro)
+        x = objObra(obj, parametro)
     elif metodo == 'supervisor':
         obj = Supervisor.objects.get(supervisor=parametro.get('supervisor'))
-        return objSupervisor(obj, parametro)
+        x = objSupervisor(obj, parametro)
     elif metodo == 'atividade':
         obj = Atividade.objects.get(id=parametro.get('id'))
-        return objAtividade(obj, parametro)
+        x = objAtividade(obj, parametro)
     elif metodo == 'diario':
         obj = Diarioobra.objects.get(id=parametro.get('id'))
-        return objDiario(obj, parametro)
+        x = objDiario(obj, parametro)
+    elif metodo == 'programacao':
+        obj = Localizacaoprogramada.objects.get(id=parametro.get('id'))
+        x = objProgramacao(obj, parametro)
     else:
-        return Response({'message':'Houve algum problema, não encontramos o metodo'}, status=400)
-
+        return Response({'method':'Update','message':'Houve algum problema, não encontramos o metodo'}, status=400)
+    if x == True:
+        return Response({'method':'Update','message':f'{parametro.get('id')}, foi editado com sucesso'})
+    else:
+        return x
+        
 @api_view(['POST'])
 def deletar(request):
     metodo = request.POST.get('metodo')
     id = request.POST.get('parametro')
     owner = request.POST.get('user')
-    if metodo == 'colaborador':
-        return Delete.Colaborador(owner, id) 
-    elif metodo == 'funcao':
-        return Delete.Funcao(owner, id)
-    elif metodo == 'supervisor':
-        return Delete.Supervisor(owner, id)
-    elif metodo == 'obra':
-        return Delete.Obra(owner, id)
-    elif metodo == 'atividade':
-        return Delete.Atividade(owner, id)
-    elif metodo == 'diario':
-        return Delete.Diario(owner, id)
+    try:
+        if metodo == 'colaborador':
+            x = Colaborador.objects.get(id=id)
+        elif metodo == 'funcao':
+            x = Funcao.objects.get(id=id)
+        elif metodo == 'supervisor':
+            x = Supervisor.objects.get(supervisor=id)
+        elif metodo == 'obra':
+            x = Obra.objects.get(id=id)
+        elif metodo == 'atividade':
+            x = Atividade.objects.get(id=id)
+        elif metodo == 'diario':
+            x = Diarioobra.objects.get(id=id)
+        elif metodo == 'programacao':
+            x = Localizacaoprogramada.objects.get(id=id)
+        else:
+            return Response({'method':'Delete','message':'Houve algum problema, não encontramos o metodo'}, status=400)
+        x.delete()
+    except ObjectDoesNotExist as e:
+        return Response({'method': 'Delete','message':'Item não encontrado'}, status=400)
+    except DatabaseError as e:
+        return Response({'method':'Delete','message': str(e)}, status=400)
     else:
-        return Response({'message':'Houve algum problema, não encontramos o metodo'}, status=400)
-
+        return Response({'method':'Delete','message':f'{id}, foi deletado com sucesso'})
+        
 @api_view(['GET'])
 def get_table(request):
     metodo = request.GET.get('metodo')
@@ -147,7 +184,7 @@ def get_table(request):
         if parametro == 'supervisor':
             value = Supervisor.objects.all().values('supervisor', 'ativo')
     if value == None:
-        return Response({'message':'Metodo não encontrado'}, status=400)
+        return Response({'method':'Tabela','message':'Método não encontrado'}, status=400)
     else:
         return JsonResponse(list(value), safe=False) 
 
@@ -169,8 +206,10 @@ def get_data(request):
             result = AtividadeSerializer(Atividade.objects.get(id=id))
         elif metodo == 'diario':
             result = DiarioobraSerializer(Diarioobra.objects.get(diario=id))
+        elif metodo == 'programacao':
+            result = ProgramacaoSerializer(Localizacaoprogramada.objects.get(id=id))
         return Response(result.data,status=200)
     except ObjectDoesNotExist:
-            return Response({'message': f'Erro de pesquisa: id não encontrada <{id}>'}, status=400)
+            return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
 
     
