@@ -28,7 +28,6 @@ def funçãoSQL(funcao):
     
     try:
         # Executando a função
-        print(funcao)
         cursor.execute(f"SELECT {funcao}")
         conn.commit()
         # Retornando uma resposta de sucesso
