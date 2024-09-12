@@ -29,6 +29,7 @@ class DescontosResumo(models.Model):
     id = models.BigAutoField(primary_key=True)
     responsavel = models.CharField()
     colaborador = models.CharField()
+    diario = models.CharField()
     dia = models.DateField()
     folgas = models.DurationField()
     faltas = models.DurationField()

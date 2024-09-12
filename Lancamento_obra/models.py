@@ -168,6 +168,8 @@ class Efetividade(models.Model):
     horafim2 = models.TimeField(blank=True, null=True)
     horaini3 = models.TimeField(blank=True, null=True)
     horafim3 = models.TimeField(blank=True, null=True)
+    id = models.IntegerField(primary_key=True)
+    diario = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
