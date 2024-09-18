@@ -38,3 +38,15 @@ class DescontosResumo(models.Model):
     class Meta:
         managed = False
         db_table = 'descontos_resumo'
+        
+class Graficos(models.Model):
+    mes = models.CharField(primary_key=True)
+    hora_50 = models.DurationField()
+    hora_100 = models.DurationField()
+    
+    def hora_50int(self):
+        return int(self.hora_50)
+    
+    class Meta:
+        managed = False
+        db_table = 'grafico'

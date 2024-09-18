@@ -4,6 +4,7 @@ import psycopg2
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
+from .views import *
 import json
 from django.http import JsonResponse
 from .mani import *
@@ -211,4 +212,13 @@ def get_data(request):
     except ObjectDoesNotExist:
             return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
 
+@api_view(['GET'])
+def grafico(request):
+    metodo = request.GET.get('metodo')
+    result = retorno400
+    try:
+        if metodo == 'grafico1':
+            return Response(Graficos.objects.all().values('mes','hora_50','hora_100'),status=200)
+    except ObjectDoesNotExist:
+            return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
     

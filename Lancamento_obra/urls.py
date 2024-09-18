@@ -9,4 +9,5 @@ urlpatterns = [
     path('get_data', api.get_data),
     path('deletar', api.deletar),
     path('update', api.update),
+    path('grafico', api.grafico),
 ]
