@@ -19,4 +19,6 @@ def upload(metodo, file, fileName):
     else:
         path = os.path.join(settings.MEDIA_ROOT, caminho+fileName)
         img.save(path) 
+        nome = fileName.split('.')
+        os.rename(os.path.join(settings.MEDIA_ROOT, caminho+fileName), os.path.join(settings.MEDIA_ROOT, caminho+nome[0]+'.jpeg'))
         return True

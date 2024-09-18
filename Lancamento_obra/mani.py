@@ -1,5 +1,5 @@
 from .models import *
-from API.models import Historico
+from Home.models import Historico
 from django.db import IntegrityError, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -84,7 +84,7 @@ def objDiario(obj,parametro):
     obj.encarregado = parametro.get('encarregado')
     obj.climamanha = parametro.get('climamanha')
     obj.climatarde = parametro.get('climatarde')
-    obj.imagem = parametro.get('imagem')
+    obj.imagem = parametro.get('imagem').split('.')[0] + '.jpg'
     obj.diario = parametro.get('diario')
     obj.indice = parametro.get('indice')
     obj.descricao = parametro.get('descricao')

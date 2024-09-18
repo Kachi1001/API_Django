@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'Home',
-    'API',
     'Lancamento_obra',
     'TI',
     'Reservas',
