@@ -3,9 +3,8 @@ from Reservas.models import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
-import requests as whatsapp
 from media.api import upload
-
+from Site_Django import whatsapp
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
@@ -92,21 +91,16 @@ def register(request):
                 z.save()
 
                 if resp != a.get('responsavel'):
-                    enviarMSG({'sala': z.sala, 'resp': resp, 'data':z.data, 'horas':msg})
+                    whatsapp.enviarMSG('5535126392',{'sala': z.sala, 'resp': resp, 'data':z.data, 'horas':msg})
                     resp = a.get('responsavel')
                     msg = []
                 msg.append(z.hora)
                 
-            enviarMSG({'sala': z.sala, 'resp': resp, 'data':z.data, 'horas':msg})
+            whatsapp.enviarMSG('5535126392',{'sala': z.sala, 'resp': resp, 'data':z.data, 'horas':msg})
             return retorno200
     else:
         return retorno400
-def enviarMSG(info):
-    url = 'http://10.0.0.139:3000/client/sendMessage/felipe'
-    obj = {"chatId": "555535126392@c.us","contentType": "string","content": f"*Sala Reservada*\nSala: _{info.get('sala')}_\nData: _{info.get('data')}_\nResponsável: _{info.get('resp')}_\nHorários: _{info.get('horas')}_"}
-    headers = {'accept': '*/*', 'Content-Type': 'application/json', 'x-api-key':'comunidadezdg.com.br'}
-    whatsapp.post(url, json=obj, headers=headers)
-    
+
 def gerarListaCarros(reservados, listaCarros):
     resultado = []
     for carro in listaCarros:
