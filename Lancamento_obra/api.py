@@ -73,7 +73,7 @@ dictModels = {
 def register(request):
     parametro = json.loads(request.POST.get('parametro'))
     metodo = request.POST.get('metodo')
-    obj = dictModels.get(metodo)()
+    obj = dictModels.get(metodo)
     owner = request.POST.get('user')
     
     if metodo == 'diario':
@@ -92,11 +92,11 @@ def register(request):
         if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
             for a in json.loads(parametro.get('lanc')):
                 a['iniciosemana'] = parametro.get('iniciosemana')
-                mani.create(a,obj)
+                mani.create(a,obj())
             return retorno200
         else: 
             return Response({'method':'Registro','message':'Houve algum problema no upload da imagem'}, status=400)
-    return mani.create(parametro,obj)
+    return mani.create(parametro,obj())
     
 @api_view(['POST'])
 def update(request):
@@ -106,7 +106,7 @@ def update(request):
     if metodo == 'supervisor':
         obj = Supervisor.objects.get(supervisor=parametro.get('supervisor'))
     else:
-        obj = dictModels.get(metodo).objects.get(id=parametro.get('id'))
+        obj = dictModels.get(metodo).objects.get(pk=parametro.get('id'))
     return mani.update(parametro,obj)
           
     
@@ -138,7 +138,7 @@ def get_table(request):
     if metodo == 'select':
         if parametro == 'funcao':
             value = Funcao.objects.all().values('funcao')
-        if parametro == 'supervisor':
+        if parametro == 'supervisor_id':
             value = Supervisor.objects.all().filter(ativo=True).values('supervisor', 'ativo').order_by('supervisor')
         if parametro == 'atividade_id':
             value = TipoAtividade.objects.all().values('tipo', 'indice').order_by('indice')
@@ -166,14 +166,18 @@ def tabela(request, table):
 def get_data(request):
     metodo = request.GET.get('metodo')
     id = request.GET.get('parametro')
-    obj = dictModels.get(metodo).objects.all().filter(id=id)
-    result = retorno400
-    try:
-        value = obj.values()
-        return JsonResponse(list(value), safe=False) 
-    except ObjectDoesNotExist:
-            return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
+    if metodo != 'diario':
+        obj = dictModels.get(metodo).objects.all().filter(id=id)
+    else:
+        obj = Diarioobra.objects.all().filter(diario=id)
+    
+    value = list(obj.values())
 
+    if len(value) == 0:
+        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada "{id}"' }, status=404)
+    else:
+        return JsonResponse(value, safe=False) 
+        
 @api_view(['GET'])
 def grafico(request):
     metodo = request.GET.get('metodo')
