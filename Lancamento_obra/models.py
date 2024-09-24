@@ -282,6 +282,8 @@ class Temp2(models.Model):
     hn = models.TimeField(blank=True, null=True)
     dia = models.DateField(blank=True, null=True)
     h100 = models.TimeField(blank=True, null=True)
+    dispensa = models.TimeField(blank=True, null=True)
+    falta = models.TimeField(blank=True, null=True)
 
     class Meta:
         managed = False

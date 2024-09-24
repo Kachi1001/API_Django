@@ -89,14 +89,15 @@ def register(request):
 
                 z = AgendaSalas(hora=a.get('hora'), data=parametro.get('data'), responsavel=a.get('responsavel'), sala=parametro.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
                 z.save()
-
+                
+                mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
                 if resp != a.get('responsavel'):
-                    whatsapp.enviarMSG('5535126392',{'sala': z.sala, 'resp': resp, 'data':z.data, 'horas':msg})
+                    whatsapp.enviarMSG('5535126392',mensagem)
                     resp = a.get('responsavel')
                     msg = []
                 msg.append(z.hora)
                 
-            whatsapp.enviarMSG('5535126392',{'sala': z.sala, 'resp': resp, 'data':z.data, 'horas':msg})
+            whatsapp.enviarMSG('5535126392',mensagem)
             return retorno200
     else:
         return retorno400
