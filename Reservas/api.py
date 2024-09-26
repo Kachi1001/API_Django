@@ -1,14 +1,17 @@
-from Reservas.serializers import *
-from Reservas.models import *
+from .serializers import *
+from .models import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
 from media.api import upload
 from Site_Django import whatsapp
+from datetime import datetime
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
-    
+latestTick = {
+    'reservasala':datetime.now()
+}
 @api_view(['GET'])
 def get(request):
     metodo = request.GET.get('metodo')
@@ -19,10 +22,12 @@ def get(request):
             return Response(serializer.data)
         except Carros.DoesNotExist:
             return retorno404
-    elif metodo == 'atendimento' or metodo == 'apoio' or metodo == 'reuniao':
-        return Response(reservaSala(request))
+    elif metodo == 'atendimento' or metodo == 'apoio' or metodo == 'reunião':
+        return reservaSala(request)
+    elif metodo == 'latestTick':
+        return Response(data=latestTick.get(parametro))
     else:
-        return retorno400
+        return Response({'message':'Método não encontrado','method':'Requisição'}, status=400)
         
 @api_view(['POST'])
 def delete(request):
@@ -79,7 +84,7 @@ def register(request):
                     conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
                     
         if len(conflito) > 0:
-            return Response({'message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
+            return Response({'method':'Conflitos','message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
         else:
             msg = []
             resp = None
@@ -90,17 +95,19 @@ def register(request):
                 z = AgendaSalas(hora=a.get('hora'), data=parametro.get('data'), responsavel=a.get('responsavel'), sala=parametro.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
                 z.save()
                 
-                mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
                 if resp != a.get('responsavel'):
                     whatsapp.enviarMSG('5535126392',mensagem)
                     resp = a.get('responsavel')
                     msg = []
                 msg.append(z.hora)
+                mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
                 
             whatsapp.enviarMSG('5535126392',mensagem)
-            return retorno200
+            global latestTick 
+            latestTick["reservasala"] = datetime.now()
+            return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
     else:
-        return retorno400
+        return Response({'method':'Erro desconhecido', 'message':'Método não encontrado'})
 
 def gerarListaCarros(reservados, listaCarros):
     resultado = []
@@ -115,28 +122,26 @@ def gerarListaCarros(reservados, listaCarros):
 def gerarLista(reservados, horarios):
     resultado = []
     for horario in horarios:
-        a = AgendaSalas(hora=horario, responsavel='', reservado='',descricao='') #cria um vazio
         try:
-            a = reservados.get(hora=horario)
+            a = reservados.filter(hora=horario)[0]
         except:
-            return Response({'message':'teste'})
-        else:
+            a = {'hora':horario, 'responsavel':'', 'reservado':'','descricao':''}#cria um vazio
+        finally:
             resultado.append(a)
-    return(resultado)
+    return resultado
 
 from Site_Django import util
 def reservaSala(request):
-    horarios1= ["07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30"]
-    horarios2= ["13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"]
+    horarios_dict = {
+        'manha': ["07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30"],
+        'tarde': ["13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"]
+    }
     metodo = request.GET.get('metodo')
-    parametro = json.loads(request.POST.get('parametro'))
-    date = parametro.data if parametro.data != None else util.formatarHTML(util.get_hoje())
-    reservados = AgendaSalas.objects.all().filter(sala=metodo, data=date)
-    
-    if metodo == 'atendimento':
-        if parametro.horario == 'manha':
-            return gerarLista(reservados, horarios1)
-        elif parametro.horario == 'tarde':
-            return gerarLista(reservados, horarios2)
+    parametro = json.loads(request.GET.get('parametro'))
+    date = parametro.get('data') if parametro.get('data') != None else util.formatarHTML(util.get_hoje())
+    reservados = AgendaSalas.objects.all().filter(sala=metodo, data=date).values('hora','responsavel','reservado','descricao')
+
+    return Response({'dados':gerarLista(reservados, horarios_dict.get(parametro.get('horario'))), 'method':'Carregar dados','message':'Sucesso em ler'}) 
+
          
         
