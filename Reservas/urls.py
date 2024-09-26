@@ -6,4 +6,5 @@ urlpatterns = [
     path('get', api.get),
     path('delete', api.delete),
     path('edit', api.edit),
+    path('reservasala', api.reservaSala),
 ]

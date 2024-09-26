@@ -92,8 +92,10 @@ def register(request):
         if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
             for a in json.loads(parametro.get('lanc')):
                 a['iniciosemana'] = parametro.get('iniciosemana')
-                mani.create(a,obj())
-            return retorno200
+                x=mani.create(a,obj())
+                if x.status_code != 200: 
+                    return x
+            return Response({'method':'Sucesso','message':'Cadastro efetuado com sucesso!'}, status=200)
         else: 
             return Response({'method':'Registro','message':'Houve algum problema no upload da imagem'}, status=400)
     return mani.create(parametro,obj())
@@ -174,7 +176,7 @@ def get_data(request):
     value = list(obj.values())
 
     if len(value) == 0:
-        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada "{id}"' }, status=404)
+        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada " {id}"' }, status=404)
     else:
         return JsonResponse(value, safe=False) 
         

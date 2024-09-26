@@ -18,7 +18,12 @@ def upload(metodo, file, fileName):
         return False
     else:
         path = os.path.join(settings.MEDIA_ROOT, caminho+fileName)
-        img.save(path) 
-        nome = fileName.split('.')
-        os.rename(os.path.join(settings.MEDIA_ROOT, caminho+fileName), os.path.join(settings.MEDIA_ROOT, caminho+nome[0]+'.jpeg'))
-        return True
+        try:
+            img.save(path)
+        except FileExistsError:
+            return True
+        else:
+            return True
+        finally:
+            nome = fileName.split('.')
+            os.rename(os.path.join(settings.MEDIA_ROOT, caminho+fileName), os.path.join(settings.MEDIA_ROOT, caminho+nome[0]+'.jpeg'))

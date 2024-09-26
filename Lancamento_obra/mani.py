@@ -22,8 +22,12 @@ class mani:
             obj.save()
             # pass
         except IntegrityError as e:
-            message = str(e).split('DETAIL:')[0].split('"')[1]
-            return Response({'method':'Integridade','message':f'Campo "{message}", não pode ser vazio'}, status=400)
+            e = str(e)
+            if 'null value' in e:
+                e = f'Campo "{e.split('DETAIL:')[0].split('"')[1]}", não pode ser vazio'
+            elif 'duplicate key' in e:
+                e = e.split('DETAIL:')[1].replace('Key', 'Chave').replace('already exists.', 'já existe no banco.')
+            return Response({'method':'Integridade','message':e}, status=400)
         except DatabaseError as e:
             message = str(e).split('CONTEXT:')[0]
             return Response({'method':'Banco de dados','message': message}, status=400)
