@@ -4,11 +4,9 @@ import psycopg2
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
-from .views import *
 import json
 from django.http import JsonResponse
-from .mani import *
-from .serializers import *
+from .mani import mani
 from .tables import buildTable
 from Midia.api import upload
 
@@ -45,12 +43,6 @@ def funçãoSQL(funcao):
 
 @api_view(['GET'])
 def funcao(request):
-    def get_formatter(value):
-        value = parametro.get(value, None)
-        if value != None:
-            return "'" + str(value) + "'"
-        return 'null'
-        
     funcao_void = ['atualizar_tabelas',]
     metodo = request.GET.get('metodo')
     if metodo in funcao_void:
@@ -58,7 +50,8 @@ def funcao(request):
 
     parametro = json.loads(request.GET.get('parametro'))
     if metodo == 'efetividade':
-        return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},'{parametro.get("dataini", '2000-01-01')}','{parametro.get("datafim", '2050-01-01')}')")
+        func = f"get_efetividade('{parametro.get("colaborador", '')}','{parametro.get("obra" , '')}','{parametro.get("dataini", '2000-01-01')}','{parametro.get("datafim", '2050-01-01')}')"
+        return funçãoSQL(func)
     elif metodo == 'subconsulta_lancamento':
         return funçãoSQL(f"{metodo}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
     return retorno400
@@ -67,18 +60,9 @@ def funcao(request):
 
 dictModels = {
     'funcao': Funcao,
-    'diario': Diarioobra,
-    'obra': Obra,
-    'programacao': Localizacaoprogramada,
-    'atividade': Atividade,
-    'supervisor': Supervisor,
-    'funcao': Funcao,
     'colaborador': Colaborador,
-    'descontos_resumo': DescontosResumo,
-    'diarias':Diarias,
-    'efetividade':Efetividade,
-    'hora_mes':HoraMes,
-    'incompletos':Incompletos,
+    'equipe': Equipe
+
 }
 
 @api_view(['POST'])
@@ -86,30 +70,7 @@ def register(request):
     parametro = json.loads(request.POST.get('parametro'))
     metodo = request.POST.get('metodo')
     obj = dictModels.get(metodo)
-    owner = request.POST.get('user')
-    
-    if metodo == 'diario':
-        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
-            pass
-        else: 
-            return retorno400
-    elif metodo == 'obra':
-        try:
-            obj.objects.get(id=parametro.get('id'))
-        except ObjectDoesNotExist:
-            pass
-        else:
-            return Response({'method':'Registro','message':'Houve algum problema, CR já existe'}, status=400)
-    elif metodo == 'programacao':
-        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
-            for a in json.loads(parametro.get('lanc')):
-                a['iniciosemana'] = parametro.get('iniciosemana')
-                x=mani.create(a,obj())
-                if x.status_code != 200: 
-                    return x
-            return Response({'method':'Sucesso','message':'Cadastro efetuado com sucesso!'}, status=200)
-        else: 
-            return Response({'method':'Registro','message':'Houve algum problema no upload da imagem'}, status=400)
+
     return mani.create(parametro,obj())
     
 @api_view(['PATCH'])
@@ -132,37 +93,29 @@ def deletar(request):
     id = request.POST.get('parametro')
     owner = request.POST.get('user')
     try:
-        if metodo == 'supervisor':
-            obj = Supervisor.objects.get(supervisor=id)
-        else:
-            obj = dictModels.get(metodo).objects.get(id=id)
+        obj = dictModels.get(metodo).objects.get(id=id)
         obj.delete()
     except ObjectDoesNotExist as e:
         return Response({'method': 'Delete','message':'Item não encontrado'}, status=400)
-    except DatabaseError as e:
-        return Response({'method':'Delete','message': str(e)}, status=400)
     else:
         return Response({'method':'Delete','message':f'{id}, foi deletado com sucesso'})
         
 @api_view(['GET'])
-def get_table(request):
+def get_list(request):
     metodo = request.GET.get('metodo')
     parametro = request.GET.get('parametro')
     value = None
     metodos = {
         'select': {
-            'funcao': Funcao.objects.all().values('funcao'),
-            'supervisor_id': Supervisor.objects.all().filter(ativo=True).values('supervisor', 'ativo').order_by('supervisor'),
-            'obra_id': Obra.objects.all().order_by('id').values('id', 'empresa', 'cidade', 'finalizada'),
-            'atividade_id': TipoAtividade.objects.all().values('tipo', 'indice').order_by('indice'), 
-            'colaborador': Colaborador.objects.all().values('id', 'nome', 'demissao').order_by('nome'),
-            'encarregado': Colaborador.objects.all().filter(encarregado=True).values('id', 'nome').order_by('nome')
+            'equipe': Equipe.objects.all().values(),
+            'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'ESTAGIARIO'},{'value':'DIRETOR'},{'value':'TERCEIRO'}]            
         },
         'table': {
-            'funcao': Funcao.objects.all().values('funcao', 'id'),
-            'supervisor': Supervisor.objects.all().values('supervisor', 'ativo')
-        }
+            'funcao': Funcao.objects.all().values(),
+            'equipe': Equipe.objects.all().values('id')
+        } 
     }
+    
     value = metodos.get(metodo).get(parametro)
     if value == None:
         return Response({'method':'Tabela','message':'Método não encontrado'}, status=400)
@@ -202,3 +155,12 @@ def grafico(request):
     except ObjectDoesNotExist:
             return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
     
+@api_view(['GET'])
+def select(request):
+    selects = {
+        'tipo': [{'value':'COMPUTADOR','text':'PC / NOTEBOOK'} ,{'value':'IMPRESSORA','text':'IMPRESSORA / SCANNER'}], 
+        'marca': [{'value':'DELL','text':'DELL INC.'} ,{'value':'LOGITECH','text':'LOGI'}], 
+    }
+    
+    value = dictModels.get(request.GET.get('metodo')).objects.all().values()
+    return Response(value)

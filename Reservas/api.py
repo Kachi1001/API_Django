@@ -3,8 +3,8 @@ from .models import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
-from media.api import upload
-from Site_Django import whatsapp
+from Midia.api import upload
+from Site_django import whatsapp
 from datetime import datetime
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -22,14 +22,14 @@ def get(request):
             return Response(serializer.data)
         except Carros.DoesNotExist:
             return retorno404
-    elif metodo == 'atendimento' or metodo == 'apoio' or metodo == 'reunião':
+    elif metodo in ['atendimento','apoio', 'reunião', 'auxiliar']:
         return reservaSala(request)
     elif metodo == 'latestTick':
         return Response(data=latestTick.get(parametro))
     else:
         return Response({'message':'Método não encontrado','method':'Requisição'}, status=400)
         
-@api_view(['POST'])
+@api_view(['DELETE'])
 def delete(request):
     metodo = request.POST.get('metodo')
     parametro = json.loads(request.POST.get('parametro'))
@@ -37,25 +37,30 @@ def delete(request):
         try:    
             x = AgendaSalas.objects.get(id=parametro.get('id'))
             x.delete()
-            return retorno200
+
         except AgendaSalas.DoesNotExist:
-            return retorno404
+            return Response({'method':'Delete','message':'Reserva não existe mais'}, status=400)
+        else:
+            return Response({'method':'Delete','message':'Concluído a exclusão com exito'}, status=200)
+            
     else:
         return retorno400
     
-@api_view(['POST'])
+@api_view(['PATCH'])
 def edit(request):
     metodo = request.POST.get('metodo')
-    parametro = request.POST.get('parametro')
+    parametro = json.loads(request.POST.get('parametro'))
     if metodo == 'sala':
         try:
             x = AgendaSalas.objects.get(id=parametro.get('id'))
             x.responsavel = parametro.get('responsavel')
             x.descricao = parametro.get('descricao')
             x.save()
-            return retorno200
         except AgendaSalas.DoesNotExist:
             return retorno404
+        else:
+            return Response({'method':'Edição','message':'Concluído a exclusão com exito'}, status=200)
+            
     else:
         return retorno400
 
@@ -130,7 +135,7 @@ def gerarLista(reservados, horarios):
             resultado.append(a)
     return resultado
 
-from Site_Django import util
+from Site_django import util
 def reservaSala(request):
     horarios_dict = {
         'manha': ["07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30"],

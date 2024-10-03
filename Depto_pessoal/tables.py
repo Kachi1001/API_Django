@@ -1,20 +1,11 @@
 from .models import *
-from .views import *
 from django.core.paginator import Paginator
 from django.db.models import Q
-value = None
+
 def buildTable(request, table, queryset):
     search_value = request.GET.get('search', '').strip()
     filtros = {
-        'atividade':Q(id__icontains=search_value) | Q(colaborador__icontains=search_value) | Q(obra__id__icontains=search_value) | Q(diario__icontains=search_value),
         'colaborador':Q(nome__icontains=search_value) | Q(funcao__icontains=search_value),
-        'obra':Q(empresa__icontains=search_value) | Q(id__icontains=search_value) | Q(cidade__icontains=search_value),
-        'diario':Q(id__icontains=search_value) | Q(data__icontains=search_value) | Q(obra__id__icontains=search_value) | Q(encarregado__icontains=search_value),
-        'incompletos':Q(nome__icontains=search_value) | Q(dia__icontains=search_value) | Q(obra__icontains=search_value) | Q(encarregado__icontains=search_value),
-        'hora_mes':Q(colaborador__icontains=search_value) | Q(competencia__icontains=search_value) | Q(contrato__icontains=search_value),
-        'programacao':Q(colaborador__icontains=search_value) | Q(obra__id__icontains=search_value) | Q(iniciosemana__icontains=search_value) | Q(encarregado__icontains=search_value),
-        'descontos_resumo':Q(encarregado__icontains=search_value) | Q(colaborador__icontains=search_value) | Q(dia__icontains=search_value),
-        'diarias':Q(competencia__icontains=search_value) | Q(colaborador__icontains=search_value),
     }
     
     sort_order = request.GET.get('order', 'desc')

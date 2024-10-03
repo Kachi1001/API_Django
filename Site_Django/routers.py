@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def isHome(x):
-    if x == 'Home' or x == 'sessions' or x == 'auth' or x == 'admin' or x == 'contenttypes':
+    if x == 'home' or x == 'sessions' or x == 'auth' or x == 'admin' or x == 'contenttypes':
         return True
     else:
         return False
@@ -21,7 +21,7 @@ class AppRouter:
         return model._meta.app_label
 
     def allow_relation(self, obj1, obj2, **hints):
-        db_list = ('default', 'Lancamento_obra', 'TI', 'Reservas', 'sessions', 'auth')
+        db_list = ('default', 'lancamento_obra', 'ti', 'reservas', 'sessions', 'auth')
         if obj1._state.db in db_list and obj2._state.db in db_list:
             logger.debug(f'Allowing relation between {obj1._state.db} and {obj2._state.db}')
             return True
