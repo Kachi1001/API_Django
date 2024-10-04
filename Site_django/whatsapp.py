@@ -1,7 +1,7 @@
 import requests
 from decouple import config
 
-url = 'http://10.0.0.139:3000/client/sendMessage/felipe'
+url = 'http://10.0.0.139:3000/client/sendMessage/gestao-dados'
 def enviarMSG(numero,mensagem):
     obj = {"chatId": f"55{numero}@c.us","contentType": "string","content": str(mensagem)}
     headers = {'accept': '*/*', 'Content-Type': 'application/json', 'x-api-key':config('WP_API', 'tecnika.com.br')}

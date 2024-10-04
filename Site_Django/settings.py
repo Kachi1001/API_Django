@@ -26,9 +26,11 @@ SECRET_KEY = 'django-insecure-hss4fba%6y**i6$hkin&j@gp3h^^7r5*duji$-f1&(_#m6*gx#
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True if config('DJ_DEBUG', 'false') == 'true' else False
+DEBUG = config('DJ_DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = [config("DJ_HOST",), '127.0.0.1', '*']
+
+ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="127.0.0.1").split(",")
+
 
 
 # Application definition
@@ -106,8 +108,9 @@ USE_L10N = True
 USE_TZ = True
 
 
-MIDIA_URL = '/midia/'
-MIDIA_ROOT = os.path.join(BASE_DIR, 'Midia')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
+MEDIA_URL = '/media/'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
