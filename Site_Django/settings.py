@@ -108,8 +108,8 @@ USE_L10N = True
 USE_TZ = True
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
-MEDIA_URL = '/media/'
+MIDIA_ROOT = os.path.join(BASE_DIR, 'Midia')
+MIDIA_URL = '/midia/'
 
 
 # Static files (CSS, JavaScript, Images)

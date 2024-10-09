@@ -1,0 +1,61 @@
+:root{
+    --side-bar_width: 250px
+  }
+.sidenav {
+    height: 100%;
+    width: var(--side-bar_width);
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 50px;
+    box-shadow:  3px 0px 15px rgb(145, 145, 145);
+    background-color: var(--cor5);
+  }
+  
+  /* Styl the sidenav links and the dropdown button */
+.sidenav a {
+    padding: 8px 8px 8px 30px;
+    text-decoration: none;
+    font-size: 15px;
+    color: black;
+    display: block; 
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  /* On mouse-over */
+.sidenav a:hover{
+    color: white;
+    background-color: #4b4b4bb6;
+  }
+
+  
+.sidenav .nome_app{
+    color: #f1f1f1;
+    font-size: larger;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    text-align: center;
+    margin: 0;
+  }
+  @media screen and (max-height: 450px) {
+    .sidenav a {font-size: 18px;}
+  }
+  
+  .accordion-header{
+    font-size: medium;
+    margin: 4px, none ,none, 4px;
+  }
+  .accordion-button{
+    font-weight: 500;
+  }
+  header, main, .submain {
+    margin-left: var(--side-bar_width);
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  

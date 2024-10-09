@@ -15,24 +15,20 @@ retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
     
 # Configurações de conexão com o banco de dados PostgreSQL
-dbname = 'Lancamento_obra'
-user = settings.DATABASES['default']['USER']
-password = settings.DATABASES['default']['PASSWORD']
-host = settings.DATABASES['default']['HOST']
-port = settings.DATABASES['default']['PORT']
-
+app = __name__.split('.')[0]
+db = settings.DATABASES['default']
 
 def funçãoSQL(funcao): 
-    conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
+    conn = psycopg2.connect(dbname=app, user=db['USER'], password=db['PASSWORD'], host=db['HOST'], port=db['PORT'])
     cursor = conn.cursor()
-    print(funcao)
+
     try:
         # Executando a função
         cursor.execute(f"SELECT {funcao}")
         conn.commit()
         # Retornando uma resposta de sucesso
     except psycopg2.Error as e:
-        return Response({'error': str(e)}, status=400)
+        return Response({'method':'Erro do banco de dados','message': str(e)}, status=400)
     else:
         return Response({'method':'Atualizar','message':'Tabela atualizada com sucesso'}, status=200)
 
@@ -41,28 +37,35 @@ def funçãoSQL(funcao):
         conn.close()
         
 
-@api_view(['GET'])
+@api_view(['POST'])
 def funcao(request):
-    funcao_void = ['atualizar_tabelas',]
-    metodo = request.GET.get('metodo')
-    if metodo in funcao_void:
-        return funçãoSQL(metodo+'()')
+    def formatSQL(value, padrao):
+        value = parametro.get(value, padrao)
+        if value != None:
+            return "'" + str(value) + "'"
+        return 'null'
 
-    parametro = json.loads(request.GET.get('parametro'))
-    if metodo == 'efetividade':
-        func = f"get_efetividade('{parametro.get("colaborador", '')}','{parametro.get("obra" , '')}','{parametro.get("dataini", '2000-01-01')}','{parametro.get("datafim", '2050-01-01')}')"
-        return funçãoSQL(func)
-    elif metodo == 'subconsulta_lancamento':
-        return funçãoSQL(f"{metodo}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
-    return retorno400
+    metodo = request.POST.get('metodo')
+    try:
+        parametro = json.loads(request.POST.get('parametro'))
+        funcao = {
+        }
+    except:
+        return funçãoSQL(metodo+'()')
+    else:
+        return funçãoSQL(funcao.get(metodo))
+        
 
 
 
 dictModels = {
     'funcao': Funcao,
     'colaborador': Colaborador,
-    'equipe': Equipe
-
+    'equipe': Equipe,
+    'periodo_aquisitivo': PeriodoAquisitivo,
+    'ferias_utilizadas': FeriasUtilizadas,
+    'ferias_processadas': FeriasProcessadas,
+    'ocupacao': Ocupacao,
 }
 
 @api_view(['POST'])
@@ -78,10 +81,7 @@ def update(request):
     metodo = request.POST.get('metodo')
     parametro = json.loads(request.POST.get('parametro'))
     owner = request.POST.get('user')
-    if metodo == 'supervisor':
-        obj = Supervisor.objects.get(supervisor=parametro.get('supervisor'))
-    else:
-        obj = dictModels.get(metodo).objects.get(pk=parametro.get('id'))
+    obj = dictModels.get(metodo).objects.get(pk=parametro.get('id'))
     return mani.update(parametro,obj)
           
     
@@ -115,52 +115,47 @@ def get_list(request):
             'equipe': Equipe.objects.all().values('id')
         } 
     }
-    
     value = metodos.get(metodo).get(parametro)
+
     if value == None:
         return Response({'method':'Tabela','message':'Método não encontrado'}, status=400)
     else:
         return JsonResponse(list(value), safe=False) 
-
+   
 @api_view(['GET'])
-def tabela(request, table):
+def tabela(request, table): 
     return JsonResponse(buildTable(request, table, dictModels.get(table).objects.all()), safe=False)
+
+lista_filterColab = []
+
+for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo','ocupacao']:
+    new = 'historico_'+x
+    lista_filterColab.append(x)
+    lista_filterColab.append(new)
+    dictModels[new] = dictModels[x]
+
 
 @api_view(['GET'])
 def get_data(request):
     metodo = request.GET.get('metodo')
     id = request.GET.get('parametro')
-    if metodo == 'diario':
-        obj = Diarioobra.objects.all().filter(diario=id)
-    elif metodo == 'lanc_dia':
-        colab = request.GET.get('colaborador').replace('%20', ' ')
-        obj = Atividade.objects.all().filter(colaborador=colab,dia=request.GET.get('dia'))
-    else:
-        obj = dictModels.get(metodo).objects.all().filter(id=id)
-    
-    value = list(obj.values())
 
-    if len(value) == 0:
-        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada " {id}"' }, status=404)
-    else:
-        return JsonResponse(value, safe=False) 
+    obj = dictModels.get(metodo).objects.all()
         
-@api_view(['GET'])
-def grafico(request):
-    metodo = request.GET.get('metodo')
-    result = retorno400
-    try:
-        if metodo == 'grafico1':
-            return Response(Graficos.objects.all().values('mes','hora_50','hora_100'),status=200)
-    except ObjectDoesNotExist:
-            return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
+    if metodo in lista_filterColab:
+        obj = obj.filter(colaborador=id)
+        obj = obj.order_by('-adquirido_em') if 'periodo_aquisitivo' in metodo else obj.order_by('-data_inicio') 
+    else: 
+        obj = obj.filter(id=id)
+        
+    obj = list(obj.values())
+    if len(obj) == 0:
+        return Response({'method':'Alerta de pesquisa','message': f'Em {metodo} não foi possível achar a id  "{id}"' }, status=404)
+    else:
+        return JsonResponse(obj, safe=False) 
+        
     
 @api_view(['GET'])
 def select(request):
-    selects = {
-        'tipo': [{'value':'COMPUTADOR','text':'PC / NOTEBOOK'} ,{'value':'IMPRESSORA','text':'IMPRESSORA / SCANNER'}], 
-        'marca': [{'value':'DELL','text':'DELL INC.'} ,{'value':'LOGITECH','text':'LOGI'}], 
-    }
-    
     value = dictModels.get(request.GET.get('metodo')).objects.all().values()
     return Response(value)

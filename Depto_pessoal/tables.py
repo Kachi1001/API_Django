@@ -5,7 +5,10 @@ from django.db.models import Q
 def buildTable(request, table, queryset):
     search_value = request.GET.get('search', '').strip()
     filtros = {
-        'colaborador':Q(nome__icontains=search_value) | Q(funcao__icontains=search_value),
+        'colaborador':Q(id__icontains=search_value) | Q(equipe__icontains=search_value),
+        'ferias_processadas':Q(colaborador__icontains=search_value) | Q(dias_processados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
+        'ferias_processadas':Q(colaborador__icontains=search_value) | Q(dias_utilizados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
+        'periodo_aquisitivo':Q(colaborador__icontains=search_value) | Q(adquirido_em__icontains=search_value) | Q(periodo__icontains=search_value) | Q(id__icontains=search_value),
     }
     
     sort_order = request.GET.get('order', 'desc')

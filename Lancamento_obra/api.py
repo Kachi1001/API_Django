@@ -27,7 +27,6 @@ port = settings.DATABASES['default']['PORT']
 def funçãoSQL(funcao): 
     conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
     cursor = conn.cursor()
-    print(funcao)
     try:
         # Executando a função
         cursor.execute(f"SELECT {funcao}")
