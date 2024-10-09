@@ -5,6 +5,7 @@ class Incompletos(models.Model):
     nome = models.CharField()
     total_horas = models.DurationField()
     encarregado = models.CharField()
+    supervisor = models.CharField()
     obra = models.IntegerField()
     
     class Meta:
