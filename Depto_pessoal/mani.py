@@ -16,7 +16,7 @@ class mani:
         try:
             obj.__dict__.update(dict)
             obj.save()
-            # pass
+            
         except IntegrityError as e:
             e = str(e)
             if 'null value' in e:

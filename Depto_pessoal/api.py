@@ -21,13 +21,16 @@ db = settings.DATABASES['default']
 def funçãoSQL(funcao): 
     conn = psycopg2.connect(dbname=app, user=db['USER'], password=db['PASSWORD'], host=db['HOST'], port=db['PORT'])
     cursor = conn.cursor()
-
+    print(funcao)
     try:
         # Executando a função
         cursor.execute(f"SELECT {funcao}")
         conn.commit()
         # Retornando uma resposta de sucesso
     except psycopg2.Error as e:
+        e = str(e)
+        if 'null value' in e:
+            e = f'Campo "{e.split('DETAIL:')[0].split('"')[1]}", não pode ser vazio'
         return Response({'method':'Erro do banco de dados','message': str(e)}, status=400)
     else:
         return Response({'method':'Atualizar','message':'Tabela atualizada com sucesso'}, status=200)
@@ -39,7 +42,7 @@ def funçãoSQL(funcao):
 
 @api_view(['POST'])
 def funcao(request):
-    def formatSQL(value, padrao):
+    def formatSQL(value, padrao = None):
         value = parametro.get(value, padrao)
         if value != None:
             return "'" + str(value) + "'"
@@ -49,6 +52,9 @@ def funcao(request):
     try:
         parametro = json.loads(request.POST.get('parametro'))
         funcao = {
+            'ocupacao': f'muda_cargo({formatSQL('id')},{formatSQL('data_inicio')},{formatSQL('remuneracao')},{formatSQL('funcao_id')})',
+            'dissidio': f'dissidio({formatSQL('id')},{formatSQL('data_inicio')},{formatSQL('remuneracao')})',
+            'desligamento': f'desligamento({formatSQL('data')},{formatSQL('id')})',
         }
     except:
         return funçãoSQL(metodo+'()')
@@ -107,12 +113,16 @@ def get_list(request):
     value = None
     metodos = {
         'select': {
-            'equipe': Equipe.objects.all().values(),
-            'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'ESTAGIARIO'},{'value':'DIRETOR'},{'value':'TERCEIRO'}]            
+            'equipe': Equipe.objects.all().values('id'),
+            'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'ESTAGIARIO'},{'value':'DIRETOR'},{'value':'TERCEIRO'}],   
+            'colaborador': Colaborador.objects.all().values('id').order_by('id'),
+            'funcao_id': Funcao.objects.all().values().order_by('id'),
+            'periodo_aquisitivo': PeriodoAquisitivo.objects.all().values().order_by('id'),
+ 
         },
         'table': {
-            'funcao': Funcao.objects.all().values(),
-            'equipe': Equipe.objects.all().values('id')
+            'funcao': Funcao.objects.all().values().order_by('id'),
+            'equipe': Equipe.objects.all().values('id').order_by('id')
         } 
     }
     value = metodos.get(metodo).get(parametro)
