@@ -23,7 +23,7 @@ def buildTable(request, table, queryset):
     # print(json.loads(request.GET.get('filter',))) 
     page_size = int(request.GET.get('limit', 10)) if request.GET.get('limit') else len(queryset)
     # Filtrando com base na busca
-    if search_value and filtros in table:
+    if search_value and table in filtros:
         queryset = queryset.filter(filtros.get(table))  # Ajuste o campo conforme necessário
 
     # Ordenando os dados

@@ -68,4 +68,5 @@ class Tecnicon(models.Model):
 
     class Meta:
         managed = False
+        ordering = ["-tecnicon", 'lanc_colab']
         db_table = 'tecnicon'
