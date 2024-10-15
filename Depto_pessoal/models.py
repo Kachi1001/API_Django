@@ -14,9 +14,9 @@ from django.db import models
 
 class Colaborador(models.Model):
     id = models.CharField(primary_key=True)
-    cpf = models.IntegerField(blank=True, null=True)
+    cpf = models.IntegerField()
     rg = models.IntegerField(blank=True, null=True)
-    nascimento = models.DateField(blank=True, null=True)
+    nascimento = models.DateField()
     fone = models.CharField(blank=True, null=True)
     ativo = models.BooleanField()
     equipe = models.CharField(blank=True, null=True)
@@ -52,6 +52,7 @@ class FeriasProcessadas(models.Model):
     dias_processados = models.IntegerField()
     data_inicio = models.DateField(blank=True, null=True)
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
+    consumido = models.BooleanField()
 
     class Meta:
         managed = False
@@ -64,6 +65,7 @@ class FeriasUtilizadas(models.Model):
     data_inicio = models.DateField(blank=True, null=True)
     periodo_aquisitivo = models.CharField(blank=True, null=True)
     antecipacao_periodo = models.BooleanField()
+    consumido = models.BooleanField()
 
     class Meta:
         managed = False
@@ -74,6 +76,7 @@ class Funcao(models.Model):
     id = models.CharField(primary_key=True)
     categoria = models.CharField()
     insalubridade = models.BooleanField(blank=True, null=True)
+    value = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -84,6 +87,15 @@ class Funcao(models.Model):
 # The error was: user mapping not found for "api"
 # Unable to inspect table 'inconsistencias'
 # The error was: user mapping not found for "api"
+
+
+class Lembrete(models.Model):
+    colaborador = models.CharField()
+    padrao = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'lembrete'
 # Unable to inspect table 'localizacaoprogramada'
 # The error was: user mapping not found for "api"
 # Unable to inspect table 'obra'

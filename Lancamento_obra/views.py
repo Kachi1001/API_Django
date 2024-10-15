@@ -51,3 +51,21 @@ class Graficos(models.Model):
     class Meta:
         managed = False
         db_table = 'grafico'
+
+class Tecnicon(models.Model):
+    tecnicon = models.BigAutoField(primary_key=True)
+    lanc_colab = models.CharField()
+    lanc_data = models.DateField()
+    lanc_descricao = models.CharField()
+    lanc_horaini1 = models.CharField()
+    lanc_horafim1 = models.CharField()
+    lanc_horaini2 = models.CharField()
+    lanc_horafim2 = models.CharField()
+    lanc_horaini3 = models.CharField()
+    lanc_horafim3 = models.CharField()
+    lanc_atividade = models.CharField()
+    lancado = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'tecnicon'

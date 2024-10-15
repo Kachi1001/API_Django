@@ -78,6 +78,7 @@ dictModels = {
     'efetividade':Efetividade,
     'hora_mes':HoraMes,
     'incompletos':Incompletos,
+    'fechados': Tecnicon,
 }
 
 @api_view(['POST'])

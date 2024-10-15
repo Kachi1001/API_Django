@@ -42,7 +42,7 @@ class AtividadeHoras(models.Model):
     id = models.IntegerField(primary_key=True)
     colaborador = models.CharField(blank=True, null=True)
     dia = models.DateField(blank=True, null=True)
-    obra = models.IntegerField(blank=True, null=True)
+    obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra', blank=True, null=True)
     hn = models.TimeField(blank=True, null=True)
     h50 = models.TimeField(blank=True, null=True)
     h100 = models.TimeField(blank=True, null=True)
