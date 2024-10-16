@@ -42,5 +42,5 @@ jobs:
       if: success()  # Só faz o deploy se os testes passarem
       run: |
         cd /home/tecnika
-        bash bat/django-update.sh teste api
-        bash bat/django-reload.sh teste
+        sudo bash bat/django-update.sh teste api
+        sudo bash bat/django-reload.sh teste
