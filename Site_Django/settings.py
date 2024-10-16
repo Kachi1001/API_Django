@@ -81,11 +81,11 @@ x = 1
 for app in INTERNAL_APP:
     DATABASES[app if app != 'Home' else 'default']  = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": app if app != 'Home' else config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
+        "NAME": app if app != INTERNAL_APP[0] else config("DB_NAME", "Site_django"),
+        "USER": config("DB_USER", "django"),
+        "PASSWORD": config("DB_PASSWORD", 'django@senha'),
+        "HOST": config("DB_HOST", '127.0.0.1'),
+        "PORT": config("DB_PORT", '5432'),
     }
     x = x + 1
 
