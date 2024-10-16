@@ -23,12 +23,12 @@ def status(request):
     return HttpResponse("Estamos online")
 
 urlpatterns = [
-    path("status", status),
+    path("api/status", status),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MIDIA_URL, document_root=settings.MIDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 for app in settings.INTERNAL_APP:
     try:
-        urlpatterns.append(path(f'{app}/', include(f'{app}.urls')))
+        urlpatterns.append(path(f'api/{app}/', include(f'{app}.urls')))
     except:
         print(f'App sem urls <{app}>')
