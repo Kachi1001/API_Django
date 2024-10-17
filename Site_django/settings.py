@@ -81,11 +81,11 @@ x = 1
 for app in INTERNAL_APP:
     DATABASES[app if app != 'Home' else 'default']  = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": app if app != 'Home' else config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
+        "NAME": app if app != INTERNAL_APP[0] else config("DB_NAME", "Site_django"),
+        "USER": config("DB_USER", "django"),
+        "PASSWORD": config("DB_PASSWORD", 'django@senha'),
+        "HOST": config("DB_HOST", '127.0.0.1'),
+        "PORT": config("DB_PORT", '5432'),
     }
     x = x + 1
 
@@ -108,14 +108,14 @@ USE_L10N = True
 USE_TZ = True
 
 
-MIDIA_ROOT = os.path.join(BASE_DIR, 'Midia')
-MIDIA_URL = '/midia/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
+MEDIA_URL = 'api/media/'
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'api/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type

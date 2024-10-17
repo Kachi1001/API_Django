@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from .mani import *
 from .serializers import *
 from .tables import buildTable
-from Midia.api import upload
+from Media.api import upload
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)

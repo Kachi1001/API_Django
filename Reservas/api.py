@@ -3,7 +3,7 @@ from .models import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
-from Midia.api import upload
+from Media.api import upload
 from Site_django import whatsapp
 from datetime import datetime
 retorno200 = Response({'message':'Sucesso'}, status=200)
