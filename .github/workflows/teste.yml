@@ -3,8 +3,6 @@ name: Django [TESTE] CI / DEPLOY
 on:
   push:
     branches: [ "teste" ]
-  pull_request:
-    branches: [ "teste" ]
 
 jobs:
   test:
