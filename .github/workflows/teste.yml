@@ -7,8 +7,7 @@ on:
     branches: [ "teste" ]
 
 jobs:
-  build-and-deploy:
-
+  build-and-test:
     runs-on: self-hosted  # O runner self-hosted está no servidor de produção
     strategy:
       max-parallel: 4
@@ -36,11 +35,45 @@ jobs:
         source venv/bin/activate  # Ativa o ambiente virtual
         python manage.py test  # Roda os testes
 
-    # Deploy no servidor de produção
-    - name: Deploy to Production
-      if: success()  # Só faz o deploy se os testes passarem
+  deploy:
+    needs: build-and-test
+    runs-on: self-hosted  # O runner self-hosted está no servidor de produção
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.12]
+    env:
+      branch: teste
+      app: api
+    defaults:
+      run:
+        shell: bash
+        working-directory: /home/tecnika/bat
+    steps:
+      # Deploy no servidor de produção
+    - name: Finalizando servidor
       run: |
-        cd /home/tecnika
-        sudo bash bat/django-stop.sh teste
-        bash bat/django-update.sh teste api
-        sudo bash bat/django-reload.sh teste
+        sudo bash django-stop.sh $branch $app #Fecha os serviços do django
+
+    - name: Atualizando o servidor
+      run: |
+        bash django-update.sh $branch $app #Faz a atualização das dependencia e arquivos
+
+    - name: Reiniciando servidor
+      run: |
+        sudo bash django-reload.sh $branch $app #Reinicia o processo do django
+
+    - name: Mandando mensagem de erro
+      if: failure()  # Só faz o deploy se os testes passarem
+      run: |
+        curl -X 'POST' \
+          'http://10.0.0.139:3000/client/sendMessage/gestao-dados' \
+          -H 'accept: */*' \
+          -H 'x-api-key: tecnika.com.br' \
+          -H 'Content-Type: application/json' \
+          -d '{
+          "chatId": "555584543627@c.us",
+          "contentType": "string",
+          "content": "Erro de deploy no [$branch] do $app"
+        }'
+    
