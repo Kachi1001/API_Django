@@ -29,7 +29,6 @@ jobs:
     - name: Install Dependencies
       run: |
         source venv/bin/activate  # Ativa o ambiente virtual
-        python -m pip install --upgrade pip
         pip install -r requirements.txt  # Instala as dependências
 
     - name: Run Tests
@@ -42,5 +41,6 @@ jobs:
       if: success()  # Só faz o deploy se os testes passarem
       run: |
         cd /home/tecnika
-        sudo bash bat/django-update.sh teste api
+        sudo bash bat/django-stop.sh teste
+        bash bat/django-update.sh teste api
         sudo bash bat/django-reload.sh teste
