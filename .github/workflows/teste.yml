@@ -7,7 +7,7 @@ on:
     branches: [ "teste" ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: self-hosted  # O runner self-hosted está no servidor de produção
     strategy:
       max-parallel: 4
@@ -36,7 +36,7 @@ jobs:
         python manage.py test  # Roda os testes
 
   deploy:
-    needs: build-and-test
+    needs: test
     runs-on: self-hosted  # O runner self-hosted está no servidor de produção
     strategy:
       max-parallel: 4
@@ -52,28 +52,11 @@ jobs:
     steps:
       # Deploy no servidor de produção
     - name: Finalizando servidor
-      run: |
-        sudo bash django-stop.sh $branch $app #Fecha os serviços do django
+      run: sudo bash django-stop.sh $branch $app #Fecha os serviços do django
 
     - name: Atualizando o servidor
-      run: |
-        bash django-update.sh $branch $app #Faz a atualização das dependencia e arquivos
+      run: sudo bash django-update.sh $branch $app #Faz a atualização das dependencia e arquivos
 
     - name: Reiniciando servidor
-      run: |
-        sudo bash django-reload.sh $branch $app #Reinicia o processo do django
+      run: sudo bash django-reload.sh $branch $app #Reinicia o processo do django
 
-    - name: Mandando mensagem de erro
-      if: failure()  # Só faz o deploy se os testes passarem
-      run: |
-        curl -X 'POST' \
-          'http://10.0.0.139:3000/client/sendMessage/gestao-dados' \
-          -H 'accept: */*' \
-          -H 'x-api-key: tecnika.com.br' \
-          -H 'Content-Type: application/json' \
-          -d '{
-          "chatId": "555584543627@c.us",
-          "contentType": "string",
-          "content": "Erro de deploy no [$branch] do $app"
-        }'
-    
