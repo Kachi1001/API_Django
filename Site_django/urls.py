@@ -28,7 +28,7 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 for app in settings.INTERNAL_APP:
-    try:
+    # try:
         urlpatterns.append(path(f'{app}/', include(f'{app}.urls')))
-    except:
-        print(f'App sem urls <{app}>')
+    # except:
+    #     print(f'App sem urls <{app}>')
