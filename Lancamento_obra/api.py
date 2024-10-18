@@ -218,6 +218,7 @@ def diario(request):
     aba['D7'] = obra.descricao
     aba['I9'] = obra.id
     aba['O9'] = obra.orcamento
+    # aba['B57'] = obra.etapas or ' '
 
     tick = 0
     while tick <= 25:
