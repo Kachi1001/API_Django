@@ -1,3 +1,4 @@
+import os
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import psycopg2
@@ -202,3 +203,35 @@ def grafico(request):
     except ObjectDoesNotExist:
             return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
     
+from openpyxl import load_workbook
+from django.http import HttpResponse
+@api_view(['GET'])
+def diario(request):
+    obra = Obra.objects.get(id=request.GET['cr'])
+
+    colabs = Localizacaoprogramada.objects.all().filter(obra=request.GET['cr'],iniciosemana=request.GET['data'])
+        
+    arquivo = load_workbook(os.path.join(settings.BASE_DIR, 'template/xlsx/diario.xlsx'))
+    aba = arquivo['CONTROLE']
+    aba['W2'] = obra.empresa
+    aba['W4'] = obra.cidade
+    aba['D7'] = obra.descricao
+    aba['I9'] = obra.id
+    aba['O9'] = obra.orcamento
+
+    tick = 0
+    while tick <= 25:
+        try:
+            aba[f'C{tick + 22}'] = colabs[tick].colaborador
+            tick += 1
+        except:
+            break
+            
+    # Criar a resposta HTTP
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=diário.xlsx'
+
+    # Salvar o arquivo no HttpResponse
+    arquivo.save(response)
+
+    return response
