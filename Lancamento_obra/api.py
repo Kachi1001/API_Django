@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from .mani import *
 from .serializers import *
 from .tables import buildTable
-from Media.api import upload
+from Site_django import media
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -90,7 +90,7 @@ def register(request):
     owner = request.POST.get('user')
     
     if metodo == 'diario':
-        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
+        if media.upload(metodo,request.FILES.get('file'),parametro.get('imagem')).status_code:
             pass
         else: 
             return retorno400
@@ -102,7 +102,7 @@ def register(request):
         else:
             return Response({'method':'Registro','message':'Houve algum problema, CR já existe'}, status=400)
     elif metodo == 'programacao':
-        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
+        if media.upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
             for a in json.loads(parametro.get('lanc')):
                 a['iniciosemana'] = parametro.get('iniciosemana')
                 x=mani.create(a,obj())

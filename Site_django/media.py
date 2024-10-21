@@ -1,5 +1,6 @@
 import os
 from PIL import Image
+from rest_framework.response import Response
 
 from django.conf import settings
 
@@ -10,15 +11,16 @@ caminhos = {
     'programacao': 'Lancamento_obra/programacao/'
 }
 def upload(metodo, file, fileName):
-    img = Image.open(file)
+    img = Image.open(file).convert('RGB')
     caminho = caminhos.get(metodo)
-    path = os.path.join(settings.MIDIA_ROOT, caminho+fileName)
+    path = os.path.join(settings.MEDIA_ROOT, caminho)
 
     try:
-        img.save(path)
-        nome = fileName.split('.')
-        os.rename(os.path.join(settings.MIDIA_ROOT, caminho+fileName), os.path.join(settings.MIDIA_ROOT, caminho+nome[0]+'.jpeg'))
+        nome = fileName.split('.')[0]
+        img.save(path + nome + '.jpeg')
     except FileExistsError:
-        return True
+        return Response(status=200)
+    except:
+        return False
     else:
-        return True 
+        return Response(status=200) 
