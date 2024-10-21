@@ -100,13 +100,13 @@ def register(request):
                 z.save()
                 
                 if resp != a.get('responsavel'):
-                    whatsapp.enviarMSG('5535126392',mensagem)
+                    whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
                     resp = a.get('responsavel')
                     msg = []
                 msg.append(z.hora)
                 mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
                 
-            whatsapp.enviarMSG('5535126392',mensagem)
+            whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
             global latestTick 
             latestTick["reservasala"] = datetime.now()
             return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
