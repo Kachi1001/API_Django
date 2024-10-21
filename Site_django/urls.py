@@ -24,8 +24,7 @@ def status(request):
 
 urlpatterns = [
     path("status", status),
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 for app in settings.INTERNAL_APP:
     # try:

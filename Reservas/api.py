@@ -3,8 +3,7 @@ from .models import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
-from Media.api import upload
-from Site_django import whatsapp
+from Site_django import media, whatsapp
 from datetime import datetime
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -71,7 +70,7 @@ def register(request):
     parametro = json.loads(request.POST.get('parametro'))
     if metodo == 'carro':
         if parametro.get('placa'):
-            if upload('carro',request.FILES.get('file'),parametro.get('imagem')):
+            if media.upload('carro',request.FILES.get('file'),parametro.get('imagem')):
                 c = Carros.objects.create(placa=parametro.get('placa'), modelo=parametro.get('modelo'),marca=parametro.get('marca'),imagem=parametro.get('imagem'))
                 return retorno200
             else:
@@ -101,13 +100,13 @@ def register(request):
                 z.save()
                 
                 if resp != a.get('responsavel'):
-                    whatsapp.enviarMSG('5535126392',mensagem)
+                    whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
                     resp = a.get('responsavel')
                     msg = []
                 msg.append(z.hora)
                 mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
                 
-            whatsapp.enviarMSG('5535126392',mensagem)
+            whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
             global latestTick 
             latestTick["reservasala"] = datetime.now()
             return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})

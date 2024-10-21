@@ -1,3 +1,4 @@
+import os
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import psycopg2
@@ -10,7 +11,7 @@ from django.http import JsonResponse
 from .mani import *
 from .serializers import *
 from .tables import buildTable
-from Media.api import upload
+from Site_django import media
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -89,7 +90,7 @@ def register(request):
     owner = request.POST.get('user')
     
     if metodo == 'diario':
-        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
+        if media.upload(metodo,request.FILES.get('file'),parametro.get('imagem')).status_code:
             pass
         else: 
             return retorno400
@@ -101,7 +102,7 @@ def register(request):
         else:
             return Response({'method':'Registro','message':'Houve algum problema, CR já existe'}, status=400)
     elif metodo == 'programacao':
-        if upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
+        if media.upload(metodo,request.FILES.get('file'),parametro.get('imagem')):
             for a in json.loads(parametro.get('lanc')):
                 a['iniciosemana'] = parametro.get('iniciosemana')
                 x=mani.create(a,obj())
@@ -202,3 +203,36 @@ def grafico(request):
     except ObjectDoesNotExist:
             return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
     
+from openpyxl import load_workbook
+from django.http import HttpResponse
+@api_view(['GET'])
+def diario(request):
+    obra = Obra.objects.get(id=request.GET['cr'])
+
+    colabs = Localizacaoprogramada.objects.all().filter(obra=request.GET['cr'],iniciosemana=request.GET['data'])
+        
+    arquivo = load_workbook(os.path.join(settings.BASE_DIR, 'template/xlsx/diario.xlsx'))
+    aba = arquivo['CONTROLE']
+    aba['W2'] = obra.empresa
+    aba['W4'] = obra.cidade
+    aba['D7'] = obra.descricao
+    aba['I9'] = obra.id
+    aba['O9'] = obra.orcamento
+    # aba['B57'] = obra.etapas or ' '
+
+    tick = 0
+    while tick <= 25:
+        try:
+            aba[f'C{tick + 22}'] = colabs[tick].colaborador
+            tick += 1
+        except:
+            break
+            
+    # Criar a resposta HTTP
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=diário.xlsx'
+
+    # Salvar o arquivo no HttpResponse
+    arquivo.save(response)
+
+    return response

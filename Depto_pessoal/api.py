@@ -8,7 +8,7 @@ import json
 from django.http import JsonResponse
 from .mani import mani
 from .tables import buildTable
-from Media.api import upload
+from Site_django import media
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)

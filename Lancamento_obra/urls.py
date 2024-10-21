@@ -10,4 +10,5 @@ urlpatterns = [
     path('deletar', api.deletar),
     path('update', api.update),
     path('grafico', api.grafico),
+    path('diario', api.diario),
 ]
