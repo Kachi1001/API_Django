@@ -9,3 +9,4 @@ whitenoise
 requests
 gunicorn
 openpyxl
+pandas
