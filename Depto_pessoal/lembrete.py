@@ -45,11 +45,14 @@ def lembrete(horas, planilha):
         if hora == '00:00':
             bd = pandas.read_excel(caminho_arquivo)
             
-Tcolab_run = False
-Tcolab = threading.Thread(target=lembrete,args=[['07:25','17:55'], 'colaboradores'])
+Tcolab= {
+    'run': False,
+    'tread': threading.Thread(target=lembrete,args=[['07:25','17:55'], 'colaboradores']) 
+}
 
 def iniciar():
-    Tcolab.start()
+    Tcolab['tread'].start()
+    Tcolab['run'] = True
 
 def finalizar():
-    Tcolab.online = False
+    Tcolab['run'] = False
