@@ -171,14 +171,14 @@ def select(request):
     return Response(value)
     
     
-from . import lembrete as lemb
-@api_view(['POST'])
-def lembrete(request, acao):
-    parametro = request.POST.get('parametro')
-    match acao:
-        case 'iniciar':
-            lemb.iniciar(parametro)
-        case 'finalizar':
-            lemb.finalizar(parametro)
-        case 'status':
-            lemb.status(parametro)
+# from . import lembrete as lemb
+# @api_view(['POST'])
+# def lembrete(request, acao):
+#     parametro = request.POST.get('parametro')
+#     match acao:
+#         case 'iniciar':
+#             lemb.iniciar(parametro)
+#         case 'finalizar':
+#             lemb.finalizar(parametro)
+#         case 'status':
+#             lemb.status(parametro)

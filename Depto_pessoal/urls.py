@@ -10,5 +10,5 @@ urlpatterns = [
     path('select', api.select),
     path('get_list', api.get_list),
     path('function', api.funcao),
-    path('lembrete/<str:acao>', api.lembrete)
+    # path('lembrete/<str:acao>', api.lembrete)
 ]

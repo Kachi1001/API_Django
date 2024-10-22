@@ -10,3 +10,4 @@ requests
 gunicorn
 openpyxl
 pandas
+django-redis

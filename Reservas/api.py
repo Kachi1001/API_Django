@@ -5,12 +5,13 @@ from rest_framework.decorators import api_view
 import json
 from Site_django import media, whatsapp
 from datetime import datetime
+import random
+from django.core.cache import cache
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
-latestTick = {
-    'reservasala':datetime.now()
-}
+
+
 @api_view(['GET'])
 def get(request):
     metodo = request.GET.get('metodo')
@@ -24,7 +25,13 @@ def get(request):
     elif metodo in ['atendimento','apoio', 'reunião', 'auxiliar']:
         return reservaSala(request)
     elif metodo == 'latestTick':
-        return Response(data=latestTick.get(parametro))
+        result = cache.get('reservas:latestTick')
+        
+        if not result:
+            result = random.random()
+            cache.set('reservas:latestTick', result)
+            
+        return Response(data=result)
     else:
         return Response({'message':'Método não encontrado','method':'Requisição'}, status=400)
         
@@ -107,8 +114,7 @@ def register(request):
                 mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
                 
             whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
-            global latestTick 
-            latestTick["reservasala"] = datetime.now()
+            cache.set('reservas:latestTick',random.random())
             return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
     else:
         return Response({'method':'Erro desconhecido', 'message':'Método não encontrado'})
