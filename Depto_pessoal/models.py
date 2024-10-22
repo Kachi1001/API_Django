@@ -7,9 +7,9 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 # Unable to inspect table 'atividade'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'atividade_horas'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 
 
 class Colaborador(models.Model):
@@ -34,7 +34,7 @@ class Dia(models.Model):
         managed = False
         db_table = 'dia'
 # Unable to inspect table 'diarias'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 
 
 class Equipe(models.Model):
@@ -82,24 +82,25 @@ class Funcao(models.Model):
         managed = False
         db_table = 'funcao_'
 # Unable to inspect table 'horas_mes'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'horas_totais'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'inconsistencias'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 
 
 class Lembrete(models.Model):
     colaborador = models.CharField()
     padrao = models.CharField()
+    telefone = models.CharField()
 
     class Meta:
         managed = False
         db_table = 'lembrete'
 # Unable to inspect table 'localizacaoprogramada'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'obra'
-# The error was: user mapping not found for "api"
+# The error was: user mapping not found for "dev_api"
 
 
 class Ocupacao(models.Model):
