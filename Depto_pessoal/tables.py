@@ -18,7 +18,7 @@ def buildTable(request, table, queryset):
     page_size = int(request.GET.get('limit', 10)) if request.GET.get('limit') else len(queryset)
     # Filtrando com base na busca
     if search_value:
-        queryset = queryset.filter(filtros.get(table))  # Ajuste o campo conforme necessário
+        queryset = queryset.filter(filtros.get(table, ''))  # Ajuste o campo conforme necessário
 
     # Ordenando os dados
     if sort_order == 'asc':

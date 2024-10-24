@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
 ]
 INTERNAL_APP = [
     'Home',
@@ -58,12 +62,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8000",  # Domínio que está fazendo a requisição
-    "http://10.0.0.139:8001", # Produção
-    "http://10.0.0.139:8002", # Teste
-    "http://10.0.0.211:8000" # Debug
+    "http://127.0.0.1:80",  # Domínio que está fazendo a requisição
+    "http://10.0.0.139:80", # Produção
+    "http://10.0.0.139:81", # Teste
+    "http://10.0.0.211:81" # Debug
 ]
+
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'Site_django.urls'
@@ -72,7 +78,23 @@ TEMPLATES = []
 
 WSGI_APPLICATION = 'Site_django.wsgi.application'
 
-
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # Inclua o caminho dos seus templates aqui, se necessário
+        ],
+        'APP_DIRS': True,  # Certifique-se de que isto está ativado
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASE_ROUTERS = ['Site_django.routers.AppRouter']

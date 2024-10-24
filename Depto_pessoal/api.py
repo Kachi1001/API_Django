@@ -40,7 +40,6 @@ def funçãoSQL(funcao):
         conn.close()
         
 
-@api_view(['POST'])
 def funcao(request):
     def formatSQL(value, padrao = None):
         value = parametro.get(value, padrao)
@@ -52,7 +51,7 @@ def funcao(request):
     try:
         parametro = json.loads(request.POST.get('parametro'))
         funcao = {
-            'ocupacao': f'muda_cargo({formatSQL('id')},{formatSQL('data_inicio')},{formatSQL('remuneracao')},{formatSQL('funcao_id')})',
+            'ocupacao': f'muda_cargo({formatSQL('id')},{formatSQL('data_inicio')},{formatSQL('data_fim')},{formatSQL('remuneracao')},{formatSQL('funcao_id')})',
             'dissidio': f'dissidio({formatSQL('id')},{formatSQL('data_inicio')},{formatSQL('remuneracao')})',
             'desligamento': f'desligamento({formatSQL('data')},{formatSQL('id')})',
         }
@@ -60,9 +59,6 @@ def funcao(request):
         return funçãoSQL(metodo+'()')
     else:
         return funçãoSQL(funcao.get(metodo))
-        
-
-
 
 dictModels = {
     'funcao': Funcao,
@@ -72,6 +68,7 @@ dictModels = {
     'ferias_utilizadas': FeriasUtilizadas,
     'ferias_processadas': FeriasProcessadas,
     'ocupacao': Ocupacao,
+    'lembrete': Lembrete,
 }
 
 @api_view(['POST'])
@@ -93,6 +90,18 @@ def update(request):
     
     
         
+@api_view(['PUT'])
+def deletar(request):
+    metodo = request.POST.get('metodo')
+    id = request.POST.get('parametro')
+    owner = request.POST.get('user')
+    try:
+        obj = dictModels.get(metodo).objects.get(id=id)
+        obj.delete()
+    except ObjectDoesNotExist as e:
+        return Response({'method': 'Delete','message':'Item não encontrado'}, status=400)
+    else:
+        return Response({'method':'Delete','message':f'{id}, foi deletado com sucesso'})
 @api_view(['DELETE'])
 def deletar(request):
     metodo = request.POST.get('metodo')
@@ -105,28 +114,37 @@ def deletar(request):
         return Response({'method': 'Delete','message':'Item não encontrado'}, status=400)
     else:
         return Response({'method':'Delete','message':f'{id}, foi deletado com sucesso'})
-        
+      
 @api_view(['GET'])
 def get_list(request):
     metodo = request.GET.get('metodo')
-    parametro = request.GET.get('parametro')
+    parametro = request.GET.get('parametro', None)
     value = None
     metodos = {
-        'select': {
             'equipe': Equipe.objects.all().values('id'),
             'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'ESTAGIARIO'},{'value':'DIRETOR'},{'value':'TERCEIRO'}],   
             'colaborador': Colaborador.objects.all().values('id').order_by('id'),
             'funcao_id': Funcao.objects.all().values().order_by('id'),
             'periodo_aquisitivo_id': PeriodoAquisitivo.objects.all().values().order_by('id'),
- 
-        },
-        'table': {
+            'padrao': [
+                {'text':'Colaborador [7:25, 17:55] ', 'value':'7:25, 17:55'},
+                {'text':'Aprendiz [13:25, 17:25]', 'value':'13:25, 17:25'},
+                {'text':'Estagiário [7:25, 13:25]', 'value':'7:25, 13:25'},
+            ],
             'funcao': Funcao.objects.all().values().order_by('id'),
-            'equipe': Equipe.objects.all().values('id').order_by('id')
-        } 
+            'equipe': Equipe.objects.all().values('id').order_by('id'),
     }
-    value = metodos.get(metodo).get(parametro)
+    value = metodos.get(metodo)
+    if parametro:
+        # Divide a string no formato 'campo=valor'
+        campo, valor = filter.split('=')
 
+        # Cria um dicionário com o filtro dinâmico
+        filtro_dinamico = {campo: valor}
+
+        # Aplica o filtro na ORM do Django
+        value = value.objects.filter(**filtro_dinamico)
+        
     if value == None:
         return Response({'method':'Tabela','message':'Método não encontrado'}, status=400)
     else:
@@ -136,9 +154,9 @@ def get_list(request):
 def tabela(request, table): 
     return JsonResponse(buildTable(request, table, dictModels.get(table).objects.all()), safe=False)
 
-lista_filterColab = []
+lista_filterColab = ['historico_ocupacao']
 
-for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo','ocupacao']:
+for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
     new = 'historico_'+x
     lista_filterColab.append(x)
     lista_filterColab.append(new)
@@ -171,14 +189,108 @@ def select(request):
     return Response(value)
     
     
-# from . import lembrete as lemb
-# @api_view(['POST'])
-# def lembrete(request, acao):
-#     parametro = request.POST.get('parametro')
-#     match acao:
-#         case 'iniciar':
-#             lemb.iniciar(parametro)
-#         case 'finalizar':
-#             lemb.finalizar(parametro)
-#         case 'status':
-#             lemb.status(parametro)
+from . import lembrete as lemb
+@api_view(['GET'])
+def lembrete(request, acao):
+    parametro = request.POST.get('parametro')
+    match acao:
+        case 'toggle':
+            print()
+            # lemb.finalizar(parametro)
+        case 'status':
+            return Response({'status':lemb.status()})
+            
+
+from .serializers import *
+from rest_framework import generics, viewsets
+
+class colaborador_list(generics.ListCreateAPIView):
+    queryset = Colaborador.objects.all()
+    serializer_class = ColaboradorSerializer
+
+class colaborador_detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Colaborador.objects.all()
+    serializer_class = ColaboradorSerializer
+
+
+# Função
+class funcao_list(generics.ListCreateAPIView):
+    queryset = Funcao.objects.all()
+    serializer_class = FuncaoSerializer
+
+class funcao_detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Funcao.objects.all()
+    serializer_class = FuncaoSerializer
+
+
+# Ocupação
+class ocupacao_list(generics.ListCreateAPIView):
+    queryset = Ocupacao.objects.all()
+    serializer_class = OcupacaoSerializer
+
+class ocupacao_detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Ocupacao.objects.all()
+    serializer_class = OcupacaoSerializer
+    
+@api_view(['POST'])
+def ocupacao_alterar(request, pk):
+    fu
+                
+@api_view(['POST'])
+def ocupacao_disidio(request, pk):
+    try:
+        resource = Ocupacao.objects.get(pk=pk)
+    except:
+        return Response(status=204)
+    else:
+        pass
+    
+# Ferias processadas
+class FeriasProcessadas_list(viewsets.ViewSet):
+    def get(self, request):
+        queryset = FeriasProcessadasSerializer.Meta.model.objects.all()
+        serializer = FeriasProcessadasSerializer(queryset)
+        return Response(serializer.data)
+    def post(self, request):
+        pass
+    
+class FeriasProcessadas_detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FeriasProcessadas.objects.all()
+    serializer_class = FeriasProcessadasSerializer
+
+# Ferias utilizadas
+class FeriasUtilizadas_list(viewsets.ViewSet):
+    def get(self, request):
+        queryset = FeriasUtilizadas.objects.all()
+        serializer = FeriasUtilizadasSerializer(queryset)
+        return Response(serializer.data)
+    def post(self, request):
+        pass
+    
+class FeriasUtilizadas_detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FeriasUtilizadas.objects.all()
+    serializer_class = FeriasUtilizadasSerializer
+    
+# @api_view(['GET','PUT', 'DELETE'])
+# def colaborador(request, pk):
+#     try:
+#         colaborador = Colaborador.objects.get(pk=pk)
+#     except:
+#         return Response(status=204)
+#     else:
+    
+#         match request.method:
+#             case 'GET':
+#                 serializer = ColaboradorSerializer(colaborador)
+#                 return Response(serializer.data)
+#             case 'PUT':
+#                 serializer = ColaboradorSerializer(colaborador, data=request.data)
+#                 if serializer.is_valid():
+#                     serializer.save()
+#                     return Response(serializer.data)
+#                 return Response(serializer.errors, status=400)
+#             case 'DELETE':
+#                 colaborador.delete()
+#                 return Response(status=200)
+
+

@@ -44,5 +44,5 @@ def get_data(request):
 
 @api_view(['POST'])
 def update_supervisor_status(request):
-    return Response({'message': f'Erro ao atualizar status: {str(e)}'}, status=400)
+    return Response({'message': f'Erro ao atualizar status:'}, status=400)
     

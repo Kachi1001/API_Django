@@ -13,7 +13,7 @@ from django.db import models
 
 
 class Colaborador(models.Model):
-    id = models.CharField(primary_key=True)
+    nome = models.CharField()
     cpf = models.IntegerField()
     rg = models.IntegerField(blank=True, null=True)
     nascimento = models.DateField()
@@ -97,10 +97,8 @@ class Lembrete(models.Model):
     class Meta:
         managed = False
         db_table = 'lembrete'
-# Unable to inspect table 'localizacaoprogramada'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'obra'
-# The error was: user mapping not found for "dev_api"
+
+
 
 
 class Ocupacao(models.Model):
