@@ -5,51 +5,58 @@ from datetime import datetime
 import pandas
 import os
 from Site_django import whatsapp
-from . import models 
+from .models import * 
 
+def hora():
+    return datetime.now().strftime('%d/%m/%Y | %H:%M') + ' -'
 
-# Cria o caminho completo para o arquivo
+horarios = {
+    'colaborador': '07:25, 17:55',
+    'aprendiz': '13:25, 17:25',
+    'estagiario': '07:25,  15:25'
+}
 
-def enviarMSG(colaborador, numero):
-    headers = {'accept': '*/*', 'Content-Type': 'application/json', 'x-api-key':'tecnika.com.br'}
-    url = 'http://10.0.0.139:3000/client/sendMessage/dp'
-    obj = {
-        "chatId": f"55{numero}@c.us",
-        "contentType": "string",
-        "content": str(f'Olá, *{colaborador}*\nHora de bater seu ponto digital 🕐📲\nNão se esqueça 😉')
-        }
-    requests.post(url, json=obj, headers=headers)
-
-def lembrete(horas, planilha):
-    caminho_arquivo = os.path.join(diretorio_planilhas, planilha+'.xlsx')
-    bd = pandas.read_excel(caminho_arquivo)
-    print(f'Esperando os horários: {horas}, e evitando os finais de semana [{planilha}]')
+def lembrete():
+    lembretes = Lembrete.objects.all()
     hora_antiga = '00:00'
     enviado = False
-    while True:
+    while run:
         hora = str(datetime.now().strftime('%H:%M'))
         verificado = hora_antiga != hora and datetime.now().weekday() < 5 # se as hora do ultimo teste e do novo ciclo são iguais, e se o dia da semana é menor que 5 (sábado)
         if verificado:
-            hora_antiga = hora
-            if hora_antiga in horas and not enviado:
-                for index, row in bd.iterrows():
-                    valor_coluna1 = str(row['NOME'])
-                    valor_coluna2 = str(row['CONTATO'])
-                    enviarMSG(valor_coluna1.strip(), valor_coluna2.replace(' ', '').replace('-', ''))
-                enviado = True
-                print(f"{datetime.now().strftime('%d/%m/%Y | %H:%M')} - enviando mensagem para os {planilha}")
-            elif not (hora_antiga in horas):
+            filtrado = lembretes.filter(padrao='1')
+            if len(filtrado) > 0 and not enviado:
+                for lembrete in filtrado:
+                    valor_coluna1 = lembrete.colaborador
+                    valor_coluna2 = lembrete.telefone
+                    whatsapp.enviarMSG(
+                    numero=     valor_coluna2.replace(' ', '').replace('-', ''),
+                    mensagem=   str(f'Olá, *{valor_coluna1.strip()}*\nHora de bater seu ponto digital 🕐📲\nNão se esqueça 😉'), 
+                    de=         'dp'
+                    )
+                    enviado = True
+            elif len(filtrado) == 0:
                 enviado = False
-        time.sleep(10)
+                
+            hora_antiga = hora
         
         if hora == '00:00':
-            bd = pandas.read_excel(caminho_arquivo)
-            
-Tcolab_run = False
-Tcolab = threading.Thread(target=lembrete,args=[['07:25','17:55'], 'colaboradores'])
+            lembretes = Lembrete.objects.all()
 
-def iniciar():
-    Tcolab.start()
+        time.sleep(30)
+run = False
+console = []
+def iniciar(tipo = 'colaborador'):
+    global run
+    try:
+        run = True
+        threading.Thread(target=lembrete,args=[['07:25','17:55'], 'colaboradores']).start()
+    except:
+        run = False
+        console.append(f'{hora()} Erro ao iniciar os {tipo}')
+    else:
+        console.append(f'{hora()} Monitorando os lembretes de {tipo}')
+iniciar()
 
-def finalizar():
-    Tcolab.online = False
+def finalizar(tipo = 'colaborador'):
+    run = False

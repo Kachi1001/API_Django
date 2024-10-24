@@ -117,7 +117,7 @@ def get_list(request):
             'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'ESTAGIARIO'},{'value':'DIRETOR'},{'value':'TERCEIRO'}],   
             'colaborador': Colaborador.objects.all().values('id').order_by('id'),
             'funcao_id': Funcao.objects.all().values().order_by('id'),
-            'periodo_aquisitivo': PeriodoAquisitivo.objects.all().values().order_by('id'),
+            'periodo_aquisitivo_id': PeriodoAquisitivo.objects.all().values().order_by('id'),
  
         },
         'table': {
@@ -169,3 +169,16 @@ def get_data(request):
 def select(request):
     value = dictModels.get(request.GET.get('metodo')).objects.all().values()
     return Response(value)
+    
+    
+# from . import lembrete as lemb
+# @api_view(['POST'])
+# def lembrete(request, acao):
+#     parametro = request.POST.get('parametro')
+#     match acao:
+#         case 'iniciar':
+#             lemb.iniciar(parametro)
+#         case 'finalizar':
+#             lemb.finalizar(parametro)
+#         case 'status':
+#             lemb.status(parametro)
