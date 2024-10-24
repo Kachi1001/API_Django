@@ -1,7 +1,7 @@
 name: Django [MAIN] CI / DEPLOY
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:
