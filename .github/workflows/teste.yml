@@ -11,8 +11,6 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.12]
-    env:
-      venv: /home/tecnika/TK/django/venv/teste/api
     steps:
     - uses: actions/checkout@v4  # Faz o checkout do código fonte
 
@@ -22,16 +20,20 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Create virtual environment
-      run: python -m venv $venv  # Cria o ambiente virtual localmente no servidor de produção
+      run: python -m venv venv  # Cria o ambiente virtual localmente no servidor de produção
 
     - name: Install Dependencies
       run: |
-        source $venv/bin/activate
+        source venv/bin/activate
         pip install -r requirements.txt
+
+    - name: Copiando .env
+      run: |
+        cp /home/tecnika/TK/django/env/teste_api.env .env
 
     - name: Run Tests
       run: |
-        source $venv/bin/activate  
+        source venv/bin/activate  
         python manage.py test
 
   deploy:
@@ -46,16 +48,28 @@ jobs:
       app: api
     defaults:
       run:
-        shell: bash
-        working-directory: /home/tecnika/bat
+        working-directory: /home/tecnika/TK/django/teste/api
+
     steps:
       # Deploy no servidor de produção
     - name: Finalizando servidor
+      working-directory: /home/tecnika/bat
       run: sudo bash django-stop.sh $branch $app #Fecha os serviços do django
 
-    - name: Atualizando o servidor
-      run: sudo bash django-update.sh $branch $app #Faz a atualização das dependencia e arquivos
+    - name: Baixando bibliotecas
+      run: |
+        source venv/bin/activate
+        pip install -r requirements.txt
+        
+    - name: Atualizando arquivos
+      run: |
+        sudo git pull origin $branch
+        
+    - name: Copiando .env
+      run: |
+        cp /home/tecnika/TK/django/env/teste_api.env .env
 
     - name: Reiniciando servidor
+      working-directory: /home/tecnika/bat
       run: sudo bash django-reload.sh $branch $app #Reinicia o processo do django
 
