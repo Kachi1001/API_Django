@@ -106,7 +106,7 @@ for app in INTERNAL_APP:
         "NAME": app if app != INTERNAL_APP[0] else config("DB_NAME", "Site_django"),
         "USER": config("DB_USER", "django"),
         "PASSWORD": config("DB_PASSWORD", 'django@senha'),
-        "HOST": config("DB_HOST", '127.0.0.1'),
+        "HOST": config("DB_HOST", '10.0.0.139'),
         "PORT": config("DB_PORT", '5432'),
     }
     x = x + 1
