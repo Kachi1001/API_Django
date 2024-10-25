@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-hss4fba%6y**i6$hkin&j@gp3h^^7r5*duji$-f1&(_#m6*gx#
 DEBUG = config('DJ_DEBUG', default=False, cast=bool)
 
 
-ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="127.0.0.1").split(",")
+ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="10.0.0.139").split(",")
 
 
 
