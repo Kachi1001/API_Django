@@ -10,4 +10,4 @@ gunicorn
 openpyxl
 pandas
 django-redis
-django-filter
+django-filters
