@@ -14,8 +14,8 @@ from django.db import models
 
 class Colaborador(models.Model):
     nome = models.CharField()
-    cpf = models.IntegerField()
-    rg = models.IntegerField(blank=True, null=True)
+    cpf = models.CharField()
+    rg = models.CharField(blank=True, null=True)
     nascimento = models.DateField()
     fone = models.CharField(blank=True, null=True)
     ativo = models.BooleanField()
@@ -39,8 +39,6 @@ class Dia(models.Model):
 
 class Equipe(models.Model):
     id = models.CharField(primary_key=True)
-    value = models.CharField()
-    text = models.CharField()
 
     class Meta:
         managed = False
@@ -48,7 +46,7 @@ class Equipe(models.Model):
 
 
 class FeriasProcessadas(models.Model):
-    colaborador = models.CharField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     dias_processados = models.IntegerField()
     data_inicio = models.DateField(blank=True, null=True)
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
@@ -60,10 +58,10 @@ class FeriasProcessadas(models.Model):
 
 
 class FeriasUtilizadas(models.Model):
-    colaborador = models.CharField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     dias_utilizados = models.IntegerField()
     data_inicio = models.DateField(blank=True, null=True)
-    periodo_aquisitivo = models.CharField(blank=True, null=True)
+    periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
     antecipacao_periodo = models.BooleanField()
     consumido = models.BooleanField()
 
@@ -76,7 +74,6 @@ class Funcao(models.Model):
     id = models.CharField(primary_key=True)
     categoria = models.CharField()
     insalubridade = models.BooleanField(blank=True, null=True)
-    value = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -99,10 +96,22 @@ class Lembrete(models.Model):
         db_table = 'lembrete'
 
 
+class LembreteLog(models.Model):
+    hora = models.DateTimeField(blank=True, null=True)
+    acao = models.CharField(blank=True, null=True)
+    padrao = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'lembrete_log'
+# Unable to inspect table 'localizacaoprogramada'
+# The error was: user mapping not found for "dev_api"
+# Unable to inspect table 'obra'
+# The error was: user mapping not found for "dev_api"
 
 
 class Ocupacao(models.Model):
-    colaborador = models.CharField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     funcao = models.ForeignKey(Funcao, models.DO_NOTHING, db_column='funcao')
     remuneracao = models.DecimalField(max_digits=7, decimal_places=2)
     data_inicio = models.DateField()
@@ -115,7 +124,7 @@ class Ocupacao(models.Model):
 
 
 class PeriodoAquisitivo(models.Model):
-    colaborador = models.CharField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     adquirido_em = models.DateField()
     periodo = models.IntegerField()
     consumido = models.BooleanField()
@@ -127,7 +136,7 @@ class PeriodoAquisitivo(models.Model):
 
 
 class ProximoPeriodo(models.Model):
-    colaborador = models.CharField()
+    colaborador = models.IntegerField()
     inicio = models.DateField()
     proximo_periodo = models.DateField()
 
