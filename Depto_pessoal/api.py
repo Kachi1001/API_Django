@@ -31,7 +31,7 @@ def funcao_sql(sql):
         e = str(e)
         if 'null value' in e:
             e = f'Campo "{e.split('DETAIL:')[0].split('"')[1]}", não pode ser vazio'
-        return Response({'method':'Erro do banco de dados','message': str(e)}, status=400)
+        return Response({'banco de dados': [str(e)]}, status=400)
     else:
         return Response({'method':'Atualizar','message':'Tabela atualizada com sucesso'}, status=200)
 
