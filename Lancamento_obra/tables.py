@@ -15,6 +15,7 @@ def buildTable(request, table, queryset):
         'programacao':Q(colaborador__icontains=search_value) | Q(obra__id__icontains=search_value) | Q(iniciosemana__icontains=search_value) | Q(encarregado__icontains=search_value),
         'descontos_resumo':Q(encarregado__icontains=search_value) | Q(colaborador__icontains=search_value) | Q(dia__icontains=search_value),
         'diarias':Q(competencia__icontains=search_value) | Q(colaborador__icontains=search_value),
+        'alocacoes':Q(colaborador__icontains=search_value) | Q(obra__icontains=search_value),
     }
     
     sort_order = request.GET.get('order', 'desc')

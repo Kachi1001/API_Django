@@ -80,6 +80,7 @@ dictModels = {
     'hora_mes':HoraMes,
     'incompletos':Incompletos,
     'fechados': Tecnicon,
+    'alocacoes': Alocacoes,
 }
 
 @api_view(['POST'])
