@@ -31,9 +31,9 @@ def funcao_sql(sql):
         e = str(e)
         if 'null value' in e:
             e = f'Campo "{e.split('DETAIL:')[0].split('"')[1]}", não pode ser vazio'
-        return Response({'banco de dados': [str(e)]}, status=400)
+        return Response({'banco de dados': [str(e.split('CONTEXT:')[0])]}, status=400)
     else:
-        return Response({'method':'Atualizar','message':'Tabela atualizada com sucesso'}, status=200)
+        return Response({'method':'Atualizar','message':'Executado com sucesso com sucesso'}, status=200)
 
     finally:
         cursor.close()
@@ -49,7 +49,7 @@ def funcao(request, metodo):
 
     try:
         funcoes = {
-            'ocupacao': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
+            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
             'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
             'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
@@ -82,46 +82,14 @@ for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
     lista_filterColab.append(x)
     lista_filterColab.append(new)
     dictModels[new] = dictModels[x]
-
-
-@api_view(['GET'])
-def get_data(request):
-    metodo = request.GET.get('metodo')
-    id = request.GET.get('parametro')
-
-    obj = dictModels.get(metodo).objects.all()
-        
-    if metodo in lista_filterColab:
-        obj = obj.filter(colaborador=id)
-        obj = obj.order_by('-adquirido_em') if 'periodo_aquisitivo' in metodo else obj.order_by('-data_inicio') 
-    else: 
-        obj = obj.filter(id=id)
-        
-    obj = list(obj.values())
-    if len(obj) == 0:
-        return Response({'method':'Alerta de pesquisa','message': f'Em {metodo} não foi possível achar a id  "{id}"' }, status=404)
-    else:
-        return JsonResponse(obj, safe=False) 
+    
         
     
 @api_view(['GET'])
 def select(request):
     value = dictModels.get(request.GET.get('metodo')).objects.all().values()
     return Response(value)
-    
-    
-# from . import lembrete as lemb
-# @api_view(['GET'])
-# def lembrete(request, acao):
-#     parametro = request.POST.get('parametro')
-#     match acao:
-#         case 'toggle':
-#             print()
-#             # lemb.finalizar(parametro)
-#         case 'status':
-#             return Response({'status':lemb.status()})
             
-
 from .serializers import *
 from rest_framework import generics, viewsets, status
 from rest_framework.exceptions import APIException
@@ -179,7 +147,7 @@ from django.shortcuts import get_object_or_404
 def ocupacao_alterar(request):
     match request.method:
         case 'POST':
-            return funcao(request.data, 'dissidio')
+            return funcao(request.data, 'muda_cargo')
         case 'GET':
             queryset = Ocupacao.objects.all()
             return Response(OcupacaoSerializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
@@ -188,7 +156,7 @@ def ocupacao_alterar(request):
 def ocupacao_dissidio(request):
     match request.method:
         case 'POST':
-            return funcao(request.data, 'ocupacao')
+            return funcao(request.data, 'dissidio')
         case 'GET':
             queryset = Ocupacao.objects.all()
             return Response(OcupacaoSerializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
@@ -279,7 +247,8 @@ def select(request, resource):
         'equipe': EquipeSelect,
         'periodo_aquisitivo': PeriodoAquisitivoSelect,
         'funcao': FuncaoSelect,
-        'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}]
+        'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
+        'padrao': [{'value':'7:25, 17:55','text':'Colaborador'},{'value':'7:25, 15:25'},{'value':'13:25, 17:25'}],
     }
     if resource in serials:
         serial = serials.get(resource)
@@ -292,6 +261,20 @@ def select(request, resource):
         values = serial
     
     return Response(values)
+        
+from django.core.cache import cache
+        
+@api_view(['POST','GET'])
+def app_menu(request):
+    base = 'Depto_pessoal:app:'
+    status = 200
+    if request.method == 'POST':
+        ca = cache.get(f'{base}toggle')
+        ca = not bool(ca)
+        cache.set(f'{base}toggle', int(ca), None)
+        status = 202
+    values = cache.get_many([f'{base}run',f'{base}toggle'])
+    return Response(values,status=status)
         
 # @api_view(['GET','PUT', 'DELETE'])
 # def colaborador(request, pk):
