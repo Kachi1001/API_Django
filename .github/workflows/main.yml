@@ -21,9 +21,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Run Tests
-      working-directory: /home/tecnika/TK/django/venv/teste/api 
       run: |
-        source $venv/bin/activate  # Ativa o ambiente virtual
+        source venv/bin/activate  # Ativa o ambiente virtual
         python manage.py test  # Roda os testes
 
   deploy:
