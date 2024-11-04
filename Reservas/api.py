@@ -25,11 +25,11 @@ def get(request):
     elif metodo in ['atendimento','apoio', 'reunião', 'auxiliar']:
         return reservaSala(request)
     elif metodo == 'latestTick':
-        result = cache.get('reservas:latestTick')
+        result = cache.get('Reservas:latestTick')
         
         if not result:
             result = random.random()
-            cache.set('reservas:latestTick', result)
+            cache.set('Reservas:latestTick', result)
             
         return Response(data=result)
     else:
