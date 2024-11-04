@@ -5,9 +5,9 @@ python-decouple
 pillow
 djangorestframework
 django-cors-headers
-whitenoise
 requests
 gunicorn
 openpyxl
 pandas
 django-redis
+django-filter

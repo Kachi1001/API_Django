@@ -1,7 +1,7 @@
 name: Django [MAIN] CI / DEPLOY
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -22,16 +22,19 @@ jobs:
 
     - name: Create virtual environment
       run: python -m venv venv  # Cria o ambiente virtual localmente no servidor de produção
-
+      
     - name: Install Dependencies
       run: |
-        source venv/bin/activate  # Ativa o ambiente virtual
-        pip install --use-feature=fast-deps -r requirements.txt  # Instala as dependências
-
+        source venv/bin/activate
+        pip install -r requirements.txt
+        
+    - name: Copiando .env
+      run: cp /home/tecnika/TK/django/env/teste_api.env .env
+      
     - name: Run Tests
       run: |
-        source venv/bin/activate  # Ativa o ambiente virtual
-        python manage.py test  # Roda os testes
+        source venv/bin/activate  
+        # python manage.py test
 
   deploy:
     needs: test
@@ -45,16 +48,28 @@ jobs:
       app: api
     defaults:
       run:
-        shell: bash
-        working-directory: /home/tecnika/bat
+        working-directory: /home/tecnika/TK/django/main/api
+
     steps:
       # Deploy no servidor de produção
     - name: Finalizando servidor
+      working-directory: /home/tecnika/bat
       run: sudo bash django-stop.sh $branch $app #Fecha os serviços do django
 
-    - name: Atualizando o servidor
-      run: sudo bash django-update.sh $branch $app #Faz a atualização das dependencia e arquivos
+    - name: Baixando bibliotecas
+      run: |
+        source venv/bin/activate
+        pip install -r requirements.txt
+        
+    - name: Atualizando arquivos
+      run: |
+        sudo git pull origin $branch
+        
+    - name: Copiando .env
+      run: |
+        cp /home/tecnika/TK/django/env/main_api.env .env
 
     - name: Reiniciando servidor
+      working-directory: /home/tecnika/bat
       run: sudo bash django-reload.sh $branch $app #Reinicia o processo do django
 

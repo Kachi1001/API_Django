@@ -17,8 +17,6 @@ Including another URLconf
 from django.http import HttpResponse
 from django.urls import path , include
 from django.conf import settings
-from django.conf.urls.static import static
-
 def status(request):
     return HttpResponse("Estamos online!!")
 
@@ -27,7 +25,7 @@ urlpatterns = [
 ]
 
 for app in settings.INTERNAL_APP:
-    # try:
+    try:
         urlpatterns.append(path(f'{app}/', include(f'{app}.urls')))
-    # except:
-    #     print(f'App sem urls <{app}>')
+    except Exception as e:
+        print(f'App sem urls <{app}> <{e}>')

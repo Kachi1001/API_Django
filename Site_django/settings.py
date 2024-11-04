@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-hss4fba%6y**i6$hkin&j@gp3h^^7r5*duji$-f1&(_#m6*gx#
 DEBUG = config('DJ_DEBUG', default=False, cast=bool)
 
 
-ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="127.0.0.1").split(",")
+ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="10.0.0.139").split(",")
 
 
 
@@ -39,7 +39,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-]
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
+    ]
 INTERNAL_APP = [
     'Home',
     'Lancamento_obra',
@@ -58,12 +63,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8000",  # Domínio que está fazendo a requisição
-    "http://10.0.0.139:8001", # Produção
-    "http://10.0.0.139:8002", # Teste
-    "http://10.0.0.211:8000" # Debug
+    "http://127.0.0.1:80",  # Domínio que está fazendo a requisição
+    "http://10.0.0.139:80", # Produção
+    "http://10.0.0.139:81", # Teste
+    "http://10.0.0.211:81" # Debug
 ]
+
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'Site_django.urls'
@@ -72,7 +79,23 @@ TEMPLATES = []
 
 WSGI_APPLICATION = 'Site_django.wsgi.application'
 
-
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # Inclua o caminho dos seus templates aqui, se necessário
+        ],
+        'APP_DIRS': True,  # Certifique-se de que isto está ativado
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASE_ROUTERS = ['Site_django.routers.AppRouter']
@@ -84,7 +107,7 @@ for app in INTERNAL_APP:
         "NAME": app if app != INTERNAL_APP[0] else config("DB_NAME", "Site_django"),
         "USER": config("DB_USER", "django"),
         "PASSWORD": config("DB_PASSWORD", 'django@senha'),
-        "HOST": config("DB_HOST", '127.0.0.1'),
+        "HOST": config("DB_HOST", '10.0.0.139'),
         "PORT": config("DB_PORT", '5432'),
     }
     x = x + 1
@@ -127,4 +150,7 @@ CACHES = {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
+}
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }

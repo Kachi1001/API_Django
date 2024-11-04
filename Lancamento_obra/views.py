@@ -53,7 +53,7 @@ class Graficos(models.Model):
         db_table = 'grafico'
 
 class Tecnicon(models.Model):
-    tecnicon = models.BigAutoField(primary_key=True)
+    tecnicon = models.CharField(primary_key=True)
     lanc_colab = models.CharField()
     lanc_data = models.DateField()
     lanc_descricao = models.CharField()
@@ -70,3 +70,14 @@ class Tecnicon(models.Model):
         managed = False
         ordering = ["-tecnicon", 'lanc_colab']
         db_table = 'tecnicon'
+
+class Alocacoes(models.Model):
+    tecnicon = models.CharField(primary_key=True)
+    colaborador = models.CharField()
+    obra = models.IntegerField()
+    dia_ini = models.DateField()
+    data_fim = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'alocacoes'

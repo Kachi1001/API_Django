@@ -13,10 +13,10 @@ def hora():
 horarios = {
     'colaborador': '07:25, 17:55',
     'aprendiz': '13:25, 17:25',
-    'estagiario': '07:25,  15:25'
+    'estagiario': '07:25, 15:25'
 }
 
-def lembrete():
+def process():
     lembretes = Lembrete.objects.all()
     hora_antiga = '00:00'
     enviado = False
@@ -46,17 +46,21 @@ def lembrete():
         time.sleep(30)
 run = False
 console = []
-def iniciar(tipo = 'colaborador'):
+def iniciar():
     global run
     try:
         run = True
-        threading.Thread(target=lembrete,args=[['07:25','17:55'], 'colaboradores']).start()
+        threading.Thread(target=process).start()
     except:
         run = False
-        console.append(f'{hora()} Erro ao iniciar os {tipo}')
+        console.append(f'{hora()} Erro ao iniciar o processo')
     else:
-        console.append(f'{hora()} Monitorando os lembretes de {tipo}')
+        console.append(f'{hora()} Monitorando os lembretes')
 iniciar()
 
-def finalizar(tipo = 'colaborador'):
+def finalizar():
+    global run
     run = False
+    
+def status():
+    return run
