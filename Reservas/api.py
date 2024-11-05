@@ -25,11 +25,11 @@ def get(request):
     elif metodo in ['atendimento','apoio', 'reunião', 'auxiliar']:
         return reservaSala(request)
     elif metodo == 'latestTick':
-        result = cache.get('reservas:latestTick')
+        result = cache.get('Reservas:latestTick')
         
         if not result:
             result = random.random()
-            cache.set('reservas:latestTick', result)
+            cache.set('Reservas:latestTick', result)
             
         return Response(data=result)
     else:
@@ -153,5 +153,12 @@ def reservaSala(request):
 
     return Response({'dados':gerarLista(reservados, horarios_dict.get(parametro.get('horario'))), 'method':'Carregar dados','message':'Sucesso em ler'}) 
 
-         
-        
+
+
+from rest_framework import generics, viewsets, status
+
+class agenda_salas(generics.ListCreateAPIView):
+    serializer_class = AgendaSalasSerializer
+    queryset = AgendaSalasSerializer.Meta.model.objects.all()
+    
+    filterset_fields = ['sala','data']

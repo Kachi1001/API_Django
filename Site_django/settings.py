@@ -148,6 +148,8 @@ CACHES = {
         'LOCATION': 'redis://10.0.0.139:6379/1',  # Use o endereço do Redis
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'KEY_PREFIX': '',
+            'VERSION': 0
         }
     }
 }

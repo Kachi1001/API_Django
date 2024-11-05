@@ -30,13 +30,8 @@ urlpatterns = [
   path('tabela/<str:table>', tabela),
 
   path('select/<str:resource>', select),
-  # path('lembrete', )
-  # path('register', api.register),
-  # path('get_data', api.get_data),
-  # path('delete', api.deletar),
-  # path('update', api.update),
-  # path('select', api.select),
-  # path('get_list', api.get_list),
-  # path('function', api.funcao),
-  # path('lembrete/<str:acao>', api.lembrete)
+  path('lembrete', Lembrete_list.as_view()),
+  path('lembrete/<str:pk>', Lembrete_detail.as_view()),
+  
+  path('app', app_menu),
 ]

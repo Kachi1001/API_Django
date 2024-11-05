@@ -12,10 +12,6 @@ class ColaboradorSerializer(serializers.ModelSerializer):
         model = Colaborador
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
            
-class ColabNomeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Colaborador
-        fields = ['nome','id']
 
 class ColaboradorSelect(serializers.ModelSerializer):
     value = serializers.CharField(source='id')
@@ -27,12 +23,20 @@ class ColaboradorSelect(serializers.ModelSerializer):
 
 
 class PeriodoAquisitivoSerializer(serializers.ModelSerializer):
-    value = serializers.CharField(source='id')
-    colaborador = ColabNomeSerializer(many=False, read_only=True)
-    
     class Meta:
         model = PeriodoAquisitivo
         fields = '__all__'  # Ou liste os campos que deseja expor na API
+        
+class PeriodoAquisitivoTable(serializers.ModelSerializer):
+    colaborador = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='nome'
+     )
+    class Meta:
+        model = PeriodoAquisitivo
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+
                    
 class PeriodoAquisitivoSelect(serializers.ModelSerializer):
     class Meta:
@@ -64,24 +68,39 @@ class FuncaoSelect(serializers.ModelSerializer):
         fields = ['value']  # Ou liste os campos que deseja expor na API 
                 
 class FeriasProcessadasSerializer(serializers.ModelSerializer):
-    colaborador = ColabNomeSerializer(many=False, read_only=False)
-    
     class Meta:
         model = FeriasProcessadas
         fields = '__all__'  # Ou liste os campos que deseja expor na API
         
+class FeriasProcessadasTable(serializers.ModelSerializer):
+    colaborador = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='nome'
+     )
+    class Meta:
+        model = FeriasProcessadas
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+
+        
 class FeriasUtilizadasSerializer(serializers.ModelSerializer):
-    colaborador = ColabNomeSerializer(many=False, read_only=False)
-    
     class Meta:
         model = FeriasUtilizadas
         fields = '__all__'  # Ou liste os campos que deseja expor na API
-    
+
+class FeriasUtilizadasTable(serializers.ModelSerializer):
+    colaborador = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='nome'
+     )
+    class Meta:
+        model = FeriasUtilizadas
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+
    
 class OcupacaoSerializer(serializers.ModelSerializer):
-    # funcao = FuncaoSerializer(many=False)
 
-    
     class Meta:
         model = Ocupacao
         fields = '__all__' # Ou liste os campos que deseja expor na API     
