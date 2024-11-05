@@ -5,5 +5,6 @@
         "psycopg",
         "viewsets"
     ],
-    "python.REPL.enableREPLSmartSend": false
+    "python.REPL.enableREPLSmartSend": false,
+    "commentTranslate.hover.enabled": false
 }

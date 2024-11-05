@@ -302,4 +302,3 @@ def app_menu(request):
 #                 colaborador.delete()
 #                 return Response(status=200)
 
-
