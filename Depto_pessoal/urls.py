@@ -4,7 +4,7 @@ odio = {'get':'get', 'post':'post'}
 urlpatterns = [
   path('colaborador', colaborador_list.as_view()),
   path('colaborador/<int:pk>', colaborador_detail.as_view()),
-  path('colaborador_desligamento/<int:pk>', colaborador_desligamento),
+  path('colaborador_desligamento', colaborador_desligamento),
 
   path('funcao', funcao_list.as_view()),
   path('funcao/<str:pk>', funcao_detail.as_view()),

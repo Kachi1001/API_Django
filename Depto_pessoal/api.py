@@ -103,6 +103,7 @@ class colaborador_list(generics.ListCreateAPIView):
 class colaborador_detail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Colaborador.objects.all()
     serializer_class = ColaboradorSerializer
+    
 
 @api_view(['POST'])
 def colaborador_desligamento(request):
