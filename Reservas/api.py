@@ -162,4 +162,3 @@ class agenda_salas(generics.ListCreateAPIView):
     queryset = AgendaSalasSerializer.Meta.model.objects.all()
     
     filterset_fields = ['sala','data']
-blabla
