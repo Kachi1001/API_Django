@@ -34,15 +34,6 @@ jobs:
       run: |
         source venv/bin/activate  
         python manage.py test
-    
-    - name: teste de Inicialização
-      run: |
-        source venv/bin/activate
-        screen -dmS teste_api sh -c 'python3 manage.py runserver 0.0.0.0:8000 &> server_log.txt'  # Redireciona a saída do servidor para um arquivo
-        sleep 5  # Aguarda o servidor iniciar
-        cat server_log.txt  # Mostra o log do servidor no painel do GitHub Actions
-        screen -S teste_api -X quit  # Encerra a sessão de tela
-        screen -wipe  # Remove sessões desnecessárias
 
   deploy:
     needs: test
