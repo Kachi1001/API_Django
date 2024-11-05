@@ -153,5 +153,12 @@ def reservaSala(request):
 
     return Response({'dados':gerarLista(reservados, horarios_dict.get(parametro.get('horario'))), 'method':'Carregar dados','message':'Sucesso em ler'}) 
 
-         
-        
+
+
+from rest_framework import generics, viewsets, status
+
+class agenda_salas(generics.ListCreateAPIView):
+    serializer_class = AgendaSalasSerializer
+    queryset = AgendaSalasSerializer.Meta.model.objects.all()
+    
+    filterset_fields = ['sala','data']
