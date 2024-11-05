@@ -12,9 +12,9 @@ def buildTable(request, table, queryset):
         'periodo_aquisitivo':Q(colaborador__nome__icontains=search_value) | Q(adquirido_em__icontains=search_value) | Q(periodo__icontains=search_value) | Q(id__icontains=search_value),
     }
     serializadores= {
-        'ferias_processadas': FeriasProcessadasSerializer,
-        'ferias_utilizadas': FeriasUtilizadasSerializer,
-        'periodo_aquisitivo': PeriodoAquisitivoSerializer
+        'ferias_processadas': FeriasProcessadasTable,
+        'ferias_utilizadas': FeriasUtilizadasTable,
+        'periodo_aquisitivo': PeriodoAquisitivoTable,
     }
     sort_order = request.GET.get('order', 'desc')
     sort_field = request.GET.get('sort', 'pk') 

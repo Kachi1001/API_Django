@@ -237,12 +237,16 @@ class Lembrete_list(generics.ListCreateAPIView):
     serializer_class = LembreteSerializer
     
     def create(self, request, *args, **kwargs):
-        cache.set('Depto_pessoal:app:update', 0, None)
+        cache.set('Depto_pessoal:app:updated', 0, None)
         return super().create(request, *args, **kwargs)
     
 class Lembrete_detail(generics.RetrieveUpdateDestroyAPIView):
     queryset = LembreteSerializer.Meta.model.objects.all()
     serializer_class = LembreteSerializer
+    
+    def destroy(self, request, *args, **kwargs):
+        cache.set('Depto_pessoal:app:updated', 0, None)
+        return super().destroy(request, *args, **kwargs)
 
 @api_view(['GET'])
 def select(request, resource):
@@ -277,7 +281,7 @@ def app_menu(request):
         ca = not bool(ca)
         cache.set(f'{base}toggle', int(ca), None)
         status = 202
-    values = cache.get_many([f'{base}run',f'{base}toggle',f'{base}update'])
+    values = cache.get_many([f'{base}run',f'{base}toggle',f'{base}updated'])
     return Response(values,status=status)
         
 # @api_view(['GET','PUT', 'DELETE'])
