@@ -8,6 +8,6 @@ class CarrosSerializer(serializers.ModelSerializer):
 
 class AgendaSalasSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Carros
+        model = AgendaSalas
         fields = '__all__'  # Ou liste os campos que deseja expor na API
 
