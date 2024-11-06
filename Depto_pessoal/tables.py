@@ -10,6 +10,7 @@ def buildTable(request, table, queryset):
         'ferias_processadas':Q(colaborador__nome__icontains=search_value) | Q(dias_processados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
         'ferias_utilizadas':Q(colaborador__nome__icontains=search_value) | Q(dias_utilizados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
         'periodo_aquisitivo':Q(colaborador__nome__icontains=search_value) | Q(adquirido_em__icontains=search_value) | Q(periodo__icontains=search_value) | Q(id__icontains=search_value),
+        'lembrete':Q(colaborador__icontains=search_value)
     }
     serializadores= {
         'ferias_processadas': FeriasProcessadasTable,

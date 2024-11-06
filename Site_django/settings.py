@@ -160,28 +160,28 @@ REST_FRAMEWORK = {
 import logging
 
 # Configuração do logger
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '%(levelname)s: %(message)s',  # Formato simples sem traceback
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'ERROR',  # Nível do log
-        },
-        '': {  # Logger raiz
-            'handlers': ['console'],
-            'level': 'ERROR',  # Nível do log
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'simple': {
+#             'format': '%(levelname)s: %(message)s',  # Formato simples sem traceback
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'ERROR',  # Nível do log
+#         },
+#         '': {  # Logger raiz
+#             'handlers': ['console'],
+#             'level': 'ERROR',  # Nível do log
+#         },
+#     },
+# }

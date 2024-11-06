@@ -257,7 +257,7 @@ def select(request, resource):
         'periodo_aquisitivo': PeriodoAquisitivoSelect,
         'funcao': FuncaoSelect,
         'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
-        'padrao': [{'value':'7:25, 17:55','text':'Colaborador'},{'value':'7:25, 15:25'},{'value':'13:25, 17:25'}],
+        'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
     }
     if resource in serials:
         serial = serials.get(resource)
