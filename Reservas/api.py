@@ -64,11 +64,14 @@ class agendasala_list(generics.ListCreateAPIView):
                 whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
                 resp = a.get('responsavel')
                 msg = []
+                
             msg.append(z.hora)
             mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp.strip()}_\nhttp://tecnikaengenharia.ddns.net/Reservas/sala/{z.sala}?data={z.data}'
             
         whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
-        cache.set('reservas:latestTick',random.random())
+        
+        cache.set('Reservas:lastick:sala',random.randint(1,100))
+        
         return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
         # return super().create(request, *args, **kwargs)
 
@@ -97,7 +100,7 @@ def lastick(request, resource):
     result = cache.get(f'Reservas:{resource}:lastick')
         
     if not result:
-        result = random.random()
-        cache.set(f'Reservas:{resource}:lastick', result, None)
+        result = random.randint(1,100)
+        cache.set('Reservas:lastick:sala',result)
             
     return Response(data=result)
