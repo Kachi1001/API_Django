@@ -264,9 +264,9 @@ def app_menu(request):
         
 @api_view(['GET'])
 def app_feriado(request):
-    try: feriados = Feriado.objects.get(id=util.get_hoje)
-    except Feriado.DoesNotExist: return 0
-    else: return 1
+    try: feriados = Feriado.objects.get(id=util.get_hoje())
+    except Feriado.DoesNotExist: return Response(0)
+    else: return Response(1)
 # @api_view(['GET','PUT', 'DELETE'])
 # def colaborador(request, pk):
 #     try:
