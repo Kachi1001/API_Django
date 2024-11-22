@@ -110,4 +110,9 @@ class LembreteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lembrete
         fields = '__all__' # Ou liste os campos que deseja expor na API     
+class FeriadoSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Feriado
+        fields = '__all__' # Ou liste os campos que deseja expor na API     
         

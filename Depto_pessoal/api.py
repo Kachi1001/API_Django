@@ -8,7 +8,7 @@ import json
 from django.http import JsonResponse
 from .mani import mani
 from .tables import buildTable
-from Site_django import media
+from Site_django import util 
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -83,28 +83,25 @@ for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
     lista_filterColab.append(new)
     dictModels[new] = dictModels[x]
     
-        
-    
-@api_view(['GET'])
-def select(request):
-    value = dictModels.get(request.GET.get('metodo')).objects.all().values()
-    return Response(value)
+
             
 from .serializers import *
-from rest_framework import generics, viewsets, status
-from rest_framework.exceptions import APIException
-from django.db import IntegrityError, DatabaseError
+
 
 # Colaborador
-class colaborador_list(generics.ListCreateAPIView):
+class colaborador_list(util.LC):
     queryset = Colaborador.objects.all()
     serializer_class = ColaboradorSerializer
 
-class colaborador_detail(generics.RetrieveUpdateDestroyAPIView):
+
+class colaborador_detail(util.RUD):
     queryset = Colaborador.objects.all()
     serializer_class = ColaboradorSerializer
     
-
+    def destroy(self, request, *args, **kwargs):
+        return funcao(request.data, 'desligamento')
+        # return super().destroy(request, *args, **kwargs)
+    
 @api_view(['POST'])
 def colaborador_desligamento(request):
     return funcao(request.data, 'desligamento')
@@ -114,32 +111,32 @@ def colaborador_desligamento(request):
 #     serializer_class = ColaboradorSelect
 
 # Função
-class funcao_list(generics.ListCreateAPIView):
+class funcao_list(util.LC):
     queryset = Funcao.objects.all()
     serializer_class = FuncaoSerializer
 
-class funcao_detail(generics.RetrieveUpdateDestroyAPIView):
+class funcao_detail(util.RUD):
     queryset = Funcao.objects.all()
     serializer_class = FuncaoSerializer
     
     
 # Equipe
-class equipe_list(generics.ListCreateAPIView):
+class equipe_list(util.LC):
     queryset = Equipe.objects.all()
     serializer_class = EquipeSerializer
 
-class equipe_detail(generics.RetrieveUpdateDestroyAPIView):
+class equipe_detail(util.RUD):
     queryset = Equipe.objects.all()
     serializer_class = EquipeSerializer
     
 # 
 # Ocupação
-class ocupacao_list(generics.ListCreateAPIView):
+class ocupacao_list(util.LC):
     queryset = Ocupacao.objects.all().order_by('-data_inicio')
     serializer_class = OcupacaoSerializer
-    filterset_fields = ['colaborador']
+    filterset_fields = ['colaborador','id']
 
-class ocupacao_detail(generics.RetrieveUpdateDestroyAPIView):
+class ocupacao_detail(util.RUD):
     queryset = Ocupacao.objects.all()
     serializer_class = OcupacaoSerializer
     
@@ -170,13 +167,13 @@ class genericList():
     
 #   
 # Periodo aquisitivo
-class PeriodoAquisitivo_list(generics.ListCreateAPIView):
+class PeriodoAquisitivo_list(util.LC):
     serializer_class = PeriodoAquisitivoSerializer
     queryset = PeriodoAquisitivo.objects.all().order_by('-adquirido_em')
     
     filterset_fields = ['colaborador']
     
-class PeriodoAquisitivo_detail(generics.RetrieveUpdateDestroyAPIView):
+class PeriodoAquisitivo_detail(util.RUD):
     queryset = PeriodoAquisitivoSerializer.Meta.model.objects.all()
     serializer_class = PeriodoAquisitivoSerializer
     
@@ -187,67 +184,47 @@ def PeriodoAquisitivo_funcao(request):
     
 #   
 # Ferias processadas
-class FeriasProcessadas_list(generics.ListCreateAPIView):
+class FeriasProcessadas_list(util.LC):
     serializer_class = FeriasProcessadasSerializer
     queryset = FeriasProcessadas.objects.all()
     
     filterset_fields = ['colaborador']
 
-    def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-
-        except DatabaseError as e:
-            # Captura outros erros de banco de dados
-            return Response(
-                {"banco de dados": (str(e).split('CONTEXT')[0])},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
             
-class FeriasProcessadas_detail(generics.RetrieveUpdateDestroyAPIView):
+class FeriasProcessadas_detail(util.RUD):
     queryset = FeriasProcessadas.objects.all()
     serializer_class = FeriasProcessadasSerializer
-    
+
 # 
 # Ferias utilizadas
-class FeriasUtilizadas_list(generics.ListCreateAPIView):
+class FeriasUtilizadas_list(util.LC):
     serializer_class = FeriasUtilizadasSerializer
     queryset = FeriasUtilizadas.objects.all()
     
     filterset_fields = ['colaborador']
-    def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-
-        except DatabaseError as e:
-            # Captura outros erros de banco de dados
-            return Response(
-                {"banco de dados": (str(e).split('CONTEXT')[0])},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
             
-class FeriasUtilizadas_detail(generics.RetrieveUpdateDestroyAPIView):
+class FeriasUtilizadas_detail(util.RUD):
     queryset = FeriasUtilizadas.objects.all()
     serializer_class = FeriasUtilizadasSerializer
     
 
 # Lembrete
-class Lembrete_list(generics.ListCreateAPIView):
-    queryset = LembreteSerializer.Meta.model.objects.all()
+class Lembrete_list(util.LC):
     serializer_class = LembreteSerializer
-    
-    def create(self, request, *args, **kwargs):
-        cache.set('Depto_pessoal:app:updated', 0, None)
-        return super().create(request, *args, **kwargs)
-    
-class Lembrete_detail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = LembreteSerializer.Meta.model.objects.all()
-    serializer_class = LembreteSerializer
-    
-    def destroy(self, request, *args, **kwargs):
-        cache.set('Depto_pessoal:app:updated', 0, None)
-        return super().destroy(request, *args, **kwargs)
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class Lembrete_detail(util.RUD):
+    serializer_class = LembreteSerializer    
+    queryset = serializer_class.Meta.model.objects.all()
+
+# Feriado
+class Feriado_list(util.LC):
+    serializer_class = FeriadoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class Feriado_detail(util.RUD):
+    serializer_class = FeriadoSerializer    
+    queryset = serializer_class.Meta.model.objects.all()
 
 @api_view(['GET'])
 def select(request, resource):
@@ -285,6 +262,11 @@ def app_menu(request):
     values = cache.get_many([f'{base}run',f'{base}toggle',f'{base}updated'])
     return Response(values,status=status)
         
+@api_view(['GET'])
+def app_feriado(request):
+    try: feriados = Feriado.objects.get(id=util.get_hoje)
+    except Feriado.DoesNotExist: return 0
+    else: return 1
 # @api_view(['GET','PUT', 'DELETE'])
 # def colaborador(request, pk):
 #     try:

@@ -1,20 +1,26 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
-value = None
+
+
 def buildTable(request, table, queryset):
-    filters = dict(request.GET).get('searchable[]')
+    fields = dict(request.GET).get('searchable[]')
     search_value = request.GET.get('search', '').strip()
     
     sort_order = request.GET.get('order', 'desc')
     sort_field = request.GET.get('sort', 'pk') 
     page_number = int(request.GET.get('offset', 1))
     # print(json.loads(request.GET.get('filter',))) 
-    page_size = int(request.GET.get('limit', 10)) if request.GET.get('limit') else len(queryset)
+    page_size = int(request.GET.get('limit', len(queryset)))
     # Filtrando com base na busca
     if search_value and table:
         preset = Q()
-        for filter in filters:
-            preset |= Q(**{f"{filter}__icontains":search_value})
+        for field in fields:
+            final = field
+            if not('_' in field):
+                # x = field.split('_')
+                # final = x[0] + '__' + x[1] 
+                preset |= Q(**{f"{final}__icontains":search_value})
+                
             
         queryset = queryset.filter(preset)  # Ajuste o campo conforme necessário
 

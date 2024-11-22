@@ -89,6 +89,14 @@ class BaseTerceiros(models.Model):
         db_table = 'base_terceiros'
 
 
+class Cartoes(models.Model):
+    nome = models.CharField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cartoes'
+
+
 class Colaborador(models.Model):
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(max_length=255)
@@ -187,6 +195,16 @@ class Etapa(models.Model):
         unique_together = (('cr', 'etapa'),)
 
 
+class Feriado(models.Model):
+    dia = models.DateField(primary_key=True)
+    descricao = models.CharField()
+    recorrente = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'feriado'
+
+
 class Funcao(models.Model):
     id = models.BigAutoField(primary_key=True)
     funcao = models.CharField(max_length=100)
@@ -217,6 +235,16 @@ class Localizacaoprogramada(models.Model):
         managed = False
         db_table = 'localizacaoprogramada'
         unique_together = (('colaborador', 'iniciosemana', 'obra'),)
+
+
+class Log(models.Model):
+    user = models.CharField()
+    action = models.CharField()
+    text = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'log'
 
 
 class Obra(models.Model):

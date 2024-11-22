@@ -45,6 +45,16 @@ class Equipe(models.Model):
         db_table = 'equipe'
 
 
+class Feriado(models.Model):
+    id = models.DateField(primary_key=True)
+    descricao = models.CharField()
+    recorrente = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'feriado'
+
+
 class FeriasProcessadas(models.Model):
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     dias_processados = models.IntegerField()
@@ -117,6 +127,8 @@ class Ocupacao(models.Model):
     data_inicio = models.DateField()
     data_fim = models.DateField(blank=True, null=True)
     continuo = models.BooleanField()
+    terceiro = models.BooleanField()
+    diaria = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
 
     class Meta:
         managed = False

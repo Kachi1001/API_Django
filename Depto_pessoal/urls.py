@@ -27,11 +27,17 @@ urlpatterns = [
   path('feriasutilizadas', FeriasUtilizadas_list.as_view()),
   path('feriasutilizadas/<str:pk>', FeriasUtilizadas_detail.as_view()),
 
+
   path('tabela/<str:table>', tabela),
 
   path('select/<str:resource>', select),
+  
+  path('feriado', Feriado_list.as_view()),
+  path('feriado/<str:pk>', Feriado_detail.as_view()),
+
   path('lembrete', Lembrete_list.as_view()),
   path('lembrete/<str:pk>', Lembrete_detail.as_view()),
   
   path('app', app_menu),
+  path('app_feriado', app_feriado),
 ]

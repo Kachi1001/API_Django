@@ -10,8 +10,7 @@ import json
 from django.http import JsonResponse
 from .mani import *
 from .serializers import *
-from .tables import buildTable
-from Site_django import media
+from Site_django import media, tables, util
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -58,7 +57,7 @@ def funcao(request):
 
     parametro = json.loads(request.GET.get('parametro'))
     if metodo == 'efetividade':
-        return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},'{parametro.get("dataini", '2000-01-01')}','{parametro.get("datafim", '2050-01-01')}')")
+        return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},'{get_formatter("dataini")}','{get_formatter("datafim")}')")
     elif metodo == 'subconsulta_lancamento':
         return funçãoSQL(f"{metodo}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
     return retorno400
@@ -173,7 +172,7 @@ def get_table(request):
 
 @api_view(['GET'])
 def tabela(request, table):
-    return JsonResponse(buildTable(request, table, dictModels.get(table).objects.all()), safe=False)
+    return JsonResponse(tables.buildTable(request, table, dictModels.get(table).objects.all()), safe=False)
 
 @api_view(['GET'])
 def get_data(request):
@@ -237,3 +236,157 @@ def diario(request):
     arquivo.save(response)
 
     return response
+
+@api_view(['GET'])
+def select(request, resource):
+    from .serializers import Select
+
+    return util.create_select(request, resource, Select)
+
+
+@api_view(['GET'])
+def resource(request, name):
+    resources = {
+        'atividade': {
+            'text': [
+                "id",
+                "dia",
+                "descricao",
+                "indice",
+                "horaini1",
+                "horafim1",
+                "horaini2",
+                "horafim2",
+                "horaini3",
+                "horafim3",
+                "motivo",
+            ],
+            'check': ["diaseguinte", "meiadiaria"],
+            'select': [
+                "obra",
+                "atividade",
+                "colaborador",
+                "supervisor",
+            ],
+        },
+        'colaborador': { 
+            'text': [
+                "id",
+                "nome",
+                "admissao",
+                "contrato",
+                "diaria",
+                "observacao",
+                "demissao",
+            ],
+            "check": ["encarregado"],
+            "select": ["funcao"]
+        },
+        'obra': {
+            'text': [
+                "id",
+                "orcamento",
+                "empresa",
+                "cidade",
+                "descricao",
+                "retrabalho",
+                "tecnicon",
+            ],
+            "check": ["finalizada"],
+            'select': ["indice","supervisor"]
+        },
+        'diario': {
+            'text': [
+                "indice",
+                "data",
+                "climamanha",
+                "climatarde",
+                "descricao",
+            ],
+            'select': ["encarregado", "obra_id"]
+        },
+        'supervisor': {
+            'text': ['supervisor'], 'checks':['ativo']},
+        'funcao': {
+            'text':['funcao', 'grupo']},
+        'programacao': {
+            'text': ['observacao', 'iniciosemana'], 
+            'select': ['colaborador', 'encarregado','obra']},
+    }
+    
+    return Response(resources.get(name))
+
+
+from rest_framework import generics, status
+class Colaborador_list(generics.ListCreateAPIView):
+    serializer_class = ColaboradorSerializer
+    queryset = ColaboradorSerializer.Meta.model.objects.all()
+    filterset_fields = ['nome','encarregado']
+    
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class Colaborador_detail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ColaboradorSerializer
+    queryset = ColaboradorSerializer.Meta.model.objects.all()
+    
+    
+class Obra_list(generics.ListCreateAPIView):
+    serializer_class = ObraSerializer
+    queryset = ObraSerializer.Meta.model.objects.all()
+    
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class Obra_detail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ObraSerializer
+    queryset = ObraSerializer.Meta.model.objects.all()
+    
+    
+class Funcao():
+    serializer_class = FuncaoSerializer
+    queryset = FuncaoSerializer.Meta.model.objects.all()
+
+class Funcao_list(Funcao, generics.ListCreateAPIView):
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class Funcao_detail(Funcao, generics.RetrieveUpdateDestroyAPIView):
+    pass
+
+class Supervisor():
+    serializer_class = SupervisorSerializer
+    queryset = SupervisorSerializer.Meta.model.objects.all()
+
+class Supervisor_list(Supervisor, generics.ListCreateAPIView):
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class Supervisor_detail(Supervisor, generics.RetrieveUpdateDestroyAPIView):
+    pass
+    
+    
+class Atividade_list(generics.ListCreateAPIView):
+    serializer_class = AtividadeSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['']
+    
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class Atividade_detail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AtividadeSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+    
+    
+    
