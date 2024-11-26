@@ -1,6 +1,6 @@
 from django.urls import path
 from .api import *
-odio = {'get':'get', 'post':'post'}
+
 urlpatterns = [
   path('colaborador', colaborador_list.as_view()),
   path('colaborador/<int:pk>', colaborador_detail.as_view()),
@@ -37,6 +37,9 @@ urlpatterns = [
   path('tabela/<str:table>', tabela),
 
   path('select/<str:resource>', select),
+  
+   path('grafico/<str:resource>', grafico),
+  
   
   path('feriado', Feriado_list.as_view()),
   path('feriado/<str:pk>', Feriado_detail.as_view()),

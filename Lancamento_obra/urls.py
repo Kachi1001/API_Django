@@ -34,5 +34,5 @@ urlpatterns = [
     
     path('exec/<str:funcao>', api.funcao),
     path('tabela/<str:table>', api.tabela),
-    path('grafico', api.grafico),
+    path('grafico/<str:table>', api.grafico),
 ]

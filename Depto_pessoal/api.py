@@ -85,9 +85,20 @@ for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
     lista_filterColab.append(new)
     dictModels[new] = dictModels[x]
     
+from . import views
+graficos = {
+    'ativos_rotatividade': views.ativos_rotatividade,
+}
+@api_view(['GET'])
+def grafico(request, resource):
+    from django.core.exceptions import ObjectDoesNotExist
 
-            
-
+    try:
+        dados = graficos.get(resource).objects.all().values()
+        dados = dados[len(dados) -36:]
+        return Response(dados,status=200)
+    except ObjectDoesNotExist:
+        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
 
 # Colaborador
 class colaborador_list(util.LC):
