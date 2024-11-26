@@ -145,7 +145,7 @@ class Diarioobra(models.Model):
     climamanha = models.CharField(max_length=20, blank=True, null=True)
     climatarde = models.CharField(max_length=20, blank=True, null=True)
     imagem = models.CharField(max_length=255, blank=True, null=True)
-    diario = models.CharField(max_length=50)
+    diario = models.CharField(max_length=50, blank=True, null=True)
     indice = models.IntegerField()
     descricao = models.CharField(blank=True, null=True)
 
@@ -279,7 +279,7 @@ class RevisaoTerceiros(models.Model):
 
 
 class Supervisor(models.Model):
-    supervisor = models.CharField(primary_key=True, max_length=100)
+    id = models.CharField(primary_key=True, max_length=100)
     ativo = models.BooleanField()
 
     class Meta:

@@ -22,11 +22,7 @@ def create_select(request, resource, Select):
         return Response({'method':'Select','message':'Campo não encontrado na API'},status=404)
     
     try:
-        queryset = serial.Meta.model.objects.all()
-        
-        data = request.GET.dict()
-        if data:
-            queryset = queryset.filter(**data)
+        queryset = serial.Meta.model.objects.all()    
 
         values = serial(queryset.order_by('pk'), many= True).data
     except:

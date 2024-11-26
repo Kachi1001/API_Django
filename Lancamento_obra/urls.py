@@ -2,7 +2,6 @@ from django.urls import path
 from . import api
 
 urlpatterns = [
-    # path('funcao', api.funcao),
     # path('register', api.register),
     # path('get_table', api.get_table),
     # path('get_data', api.get_data),
@@ -22,11 +21,18 @@ urlpatterns = [
     
     path('atividade', api.Atividade_list.as_view()),
     path('atividade/<str:pk>', api.Atividade_detail.as_view()),
+
+    path('diario', api.Diarioobra_list.as_view()),
+    path('diario/<str:pk>', api.Diarioobra_detail.as_view()),
+    path('diario_impressao', api.diario_impressao),
+    
+    path('programacao', api.Programacao_list.as_view()),
+    path('programacao/<str:pk>', api.Programacao_detail.as_view()),
     
     path('select/<str:resource>', api.select),
     path('resource/<str:name>', api.resource),
     
+    path('exec/<str:funcao>', api.funcao),
     path('tabela/<str:table>', api.tabela),
     path('grafico', api.grafico),
-    path('diario', api.diario),
 ]

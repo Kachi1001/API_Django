@@ -33,7 +33,8 @@ def funçãoSQL(funcao):
         conn.commit()
         # Retornando uma resposta de sucesso
     except psycopg2.Error as e:
-        return Response({'error': str(e)}, status=400)
+        e = str(e).split('\n')[0]
+        return Response({'error': e}, status=400)
     else:
         return Response({'method':'Atualizar','message':'Tabela atualizada com sucesso'}, status=200)
 
@@ -42,24 +43,22 @@ def funçãoSQL(funcao):
         conn.close()
         
 
-@api_view(['GET'])
-def funcao(request):
-    def get_formatter(value):
-        value = parametro.get(value, None)
+@api_view(['POST'])
+def funcao(request, funcao):
+    def get_formatter(value, padrao= None):
+        value = parametro.get(value, padrao)
         if value != None:
             return "'" + str(value) + "'"
         return 'null'
         
     funcao_void = ['atualizar_tabelas',]
-    metodo = request.GET.get('metodo')
-    if metodo in funcao_void:
-        return funçãoSQL(metodo+'()')
-
-    parametro = json.loads(request.GET.get('parametro'))
-    if metodo == 'efetividade':
-        return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},'{get_formatter("dataini")}','{get_formatter("datafim")}')")
-    elif metodo == 'subconsulta_lancamento':
-        return funçãoSQL(f"{metodo}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
+    if funcao in funcao_void:
+        return funçãoSQL(funcao+'()')
+    parametro = request.data
+    if funcao == 'efetividade':
+        return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},{get_formatter("dataini")},{get_formatter("datafim")})")
+    elif funcao == 'subconsulta_lancamento':
+        return funçãoSQL(f"{funcao}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
     return retorno400
 
 
@@ -206,7 +205,7 @@ def grafico(request):
 from openpyxl import load_workbook
 from django.http import HttpResponse
 @api_view(['GET'])
-def diario(request):
+def diario_impressao(request):
     obra = Obra.objects.get(id=request.GET['cr'])
 
     colabs = Localizacaoprogramada.objects.all().filter(obra=request.GET['cr'],iniciosemana=request.GET['data'])
@@ -260,6 +259,9 @@ def resource(request, name):
                 "horaini3",
                 "horafim3",
                 "motivo",
+                'etapa1',
+                'etapa2',
+                'etapa3',
             ],
             'check': ["diaseguinte", "meiadiaria"],
             'select': [
@@ -297,96 +299,134 @@ def resource(request, name):
         },
         'diario': {
             'text': [
+                "id",
+                "diario",
                 "indice",
                 "data",
                 "climamanha",
                 "climatarde",
                 "descricao",
             ],
-            'select': ["encarregado", "obra_id"]
+            'select': ["encarregado", "obra"],
+            'check': []
         },
         'supervisor': {
-            'text': ['supervisor'], 'checks':['ativo']},
+            'text': ['id'], 'check':['ativo']},
         'funcao': {
             'text':['funcao', 'grupo']},
         'programacao': {
-            'text': ['observacao', 'iniciosemana'], 
-            'select': ['colaborador', 'encarregado','obra']},
+            'text': ['id','observacao', 'iniciosemana'], 
+            'select': ['colaborador', 'encarregado','obra'],
+            'check': []},
     }
     
     return Response(resources.get(name))
 
 
 from rest_framework import generics, status
-class Colaborador_list(generics.ListCreateAPIView):
+class Colaborador_list(util.LC):
+    serializer_class = ColaboradorSerializer
+    queryset = ColaboradorSerializer.Meta.model.objects.all().order_by('nome')
+    filterset_fields = {
+        'demissao': ['isnull'],  # Permite filtrar por isnull e valores exatos
+        'nome': ['exact', 'icontains'],       # Exemplo de filtro para nome
+        'encarregado': ['exact'],       # Exemplo de filtro para nome
+    }
+
+    
+class Colaborador_detail(util.RUD):
     serializer_class = ColaboradorSerializer
     queryset = ColaboradorSerializer.Meta.model.objects.all()
-    filterset_fields = ['nome','encarregado']
-    
-    @util.database_exception
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-
-class Colaborador_detail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ColaboradorSerializer
-    queryset = ColaboradorSerializer.Meta.model.objects.all()
     
     
-class Obra_list(generics.ListCreateAPIView):
+class Obra_list(util.LC):
     serializer_class = ObraSerializer
-    queryset = ObraSerializer.Meta.model.objects.all()
-    
-    @util.database_exception
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    queryset = serializer_class.Meta.model.objects.all().order_by('id')
+    filterset_fields = ['finalizada']
 
 
-class Obra_detail(generics.RetrieveUpdateDestroyAPIView):
+class Obra_detail(util.RUD):
     serializer_class = ObraSerializer
-    queryset = ObraSerializer.Meta.model.objects.all()
-    
+    queryset = serializer_class.Meta.model.objects.all()
     
 class Funcao():
     serializer_class = FuncaoSerializer
-    queryset = FuncaoSerializer.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all()
 
-class Funcao_list(Funcao, generics.ListCreateAPIView):
-    @util.database_exception
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+class Funcao_list(Funcao, util.LC):
+    pass
 
-
-class Funcao_detail(Funcao, generics.RetrieveUpdateDestroyAPIView):
+class Funcao_detail(Funcao, util.RUD):
     pass
 
 class Supervisor():
     serializer_class = SupervisorSerializer
-    queryset = SupervisorSerializer.Meta.model.objects.all()
-
-class Supervisor_list(Supervisor, generics.ListCreateAPIView):
-    @util.database_exception
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-
-class Supervisor_detail(Supervisor, generics.RetrieveUpdateDestroyAPIView):
-    pass
-    
-    
-class Atividade_list(generics.ListCreateAPIView):
-    serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
-    filterset_fields = ['']
+
+class Supervisor_list(Supervisor, util.LC):
+    pass
+
+class Supervisor_detail(Supervisor, util.RUD):
+    pass    
     
-    @util.database_exception
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+class Atividade_list(util.LC):
+    serializer_class = AtividadeSerializer
+    queryset = serializer_class.Meta.model.objects.all().order_by('id')
 
 
 class Atividade_detail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
+
+class Diarioobra_list(util.LC):
+    serializer_class = DiarioobraSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['diario']
     
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        parametro = json.loads(request.POST.get('parametro'))
+        
+        if media.upload('diario',request.FILES.get('file'),parametro.get('imagem')).status_code:
+            diario = DiarioobraSerializer(data=parametro)
+            if diario.is_valid():
+                diario.save()
+                return Response(diario.data,status=status.HTTP_201_CREATED) 
+            else:
+                media.delete('diario', parametro.get('imagem'))
+                return Response(diario.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
+        else: 
+            return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
+            
     
+class Diarioobra_detail(util.RUD):
+    serializer_class = DiarioobraSerializer
+    queryset = serializer_class.Meta.model.objects.all()
     
+
+class Programacao_list(util.LC):
+    serializer_class = ProgramacaoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        parametro = json.loads(request.POST.get('parametro'))
+
+        if media.upload('programacao',request.FILES.get('file'),parametro.get('imagem')).status_code:
+            for a in json.loads(parametro.get('lanc')):
+                a['iniciosemana'] = parametro.get('iniciosemana')
+                a['id'] = 'qualquer'
+                
+                programacao = ProgramacaoSerializer(data=a)
+                if programacao.is_valid():
+                    programacao.save()
+                else:
+                    media.delete('programacao', parametro.get('imagem'))
+                    return Response(programacao.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response({'sucesso'},status=status.HTTP_201_CREATED) 
+        else: 
+            return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+class Programacao_detail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProgramacaoSerializer
+    queryset = serializer_class.Meta.model.objects.all()

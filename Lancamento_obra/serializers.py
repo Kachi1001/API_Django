@@ -27,6 +27,8 @@ class ColaboradorSerializer(serializers.ModelSerializer):
         model = models.Colaborador
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
         
+
+        
 class ObraSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Obra
@@ -98,6 +100,8 @@ class TipoAtividadeSelect(serializers.ModelSerializer):
     class Meta:
         model = models.TipoAtividade
         fields = ['value','text']  # Ou liste os campos que deseja expor na API    
+        
+ 
 
 Select = {
     'funcao': FuncaoSelect,
@@ -105,5 +109,6 @@ Select = {
     'obra': ObraSelect,
     'colaborador': ColaboradorSelect,
     'atividade': TipoAtividadeSelect,
-    'indice': [{'text':'ATESTADO'},{'text':'DISPENSAS E FOLGAS'},{'text':'FALTAS'},{'text':'FÉRIAS'},{'text':'OBRAS ENGENHARIA'},{'text':'RETRABALHOS'},{'text':'SERVIÇOS INTERNOS'},{'text':'SERVIÇOS INTERNOS'}, {'text':'TREINAMENTO'},{'text':'SERVIÇOS PARA O GRUPO'}]
+    'indice': [{'text':'ATESTADO'},{'text':'DISPENSAS E FOLGAS'},{'text':'FALTAS'},{'text':'FÉRIAS'},{'text':'OBRAS ENGENHARIA'},{'text':'RETRABALHOS'},{'text':'SERVIÇOS INTERNOS'},{'text':'SERVIÇOS INTERNOS'}, {'text':'TREINAMENTO'},{'text':'SERVIÇOS PARA O GRUPO'}],
+    'encarregado': ColaboradorSelect(models.Colaborador.objects.all().filter(encarregado=True, demissao__isnull=True),many=True).data
 }    

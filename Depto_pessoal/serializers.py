@@ -115,4 +115,45 @@ class FeriadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feriado
         fields = '__all__' # Ou liste os campos que deseja expor na API     
+
+
+class AvaliacaoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Colaborador
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+
+class AvaliacaoTable(serializers.ModelSerializer):
+    avaliacao = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='situacao'
+     )
+    class Meta:
+        model = Colaborador
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+
+class TipoAvaliacaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ColabAvaliacao
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+
+
+class TipoAvaliacaoSelect(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='situacao')
         
+        class Meta:
+            model = ColabAvaliacao
+            fields = ['value','text']  # Ou liste os campos que deseja expor na API   
+    
+        
+Select = {
+        'colaborador': ColaboradorSelect,
+        'equipe': EquipeSelect,
+        'periodo_aquisitivo': PeriodoAquisitivoSelect,
+        'funcao': FuncaoSelect,
+        'avaliacao': TipoAvaliacaoSelect,
+        'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
+        'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
+}    

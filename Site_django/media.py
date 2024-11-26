@@ -24,3 +24,10 @@ def upload(metodo, file, fileName):
         return False
     else:
         return Response(status=200) 
+    
+def delete(metodo, fileName):
+    nome = fileName.split('.')[0]
+    caminho = caminhos.get(metodo)
+    path = os.path.join(settings.MEDIA_ROOT, caminho, nome + '.jpeg')
+    os.remove(path)
+    

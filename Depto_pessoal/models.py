@@ -12,6 +12,14 @@ from django.db import models
 # The error was: user mapping not found for "dev_api"
 
 
+class ColabAvaliacao(models.Model):
+    situacao = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'colab_avaliacao'
+
+
 class Colaborador(models.Model):
     nome = models.CharField()
     cpf = models.CharField()
@@ -20,6 +28,9 @@ class Colaborador(models.Model):
     fone = models.CharField(blank=True, null=True)
     ativo = models.BooleanField()
     equipe = models.CharField(blank=True, null=True)
+    avaliacao = models.ForeignKey(ColabAvaliacao, models.DO_NOTHING, db_column='avaliacao', blank=True, null=True)
+    avaliacao_descricao = models.CharField(blank=True, null=True)
+    avaliacao_recontratar = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -27,7 +38,7 @@ class Colaborador(models.Model):
 
 
 class Dia(models.Model):
-    dia = models.DateField(primary_key=True)
+    id = models.DateField(primary_key=True)
     feriado = models.BooleanField()
 
     class Meta:

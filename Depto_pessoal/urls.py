@@ -27,6 +27,12 @@ urlpatterns = [
   path('feriasutilizadas', FeriasUtilizadas_list.as_view()),
   path('feriasutilizadas/<str:pk>', FeriasUtilizadas_detail.as_view()),
 
+  path('avaliacao', Avaliacao_list.as_view()),
+  path('avaliacao/<str:pk>', Avaliacao_detail.as_view()),
+
+  path('tipoavaliacao', TipoAvaliacao_list.as_view()),
+  path('tipoavaliacao/<str:pk>', TipoAvaliacao_detail.as_view()),
+
 
   path('tabela/<str:table>', tabela),
 

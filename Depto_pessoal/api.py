@@ -2,11 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from .models import *
-import json
-from django.http import JsonResponse
-from .mani import mani
 from .tables import buildTable
 from Site_django import util 
 
@@ -59,6 +55,7 @@ def funcao(request, metodo):
 
     return funcao_sql(sql)
 
+from .serializers import *
 dictModels = {
     'funcao': Funcao,
     'colaborador': Colaborador,
@@ -68,12 +65,17 @@ dictModels = {
     'ferias_processadas': FeriasProcessadas,
     'ocupacao': Ocupacao,
     'lembrete': Lembrete,
+    'avaliacao': Colaborador.objects.all().filter(avaliacao__isnull=False)
 }
 
    
 @api_view(['GET'])
 def tabela(request, table): 
-    return Response(buildTable(request, table, dictModels.get(table).objects.all()))
+    try:
+        return Response(buildTable(request, table, dictModels.get(table).objects.all()))
+    except:
+        print(dictModels.get(table))
+        return Response(buildTable(request, table, dictModels.get(table)))
 
 lista_filterColab = ['historico_ocupacao']
 
@@ -85,7 +87,6 @@ for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
     
 
             
-from .serializers import *
 
 
 # Colaborador
@@ -225,28 +226,33 @@ class Feriado_list(util.LC):
 class Feriado_detail(util.RUD):
     serializer_class = FeriadoSerializer    
     queryset = serializer_class.Meta.model.objects.all()
+    
+class Avaliacao():
+    serializer_class = AvaliacaoSerializer
+    queryset = serializer_class.Meta.model.objects.all().filter(avaliacao__isnull=False)
 
+class Avaliacao_list(Avaliacao,util.LC):
+    pass
+
+class Avaliacao_detail(Avaliacao,util.RUD):
+    pass
+    
+class TipoAvaliacao():
+    serializer_class = TipoAvaliacaoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+
+class TipoAvaliacao_list(TipoAvaliacao,util.LC):
+    pass
+    
+class TipoAvaliacao_detail(TipoAvaliacao,util.RUD):
+    pass
+    
+        
 @api_view(['GET'])
 def select(request, resource):
-    serials = {
-        'colaborador': ColaboradorSelect,
-        'equipe': EquipeSelect,
-        'periodo_aquisitivo': PeriodoAquisitivoSelect,
-        'funcao': FuncaoSelect,
-        'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
-        'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
-    }
-    if resource in serials:
-        serial = serials.get(resource)
-    else:
-        return Response({'method':'Select','message':'Campo não encontrado na API'},status=404)
-    
-    try:
-        values = serial(serial.Meta.model.objects.all(), many= True).data
-    except:
-        values = serial
-    
-    return Response(values)
+    from .serializers import Select
+
+    return util.create_select(request, resource, Select)
         
 from django.core.cache import cache
         
@@ -267,25 +273,4 @@ def app_feriado(request):
     try: feriados = Feriado.objects.get(id=util.get_hoje())
     except Feriado.DoesNotExist: return Response(0)
     else: return Response(1)
-# @api_view(['GET','PUT', 'DELETE'])
-# def colaborador(request, pk):
-#     try:
-#         colaborador = Colaborador.objects.get(pk=pk)
-#     except:
-#         return Response(status=204)
-#     else:
-    
-#         match request.method:
-#             case 'GET':
-#                 serializer = ColaboradorSerializer(colaborador)
-#                 return Response(serializer.data)
-#             case 'PUT':
-#                 serializer = ColaboradorSerializer(colaborador, data=request.data)
-#                 if serializer.is_valid():
-#                     serializer.save()
-#                     return Response(serializer.data)
-#                 return Response(serializer.errors, status=400)
-#             case 'DELETE':
-#                 colaborador.delete()
-#                 return Response(status=200)
 

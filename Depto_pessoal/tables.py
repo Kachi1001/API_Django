@@ -16,6 +16,7 @@ def buildTable(request, table, queryset):
         'ferias_processadas': FeriasProcessadasTable,
         'ferias_utilizadas': FeriasUtilizadasTable,
         'periodo_aquisitivo': PeriodoAquisitivoTable,
+        'avaliacao': AvaliacaoTable,
     }
     sort_order = request.GET.get('order', 'desc')
     sort_field = request.GET.get('sort', 'pk') 
