@@ -74,8 +74,8 @@ def tabela(request, table):
     try:
         return Response(buildTable(request, table, dictModels.get(table).objects.all()))
     except:
-        print(dictModels.get(table))
         return Response(buildTable(request, table, dictModels.get(table)))
+
 
 lista_filterColab = ['historico_ocupacao']
 

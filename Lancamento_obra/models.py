@@ -241,6 +241,7 @@ class Log(models.Model):
     user = models.CharField()
     action = models.CharField()
     text = models.CharField()
+    resource = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False

@@ -67,8 +67,8 @@ class FuncaoSelect(serializers.ModelSerializer):
         fields = ['value','text']  # Ou liste os campos que deseja expor na API 
            
 class SupervisorSelect(serializers.ModelSerializer):
-    value = serializers.CharField(source='supervisor')
-    text = serializers.CharField(source='supervisor')
+    value = serializers.CharField(source='id')
+    text = serializers.CharField(source='id')
     class Meta:
         model = models.Supervisor   
         fields = ['value','text']  # Ou liste os campos que deseja expor na API    

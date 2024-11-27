@@ -10,7 +10,7 @@ import json
 from django.http import JsonResponse
 from .mani import *
 from .serializers import *
-from Site_django import media, tables, util
+from Site_django import media, util
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
@@ -171,7 +171,7 @@ def get_table(request):
 
 @api_view(['GET'])
 def tabela(request, table):
-    return JsonResponse(tables.buildTable(request, table, dictModels.get(table).objects.all()), safe=False)
+    return JsonResponse(util.buildTable(request, table, dictModels.get(table).objects.all()), safe=False)
 
 @api_view(['GET'])
 def get_data(request):
@@ -191,16 +191,20 @@ def get_data(request):
         return Response({'method':'Alerta de pesquisa','message': f'id não encontrada " {id}"' }, status=404)
     else:
         return JsonResponse(value, safe=False) 
-        
+    
 @api_view(['GET'])
-def grafico(request):
-    metodo = request.GET.get('metodo')
-    result = retorno400
+def grafico(request, resource):
+    from . import views
+    graficos = {
+        'horas': views.Graficos,
+    }
+    from django.core.exceptions import ObjectDoesNotExist
     try:
-        if metodo == 'grafico1':
-            return Response(Graficos.objects.all().values('mes','hora_50','hora_100'),status=200)
+        dados = graficos.get(resource).objects.all().values()
+        dados = dados[len(dados) -36:]
+        return Response(dados,status=200)
     except ObjectDoesNotExist:
-            return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
+        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
     
 from openpyxl import load_workbook
 from django.http import HttpResponse
@@ -373,10 +377,20 @@ class Atividade_list(util.LC):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all().order_by('id')
 
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        Log.objects.create(user= request.data['user'], action='create', text=str(request.data),resource='Atividade')
+        return super().create(request, *args, **kwargs)
+
 
 class Atividade_detail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
+    
+    @util.database_exception
+    def delete(self, request, *args, **kwargs):
+        Log.objects.create(user= request.data['user'], action='delete', text=str(request.data),resource='Atividade')
+        return super().delete(request, *args, **kwargs)
 
 class Diarioobra_list(util.LC):
     serializer_class = DiarioobraSerializer
