@@ -158,6 +158,8 @@ def select(request, resource):
     return util.create_select(request, resource, Select)
 
 resources = util.get_resources(models)
+resources['atividade']['select'].append('colaborador')
+print(resources)
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
