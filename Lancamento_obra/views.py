@@ -12,7 +12,7 @@ class Incompletos(models.Model):
         managed = False
         db_table = 'incompletos'
         
-class HoraMes(models.Model):
+class hora_mes(models.Model):
     competencia = models.CharField(primary_key=True)
     contrato = models.CharField()
     colaborador = models.CharField()
