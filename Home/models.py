@@ -133,3 +133,17 @@ class Historico(models.Model):
     class Meta:
         managed = False
         db_table = 'historico'
+
+
+class Log(models.Model):
+    user_name = models.CharField()
+    action = models.CharField()
+    text = models.CharField()
+    resource = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(blank=True, null=True)
+    app = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'log'
