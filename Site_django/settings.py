@@ -36,12 +36,12 @@ ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="10.0.0.139").split(",")
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'django_filters',
     ]
@@ -56,8 +56,8 @@ INSTALLED_APPS += INTERNAL_APP
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

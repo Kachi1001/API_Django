@@ -1,5 +1,23 @@
 from django.utils import timezone
 from rest_framework.response import Response
+from django.http import JsonResponse
+
+from django.core.cache import cache
+
+from functools import wraps
+def cached(ttl=60):  # TTL (tempo de vida) em segundos
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            chave = f"{func.__name__}:{args}:{kwargs}"
+            resultado = cache.get(chave )
+            if resultado:
+                return resultado
+            resultado = func(*args, **kwargs)
+            cache.set(chave, resultado, ttl)
+            return resultado
+        return wrapper
+    return decorator
 
 def formatarDecimal(valor):
     if valor >= 10:
@@ -12,6 +30,9 @@ def formatarHTML(valor):
 
 def get_hoje():
     return timezone.now().date()
+
+def get_agora():
+    return timezone.now()
 
 
 def create_select(request, resource, Select):
@@ -29,23 +50,37 @@ def create_select(request, resource, Select):
         values = serial
     return Response(values)
 
-from rest_framework import generics, status
+from rest_framework import generics
 
 
 from django.db import DatabaseError
 
 def database_exception(funcao):
     def wrapper(*args, **kwargs):
+        action = ''
+        request = args[1]
+        status = 'Sucesso'
+        text = None 
+        path = request.META['PATH_INFO'][1:].split('/')
         try:
-            return funcao(*args, **kwargs)
+            action = funcao(*args, **kwargs)
+            text = action.data
         except DatabaseError as e:
-            return Response(
+            status = 'Falhou'
+            text = {'data':request.data,'error':str(e)}
+            action =  Response(
                 {"banco de dados": (str(e).split('CONTEXT')[0])},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-            
+                status=500
+            )            
+        if request.method != 'GET':
+            try:
+                Log.objects.create(user_name=request.data['user'], action=request.method, text=text or path[2] ,app=path[0],resource=path[1],status=status)
+            except:
+                pass
+        return action
     return wrapper
-    
+
+from Home.models import Log
 class RUD(generics.RetrieveUpdateDestroyAPIView):
     
     @database_exception
@@ -76,7 +111,18 @@ class LC(generics.ListCreateAPIView):
     
 
 
-def buildTable(request, table, queryset):
+def get_table(request, table ,dicts):
+    queryset = None
+    try:
+        queryset = dicts.get(table).objects.all()
+    except:
+        try:
+            queryset = dicts.get(table)
+        except:
+            return Response({'error':'Tabela não existe no banco ou está desativada'})
+    return JsonResponse(buildTable(request, table, queryset))
+
+def buildTable(request, table, queryset):   
     from django.core.paginator import Paginator
     from django.db.models import Q
     fields = dict(request.GET).get('searchable[]')
@@ -115,3 +161,32 @@ def buildTable(request, table, queryset):
         'rows': list(page_obj.object_list.values())  # Ajuste os campos conforme necessário
     }
     return data
+
+def get_resources(models):
+    classes = [nome for nome in dir(models) if nome.startswith('') and callable(getattr(models, nome))]
+    resources = {}
+    for resource in classes:
+        classe = resource
+        resource = resource.lower()
+        resources[resource] = {'text':[], 'select':[], 'check':[]}
+        for field, valor in vars(getattr(models, classe)).items():
+            if not any(x in field for x in ['_set', 'get_', '__', '_meta','DoesNotExist','MultipleObjectsReturned','objects','_id']):
+                tipo = str(vars(valor).items()).split('<')[1].split(':')[0].split('.') 
+                if tipo[len(tipo) - 1] == 'BooleanField':
+                    resources[resource]['check'].append(field)
+                else:
+                    for detail, name in vars(valor).items():
+                        for x in vars(name).items():
+                            if x[0] == 'db_column':
+                                if x[1] != None:
+                                    resources[resource]['select'].append(field)
+                                else:
+                                    resources[resource]['text'].append(field)
+    return resources
+
+def get_classes(package):
+    result = {}
+    classes = [nome for nome in dir(package) if nome.startswith('') and callable(getattr(package, nome))]
+    for classe in classes:
+        result[classe.lower()] = getattr(package, classe) 
+    return result
