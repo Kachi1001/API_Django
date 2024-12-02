@@ -24,8 +24,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install -r requirements.txt
         source venv/bin/activate
+        pip install -r requirements.txt
 
     - name: Copiando .env
       run: cp /home/tecnika/TK/django/env/teste_api.env .env
