@@ -5,7 +5,7 @@ from django.conf import settings
 from .models import *
 from .tables import buildTable
 from Site_django import util 
-
+from . import models, views
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
@@ -13,6 +13,8 @@ retorno404 = Response({'message':'Registro não encontrado'}, status=404)
 # Configurações de conexão com o banco de dados PostgreSQL
 app = __name__.split('.')[0]
 db = settings.DATABASES['default']
+
+
 
 def funcao_sql(sql): 
     conn = psycopg2.connect(dbname=app, user=db['USER'], password=db['PASSWORD'], host=db['HOST'], port=db['PORT'])
@@ -71,12 +73,18 @@ dictModels = {
    
 @api_view(['GET'])
 def tabela(request, table): 
+    # return util.get_table(request, table, dictModels)
     try:
         return Response(buildTable(request, table, dictModels.get(table).objects.all()))
     except:
         return Response(buildTable(request, table, dictModels.get(table)))
 
-
+from . import models
+resources = util.get_resources(models)
+@api_view(['GET'])
+def resource(request, name):
+    return Response(resources.get(name))
+    
 lista_filterColab = ['historico_ocupacao']
 
 for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
@@ -144,13 +152,13 @@ class equipe_detail(util.RUD):
 # 
 # Ocupação
 class ocupacao_list(util.LC):
-    queryset = Ocupacao.objects.all().order_by('-data_inicio')
     serializer_class = OcupacaoSerializer
+    queryset = serializer_class.Meta.model.objects.all().order_by('-data_inicio')
     filterset_fields = ['colaborador','id']
 
 class ocupacao_detail(util.RUD):
-    queryset = Ocupacao.objects.all()
     serializer_class = OcupacaoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
     
 from django.shortcuts import get_object_or_404
 @api_view(['POST','GET'])
@@ -171,23 +179,17 @@ def ocupacao_dissidio(request):
             queryset = Ocupacao.objects.all()
             return Response(OcupacaoSerializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
     
-class genericList():
-    serializer = None
-    
-    def get(self, request):
-        return Response(self.serializer(self.serializer.Meta.model.objects.all(), many=True).data)
-    
 #   
 # Periodo aquisitivo
 class PeriodoAquisitivo_list(util.LC):
     serializer_class = PeriodoAquisitivoSerializer
-    queryset = PeriodoAquisitivo.objects.all().order_by('-adquirido_em')
-    
+    queryset = serializer_class.Meta.model.objects.all().order_by('-adquirido_em')
     filterset_fields = ['colaborador']
     
+    
 class PeriodoAquisitivo_detail(util.RUD):
-    queryset = PeriodoAquisitivoSerializer.Meta.model.objects.all()
     serializer_class = PeriodoAquisitivoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
     
 @api_view(['POST'])
 def PeriodoAquisitivo_funcao(request):

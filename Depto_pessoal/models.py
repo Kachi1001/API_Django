@@ -22,7 +22,7 @@ class ColabAvaliacao(models.Model):
 
 class Colaborador(models.Model):
     nome = models.CharField()
-    cpf = models.CharField()
+    cpf = models.CharField(db_comment='text')
     rg = models.CharField(blank=True, null=True)
     nascimento = models.DateField()
     fone = models.CharField(blank=True, null=True)
@@ -50,6 +50,8 @@ class Dia(models.Model):
 
 class Equipe(models.Model):
     id = models.CharField(primary_key=True)
+    gestor = models.CharField(blank=True, null=True)
+    fone = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -140,6 +142,7 @@ class Ocupacao(models.Model):
     continuo = models.BooleanField()
     terceiro = models.BooleanField()
     diaria = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    equipe = models.ForeignKey(Equipe, models.DO_NOTHING, db_column='equipe')
 
     class Meta:
         managed = False

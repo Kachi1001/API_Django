@@ -35,8 +35,8 @@ urlpatterns = [
 
 
   path('tabela/<str:table>', tabela),
-
-  # path('select/<str:resource>', select),
+  path('resource/<str:name>', resource),
+  path('select/<str:resource>', select),
   
   #  path('grafico/<str:resource>', grafico),
   

@@ -22,9 +22,9 @@ urlpatterns = [
     path('atividade', api.Atividade_list.as_view()),
     path('atividade/<str:pk>', api.Atividade_detail.as_view()),
 
-    path('diario', api.Diarioobra_list.as_view()),
-    path('diario/<str:pk>', api.Diarioobra_detail.as_view()),
-    path('diario_impressao', api.diario_impressao),
+    path('diarioobra', api.Diarioobra_list.as_view()),
+    path('diarioobra/<str:pk>', api.Diarioobra_detail.as_view()),
+    path('diarioobra_impressao', api.diario_impressao),
     
     path('programacao', api.Programacao_list.as_view()),
     path('programacao/<str:pk>', api.Programacao_detail.as_view()),

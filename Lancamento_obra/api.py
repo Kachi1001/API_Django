@@ -159,7 +159,9 @@ def select(request, resource):
 
 resources = util.get_resources(models)
 resources['atividade']['select'].append('colaborador')
-print(resources)
+resources['diarioobra']['select'].append('encarregado')
+resources['encarregado'] = resources['colaborador']
+
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
@@ -237,7 +239,7 @@ class Diarioobra_list(util.LC):
     def create(self, request, *args, **kwargs):
         parametro = json.loads(request.POST.get('parametro'))
         
-        if media.upload('diario',request.FILES.get('file'),parametro.get('imagem')).status_code:
+        if media.upload('diarioobra',request.FILES.get('file'),parametro.get('imagem')).status_code:
             diario = DiarioobraSerializer(data=parametro)
             if diario.is_valid():
                 diario.save()

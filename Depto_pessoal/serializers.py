@@ -100,7 +100,6 @@ class FeriasUtilizadasTable(serializers.ModelSerializer):
 
    
 class OcupacaoSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Ocupacao
         fields = '__all__' # Ou liste os campos que deseja expor na API     

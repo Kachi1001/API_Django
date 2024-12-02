@@ -167,21 +167,25 @@ def get_resources(models):
     resources = {}
     for resource in classes:
         classe = resource
-        resource = resource.lower()
-        resources[resource] = {'text':[], 'select':[], 'check':[]}
+        resource = {'text':[], 'select':[], 'check':[]}
         for field, valor in vars(getattr(models, classe)).items():
             if not any(x in field for x in ['_set', 'get_', '__', '_meta','DoesNotExist','MultipleObjectsReturned','objects','_id']):
                 tipo = str(vars(valor).items()).split('<')[1].split(':')[0].split('.') 
                 if tipo[len(tipo) - 1] == 'BooleanField':
-                    resources[resource]['check'].append(field)
+                    resource['check'].append(field)
                 else:
                     for detail, name in vars(valor).items():
                         for x in vars(name).items():
                             if x[0] == 'db_column':
                                 if x[1] != None:
-                                    resources[resource]['select'].append(field)
+                                    resource['select'].append(field)
                                 else:
-                                    resources[resource]['text'].append(field)
+                                    resource['text'].append(field)
+            elif field == '_meta':
+                for key, value in vars(valor).items():
+                    if key == 'db_table':
+                        resource_name = value
+        resources[resource_name] = resource
     return resources
 
 def get_classes(package):

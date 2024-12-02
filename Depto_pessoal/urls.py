@@ -33,16 +33,15 @@ urlpatterns = [
   path('tipoavaliacao', TipoAvaliacao_list.as_view()),
   path('tipoavaliacao/<str:pk>', TipoAvaliacao_detail.as_view()),
 
-
-  path('tabela/<str:table>', tabela),
-
-  path('select/<str:resource>', select),
-  
-   path('grafico/<str:resource>', grafico),
-  
-  
   path('feriado', Feriado_list.as_view()),
   path('feriado/<str:pk>', Feriado_detail.as_view()),
+
+  
+  path('tabela/<str:table>', tabela),
+  path('resource/<str:name>', resource),
+  path('select/<str:resource>', select),
+  path('grafico/<str:resource>', grafico),
+  
 
   path('lembrete', Lembrete_list.as_view()),
   path('lembrete/<str:pk>', Lembrete_detail.as_view()),

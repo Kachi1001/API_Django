@@ -1,12 +1,18 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import psycopg2
-from django.conf import settings
-from .models import *
 from Site_django import util 
-from . import views
+from . import views, models
 
-    
+@api_view(['GET'])
+def select(request, resource):
+    from .serializers import Select
+
+    return util.create_select(request, resource, Select)
+
+resources = util.get_resources(models)
+@api_view(['GET'])
+def resource(request, name):
+    return Response(resources.get(name))
 # # Configurações de conexão com o banco de dados PostgreSQL
 # app = __name__.split('.')[0]
 # db = settings.DATABASES['default']
@@ -53,17 +59,21 @@ from . import views
 #     return funcao_sql(sql)
 
 # from .serializers import *
-dictModels = {
-    'orcamento_cotacao': views.orcamento_cotacao
-}
+# dictModels = {
+#     'orcamento_cotacao': views.orcamento_cotacao,
+#     'lucratividade': views.lucratividade,
+# }
+table_views = util.get_classes(views)
+table_models = util.get_classes(models)
 
-   
 @api_view(['GET'])
 def tabela(request, table): 
-    try:
-        return Response(util.buildTable(request, table, dictModels.get(table).objects.all()))
-    except:
-        return Response(util.buildTable(request, table, dictModels.get(table)))
+    dicts= table_views
+    dicts.update(table_models)
+    return Response(util.get_table(request, table, dicts))
+        
+
+    
 
 # lista_filterColab = ['historico_ocupacao']
 

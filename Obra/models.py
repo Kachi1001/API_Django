@@ -101,7 +101,7 @@ class FdCompra(models.Model):
 
 
 class FdOrcado(models.Model):
-    obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
+    orcamento = models.ForeignKey('Orcamento', models.DO_NOTHING, db_column='orcamento')
     fornecedor = models.ForeignKey('MatFornecedor', models.DO_NOTHING, db_column='fornecedor', blank=True, null=True)
     produto = models.ForeignKey('MatProduto', models.DO_NOTHING, db_column='produto')
     quantidade = models.DecimalField(max_digits=15, decimal_places=6)
@@ -115,6 +115,8 @@ class FdOrcado(models.Model):
     etapa = models.CharField(blank=True, null=True)
     cidade = models.ForeignKey(Cidade, models.DO_NOTHING, db_column='cidade')
     endereco = models.CharField(blank=True, null=True)
+    data = models.DateField()
+    urgencia = models.BooleanField()
 
     class Meta:
         managed = False
@@ -259,6 +261,16 @@ class OrcadoRealizado(models.Model):
     class Meta:
         managed = False
         db_table = 'orcado_realizado'
+
+
+class Orcamento(models.Model):
+    id = models.CharField(primary_key=True, max_length=8)
+    cliente = models.CharField()
+    cidade = models.ForeignKey(Cidade, models.DO_NOTHING, db_column='cidade', db_comment='foreign key')
+
+    class Meta:
+        managed = False
+        db_table = 'orcamento'
 
 
 class Realizado(models.Model):

@@ -13,3 +13,12 @@ class orcamento_cotacao(models.Model):
     class Meta:
         managed = False
         db_table = 'orcamento_cotacao'
+
+class lucratividade(models.Model):
+    obra = models.IntegerField(primary_key=True)
+    h100 = models.TextField(max_length=255)
+    colaborador = models.TextField(max_length=255)
+    
+    class Meta:
+        managed = False
+        db_table = 'lucratividade'

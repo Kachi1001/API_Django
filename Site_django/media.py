@@ -7,7 +7,7 @@ from django.conf import settings
 
 caminhos = {
     'carro': 'Reservas/carros/',
-    'diario': 'Lancamento_obra/diario/',
+    'diarioobra': 'Lancamento_obra/diarioobra/',
     'programacao': 'Lancamento_obra/programacao/'
 }
 def upload(metodo, file, fileName):
