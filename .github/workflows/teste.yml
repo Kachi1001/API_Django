@@ -15,17 +15,19 @@ jobs:
     - uses: actions/checkout@v4  # Faz o checkout do código fonte
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Create virtual environment
       run: python -m venv venv  # Cria o ambiente virtual localmente no servidor de produção
 
+    - name: Iniciando ambiente virtual
+      run: source venv/bin/activate  # Cria o ambiente virtual localmente no servidor de produção
+
     - name: Install Dependencies
-      run: |
-        source venv/bin/activate
-        pip install -r requirements.txt
+      run: pip install -r requirements.txt
         
     - name: Copiando .env
       run: cp /home/tecnika/TK/django/env/teste_api.env .env
