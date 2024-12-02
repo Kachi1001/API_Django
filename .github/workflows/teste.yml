@@ -18,6 +18,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Create virtual environment
       run: python -m venv venv  # Cria o ambiente virtual localmente no servidor de produção
