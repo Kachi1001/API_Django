@@ -82,18 +82,17 @@ def tabela(request, table):
 from . import models
 resources = util.get_resources(models)
 resources['colaborador'] = resources['colaborador_']
+resources['avaliacao'] = resources['colaborador_']
+resources['tipoavaliacao'] = resources['colab_avaliacao']
+resources['funcao'] = resources['funcao_']
+resources['funcao']['select'].append('categoria')
+resources['feriasutilizadas'] = resources['ferias_utilizadas'] 
+resources['feriasprocessadas'] = resources['ferias_processadas'] 
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
-    
-lista_filterColab = ['historico_ocupacao']
 
-for x in ['ferias_processadas','ferias_utilizadas','periodo_aquisitivo']:
-    new = 'historico_'+x
-    lista_filterColab.append(x)
-    lista_filterColab.append(new)
-    dictModels[new] = dictModels[x]
-    
+  
 from . import views
 graficos = {
     'ativos_rotatividade': views.ativos_rotatividade,
