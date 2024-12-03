@@ -81,6 +81,7 @@ def tabela(request, table):
 
 from . import models
 resources = util.get_resources(models)
+resources['colaborador'] = resources['colaborador_']
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
