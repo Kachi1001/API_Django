@@ -67,7 +67,7 @@ dictModels = {
     'feriasprocessadas': FeriasProcessadas,
     'feriassaldos': views.FeriasSaldos.objects.all(),
     'ocupacao': Ocupacao,
-    'lembrete': Lembrete,
+    'ponto': Lembrete,
     'avaliacao': Colaborador.objects.all().filter(avaliacao__isnull=False),
     'feriasmensagem': views.FeriasMensagem.objects.all(),
 }
@@ -273,8 +273,8 @@ def select(request, resource):
 from django.core.cache import cache
         
 @api_view(['POST','GET'])
-def app_menu(request):
-    base = 'Depto_pessoal:app:'
+def app_menu(request, app):
+    base = f'Depto_pessoal:app:{app}:'
     status = 200
     if request.method == 'POST':
         ca = cache.get(f'{base}toggle')

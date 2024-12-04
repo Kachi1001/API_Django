@@ -11,6 +11,7 @@ class ativos_rotatividade(models.Model):
         db_table = 'grafico_ativos_rotatividade'
         
 class FeriasSaldos(models.Model):
+    id = models.IntegerField()
     colaborador = models.CharField(primary_key=True)
     equipe = models.CharField()
     adquirido_em = models.DateField()

@@ -81,3 +81,17 @@ class Alocacoes(models.Model):
     class Meta:
         managed = False
         db_table = 'alocacoes'
+        
+class Diarias(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, primary_key=True)
+    competencia = models.TextField(blank=True, null=True)
+    diarias = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    valor_diaria = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total_diarias = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    valor_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    valor_total = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'diarias_ok'

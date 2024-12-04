@@ -77,7 +77,6 @@ dictModels = {
 from . import models, views
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
-
 @api_view(['GET'])
 def tabela(request, table):
     dicts = table_models
@@ -161,6 +160,7 @@ resources = util.get_resources(models)
 resources['atividade']['select'].append('colaborador')
 resources['diarioobra']['select'].append('encarregado')
 resources['encarregado'] = resources['colaborador']
+resources['colaborador']['select'].append('funcao')
 
 @api_view(['GET'])
 def resource(request, name):

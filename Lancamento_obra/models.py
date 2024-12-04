@@ -124,18 +124,6 @@ class Dia(models.Model):
         db_table = 'dia'
 
 
-class Diarias(models.Model):
-    colaborador = models.CharField(max_length=255, blank=True, null=True)
-    competencia = models.TextField(blank=True, null=True)
-    diaria = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    horas = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    valor_diarias = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
-    valor_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
-    total = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'diarias'
 
 
 class Diarioobra(models.Model):
