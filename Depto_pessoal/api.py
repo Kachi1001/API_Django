@@ -62,12 +62,14 @@ dictModels = {
     'funcao': Funcao,
     'colaborador': Colaborador,
     'equipe': Equipe,
-    'periodo_aquisitivo': PeriodoAquisitivo,
-    'ferias_utilizadas': FeriasUtilizadas,
-    'ferias_processadas': FeriasProcessadas,
+    'periodoaquisitivo': PeriodoAquisitivo,
+    'feriasutilizadas': FeriasUtilizadas,
+    'feriasprocessadas': FeriasProcessadas,
+    'feriassaldos': views.FeriasSaldos.objects.all(),
     'ocupacao': Ocupacao,
     'lembrete': Lembrete,
-    'avaliacao': Colaborador.objects.all().filter(avaliacao__isnull=False)
+    'avaliacao': Colaborador.objects.all().filter(avaliacao__isnull=False),
+    'feriasmensagem': views.FeriasMensagem.objects.all(),
 }
 
    
@@ -88,6 +90,7 @@ resources['funcao'] = resources['funcao_']
 resources['funcao']['select'].append('categoria')
 resources['feriasutilizadas'] = resources['ferias_utilizadas'] 
 resources['feriasprocessadas'] = resources['ferias_processadas'] 
+resources['periodoaquisitivo'] = resources['periodo_aquisitivo'] 
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
@@ -200,7 +203,7 @@ def PeriodoAquisitivo_funcao(request):
 # Ferias processadas
 class FeriasProcessadas_list(util.LC):
     serializer_class = FeriasProcessadasSerializer
-    queryset = FeriasProcessadas.objects.all()
+    queryset = FeriasProcessadas.objects.all().order_by('-id')
     
     filterset_fields = ['colaborador']
 
@@ -213,7 +216,7 @@ class FeriasProcessadas_detail(util.RUD):
 # Ferias utilizadas
 class FeriasUtilizadas_list(util.LC):
     serializer_class = FeriasUtilizadasSerializer
-    queryset = FeriasUtilizadas.objects.all()
+    queryset = FeriasUtilizadas.objects.all().order_by('-id')
     
     filterset_fields = ['colaborador']
             

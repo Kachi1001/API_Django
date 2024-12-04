@@ -7,21 +7,22 @@ def buildTable(request, table, queryset):
     search_value = request.GET.get('search', '').strip()
     filtros = {
         'colaborador':Q(nome__icontains=search_value) | Q(id__icontains=search_value) | Q(equipe__icontains=search_value),
-        'ferias_processadas':Q(colaborador__nome__icontains=search_value) | Q(dias_processados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
-        'ferias_utilizadas':Q(colaborador__nome__icontains=search_value) | Q(dias_utilizados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
-        'periodo_aquisitivo':Q(colaborador__nome__icontains=search_value) | Q(adquirido_em__icontains=search_value) | Q(periodo__icontains=search_value) | Q(id__icontains=search_value),
-        'lembrete':Q(colaborador__icontains=search_value)
+        'feriasprocessadas':Q(colaborador__nome__icontains=search_value) | Q(dias_processados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
+        'feriasutilizadas':Q(colaborador__nome__icontains=search_value) | Q(dias_utilizados__icontains=search_value) | Q(data_inicio__icontains=search_value) | Q(periodo_aquisitivo__id__icontains=search_value),
+        'periodoaquisitivo':Q(colaborador__nome__icontains=search_value) | Q(adquirido_em__icontains=search_value) | Q(periodo__icontains=search_value) | Q(id__icontains=search_value),
+        'lembrete':Q(colaborador__icontains=search_value),
+        'feriassaldos':Q(colaborador__icontains=search_value),
+        'avaliacao':Q(nome__icontains=search_value) | Q(avaliacao__id__icontains=search_value) | Q(cpf__icontains=search_value) | Q(rg__icontains=search_value),
     }
     serializadores= {
-        'ferias_processadas': FeriasProcessadasTable,
-        'ferias_utilizadas': FeriasUtilizadasTable,
-        'periodo_aquisitivo': PeriodoAquisitivoTable,
+        'feriasprocessadas': FeriasProcessadasTable,
+        'feriasutilizadas': FeriasUtilizadasTable,
+        'periodoaquisitivo': PeriodoAquisitivoTable,
         'avaliacao': AvaliacaoTable,
     }
     sort_order = request.GET.get('order', 'desc')
     sort_field = request.GET.get('sort', 'pk') 
     page_number = int(request.GET.get('offset', 1))
-    # print(json.loads(request.GET.get('filter',))) 
     page_size = int(request.GET.get('limit', 10)) if request.GET.get('limit') else len(queryset)
     # Filtrando com base na busca
     if search_value:

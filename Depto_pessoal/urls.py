@@ -20,9 +20,9 @@ urlpatterns = [
   path('feriasprocessadas', FeriasProcessadas_list.as_view()),
   path('feriasprocessadas/<str:pk>', FeriasProcessadas_detail.as_view()),
 
-  path('periodo_aquisitivo', PeriodoAquisitivo_list.as_view()),
-  path('periodo_aquisitivo_funcao', PeriodoAquisitivo_funcao),
-  path('periodo_aquisitivo/<str:pk>', PeriodoAquisitivo_detail.as_view()),
+  path('periodoaquisitivo', PeriodoAquisitivo_list.as_view()),
+  path('periodoaquisitivo_funcao', PeriodoAquisitivo_funcao),
+  path('periodoaquisitivo/<str:pk>', PeriodoAquisitivo_detail.as_view()),
   
   path('feriasutilizadas', FeriasUtilizadas_list.as_view()),
   path('feriasutilizadas/<str:pk>', FeriasUtilizadas_detail.as_view()),
