@@ -56,14 +56,15 @@ jobs:
       working-directory: /home/tecnika/bat
       run: sudo bash django-stop.sh $branch $app #Fecha os serviços do django
 
+    - name: Atualizando arquivos
+      run: |
+        sudo git pull origin $branch
+        
     - name: Baixando bibliotecas
       run: |
         source venv/bin/activate
         pip install -r requirements.txt
         
-    - name: Atualizando arquivos
-      run: |
-        sudo git pull origin $branch
         
     - name: Copiando .env
       run: |

@@ -17,14 +17,10 @@ Including another URLconf
 from django.urls import path , include
 from django.conf import settings
 
-from rest_framework import routers
-route = routers.DefaultRouter()
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 urlpatterns = [
-    path('', include(route.urls)),
     path('token', TokenObtainPairView.as_view()),
 ]
         
