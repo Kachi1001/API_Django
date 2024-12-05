@@ -91,6 +91,8 @@ resources['funcao']['select'].append('categoria')
 resources['feriasutilizadas'] = resources['ferias_utilizadas'] 
 resources['feriasprocessadas'] = resources['ferias_processadas'] 
 resources['periodoaquisitivo'] = resources['periodo_aquisitivo'] 
+resources['ponto'] = resources['lembrete'] 
+resources['ponto']['select'].append('padrao') 
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))

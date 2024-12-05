@@ -68,7 +68,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:80",  # Domínio que está fazendo a requisição
     "http://10.0.0.139:80", # Produção
     "http://10.0.0.139:81", # Teste
-    "http://10.0.0.211:81" # Debug
+    "http://10.0.0.211:83" # Debug
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
