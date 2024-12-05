@@ -83,7 +83,7 @@ def database_exception(funcao):
 from Home.models import Log
 from rest_framework.permissions import IsAuthenticated  
 class RUD(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, )    
     
     @database_exception
     def retrieve(self, request, *args, **kwargs):
