@@ -81,7 +81,9 @@ def database_exception(funcao):
     return wrapper
 
 from Home.models import Log
+from rest_framework.permissions import IsAuthenticated  
 class RUD(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, )
     
     @database_exception
     def retrieve(self, request, *args, **kwargs):
@@ -101,6 +103,8 @@ class RUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 class LC(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated, )
+    
     @database_exception
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

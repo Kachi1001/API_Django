@@ -117,9 +117,25 @@ for app in INTERNAL_APP:
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = []
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication')
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -161,7 +177,7 @@ REST_FRAMEWORK = {
 
 import logging
 
-# Configuração do logger
+# # Configuração do logger
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
@@ -187,3 +203,4 @@ import logging
 #         },
 #     },
 # }
+APPEND_SLASH = True
