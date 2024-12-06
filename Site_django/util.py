@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 
 from django.core.cache import cache
-
+from Home.models import AuthUser
 from functools import wraps
 def cached(ttl=60):  # TTL (tempo de vida) em segundos
     def decorator(func):
@@ -74,7 +74,8 @@ def database_exception(funcao):
             )            
         if request.method != 'GET':
             try:
-                Log.objects.create(user_name=request.data['user'], action=request.method, text=text or path[2] ,app=path[0],resource=path[1],status=status)
+                user = AuthUser.objects.get(id=request.headers.get('X-User-Id'))
+                Log.objects.create(user_name=user.username, action=request.method, text=text or path[2] ,app=path[0],resource=path[1],status=status)
             except:
                 pass
         return action
