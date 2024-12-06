@@ -95,6 +95,7 @@ resources['feriasprocessadas'] = resources['ferias_processadas']
 resources['periodoaquisitivo'] = resources['periodo_aquisitivo'] 
 resources['ponto'] = resources['lembrete'] 
 resources['ponto']['select'].append('padrao') 
+resources['desligamento'] = {'text':['data', 'id']}
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
@@ -102,7 +103,7 @@ def resource(request, name):
   
 from . import views
 graficos = {
-    'ativos_rotatividade': views.ativos_rotatividade,
+    'ativos_rovatatividade': views.ativos_rotatividade,
 }
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
@@ -125,7 +126,8 @@ class colaborador_list(util.LC):
 class colaborador_detail(util.RUD):
     queryset = Colaborador.objects.all()
     serializer_class = ColaboradorSerializer
-    
+
+    @util.database_exception
     def destroy(self, request, *args, **kwargs):
         return funcao(request.data, 'desligamento')
         # return super().destroy(request, *args, **kwargs)
