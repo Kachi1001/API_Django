@@ -1,4 +1,5 @@
-from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
@@ -37,7 +38,7 @@ def funcao_sql(sql):
         cursor.close()
         conn.close()
         
-
+@permission_classes([IsAuthenticated]) 
 def funcao(request, metodo):
     def format_sql(value):
         value = request.get(value)
@@ -74,6 +75,7 @@ dictModels = {
 
    
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def tabela(request, table): 
     # return util.get_table(request, table, dictModels)
     try:
@@ -103,6 +105,7 @@ graficos = {
     'ativos_rotatividade': views.ativos_rotatividade,
 }
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def grafico(request, resource):
     from django.core.exceptions import ObjectDoesNotExist
 
@@ -128,6 +131,7 @@ class colaborador_detail(util.RUD):
         # return super().destroy(request, *args, **kwargs)
     
 @api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
 def colaborador_desligamento(request):
     return funcao(request.data, 'desligamento')
     
@@ -167,6 +171,7 @@ class ocupacao_detail(util.RUD):
     
 from django.shortcuts import get_object_or_404
 @api_view(['POST','GET'])
+@permission_classes([IsAuthenticated]) 
 def ocupacao_alterar(request):
     match request.method:
         case 'POST':
@@ -176,6 +181,7 @@ def ocupacao_alterar(request):
             return Response(OcupacaoSerializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
             
 @api_view(['POST','GET'])
+@permission_classes([IsAuthenticated]) 
 def ocupacao_dissidio(request):
     match request.method:
         case 'POST':
@@ -197,6 +203,7 @@ class PeriodoAquisitivo_detail(util.RUD):
     queryset = serializer_class.Meta.model.objects.all()
     
 @api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
 def PeriodoAquisitivo_funcao(request):
     return funcao(request, 'periodo_aquisitivo')
 
@@ -267,6 +274,7 @@ class TipoAvaliacao_detail(TipoAvaliacao,util.RUD):
     
         
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def select(request, resource):
     from .serializers import Select
 
@@ -275,6 +283,7 @@ def select(request, resource):
 from django.core.cache import cache
         
 @api_view(['POST','GET'])
+@permission_classes([IsAuthenticated]) 
 def app_menu(request, app):
     base = f'Depto_pessoal:app:{app}:'
     status = 200
@@ -287,6 +296,7 @@ def app_menu(request, app):
     return Response(values,status=status)
         
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def app_feriado(request):
     try: feriados = Feriado.objects.get(id=util.get_hoje())
     except Feriado.DoesNotExist: return Response(0)

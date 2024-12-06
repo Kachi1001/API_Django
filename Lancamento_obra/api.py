@@ -1,5 +1,6 @@
 import os
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
@@ -39,6 +40,7 @@ def funçãoSQL(funcao):
         
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
 def funcao(request, funcao):
     def get_formatter(value, padrao= None):
         value = parametro.get(value, padrao)
@@ -78,31 +80,14 @@ from . import models, views
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def tabela(request, table):
     dicts = table_models
     dicts.update(table_views)
     return util.get_table(request, table, dicts)
-
-@api_view(['GET'])
-def get_data(request):
-    metodo = request.GET.get('metodo')
-    id = request.GET.get('parametro')
-    if metodo == 'diario':
-        obj = Diarioobra.objects.all().filter(diario=id)
-    elif metodo == 'lanc_dia':
-        colab = request.GET.get('colaborador').replace('%20', ' ')
-        obj = Atividade.objects.all().filter(colaborador=colab,dia=request.GET.get('dia'))
-    else:
-        obj = dictModels.get(metodo).objects.all().filter(id=id)
-    
-    value = list(obj.values())
-
-    if len(value) == 0:
-        return Response({'method':'Alerta de pesquisa','message': f'id não encontrada " {id}"' }, status=404)
-    else:
-        return JsonResponse(value, safe=False) 
     
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def grafico(request, resource):
     from . import views
     graficos = {
@@ -119,6 +104,7 @@ def grafico(request, resource):
 from openpyxl import load_workbook
 from django.http import HttpResponse
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def diario_impressao(request):
     obra = Obra.objects.get(id=request.GET['cr'])
 
@@ -151,6 +137,7 @@ def diario_impressao(request):
     return response
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def select(request, resource):
     from .serializers import Select
 
@@ -163,6 +150,7 @@ resources['encarregado'] = resources['colaborador']
 resources['colaborador']['select'].append('funcao')
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def resource(request, name):
     return Response(resources.get(name))
 
@@ -203,32 +191,24 @@ class Funcao_list(Funcao, util.LC):
 class Funcao_detail(Funcao, util.RUD):
     pass
 
-class Supervisor():
+
+class Supervisor_list(util.LC):
     serializer_class = SupervisorSerializer
     queryset = serializer_class.Meta.model.objects.all()
 
-class Supervisor_list(Supervisor, util.LC):
-    pass
-
-class Supervisor_detail(Supervisor, util.RUD):
-    pass    
+class Supervisor_detail(util.RUD):
+    serializer_class = SupervisorSerializer
+    queryset = serializer_class.Meta.model.objects.all()
     
 class Atividade_list(util.LC):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
 
 
-class Atividade_detail(generics.RetrieveUpdateDestroyAPIView):
+class Atividade_detail(util.RUD):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
-    
-    @util.database_exception
-    def delete(self, request, *args, **kwargs):
-        return super().delete(request, *args, **kwargs) 
-    
-    @util.database_exception
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+
     
 class Diarioobra_list(util.LC):
     serializer_class = DiarioobraSerializer

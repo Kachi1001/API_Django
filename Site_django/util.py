@@ -94,9 +94,9 @@ class RUD(generics.RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
-    @database_exception
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+    # @database_exception
+    # def partial_update(self, request, *args, **kwargs):
+    #     return super().partial_update(request, *args, **kwargs)
 
     @database_exception
     def destroy(self, request, *args, **kwargs):
@@ -130,20 +130,23 @@ def get_table(request, table ,dicts):
 def buildTable(request, table, queryset):   
     from django.core.paginator import Paginator
     from django.db.models import Q
-    fields = dict(request.GET).get('searchable[]')
+    fields = request.GET.get('searchable', '').split('%2')[0].split(',')
     search_value = request.GET.get('search', '').strip()
     
     sort_order = request.GET.get('order', 'desc')
+    sort_order = 'desc' if sort_order == 'undefined' else sort_order
     sort_field = request.GET.get('sort', 'pk') 
+    sort_field = 'pk' if sort_field == 'undefined' else sort_field
+    
     page_number = int(request.GET.get('offset', 1))
     # print(json.loads(request.GET.get('filter',))) 
-    page_size = int(request.GET.get('limit', len(queryset)))
+    page_size = int(request.GET.get('limit', 25))
     # Filtrando com base na busca
     if search_value and table:
         preset = Q()
-        for field in fields:
-            final = field
-            if not('_' in field):
+        for x in fields:
+            final = x
+            if not('_' in x):
                 # x = field.split('_')
                 # final = x[0] + '__' + x[1] 
                 preset |= Q(**{f"{final}__icontains":search_value})
