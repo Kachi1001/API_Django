@@ -237,7 +237,9 @@ class FeriasUtilizadas_detail(util.RUD):
     
 
 # Lembrete
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 class Lembrete_list(util.LC):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = LembreteSerializer
     queryset = serializer_class.Meta.model.objects.all()
         
@@ -247,6 +249,7 @@ class Lembrete_detail(util.RUD):
 
 # Feriado
 class Feriado_list(util.LC):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = FeriadoSerializer
     queryset = serializer_class.Meta.model.objects.all()
         
