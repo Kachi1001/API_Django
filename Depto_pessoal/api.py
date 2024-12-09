@@ -249,7 +249,6 @@ class Lembrete_detail(util.RUD):
 
 # Feriado
 class Feriado_list(util.LC):
-    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = FeriadoSerializer
     queryset = serializer_class.Meta.model.objects.all()
         
@@ -301,7 +300,6 @@ def app_menu(request, app):
     return Response(values,status=status)
         
 @api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
 def app_feriado(request):
     try: feriados = Feriado.objects.get(id=util.get_hoje())
     except Feriado.DoesNotExist: return Response(0)
