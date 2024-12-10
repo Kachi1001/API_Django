@@ -209,26 +209,14 @@ class Atividade_detail(util.RUD):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
 
-    
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.views.decorators.csrf import csrf_exempt
 class Diarioobra_list(util.LC):
     serializer_class = DiarioobraSerializer
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['diario']
-    
-    @util.database_exception
-    def create(self, request, *args, **kwargs):
-        parametro = json.loads(request.POST.get('parametro'))
-        
-        if media.upload('diarioobra',request.FILES.get('file'),parametro.get('imagem')).status_code:
-            diario = DiarioobraSerializer(data=parametro)
-            if diario.is_valid():
-                diario.save()
-                return Response(diario.data,status=status.HTTP_201_CREATED) 
-            else:
-                media.delete('diario', parametro.get('imagem'))
-                return Response(diario.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
-        else: 
-            return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
+    parser_classes = [MultiPartParser, FormParser]
+
             
     
 class Diarioobra_detail(util.RUD):

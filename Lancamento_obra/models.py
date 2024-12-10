@@ -127,12 +127,14 @@ class Dia(models.Model):
 
 
 class Diarioobra(models.Model):
+    # def upload_image_colab(instance, filename):
+    #     return f'{filename}'
     data = models.DateField()
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
     encarregado = models.CharField(max_length=100, blank=True, null=True)
     climamanha = models.CharField(max_length=20, blank=True, null=True)
     climatarde = models.CharField(max_length=20, blank=True, null=True)
-    imagem = models.CharField(max_length=255, blank=True, null=True)
+    # imagem = models.ImageField(upload_to=upload_image_colab, blank=True, null=False)
     diario = models.CharField(max_length=50, blank=True, null=True)
     indice = models.IntegerField()
     descricao = models.CharField(blank=True, null=True)
