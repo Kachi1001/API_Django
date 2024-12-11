@@ -55,6 +55,10 @@ from rest_framework import generics
 
 from django.db import DatabaseError
 
+def get_user(request):
+    return AuthUser.objects.get(id=request.headers.get('X-User-Id'))
+
+
 def database_exception(funcao):
     def wrapper(*args, **kwargs):
         action = ''
@@ -74,7 +78,7 @@ def database_exception(funcao):
             )            
         if request.method != 'GET':
             try:
-                user = AuthUser.objects.get(id=request.headers.get('X-User-Id'))
+                user = get_user(request)
                 Log.objects.create(user_name=user.username, action=request.method, text=text or path[2] ,app=path[0],resource=path[1],status=status)
             except:
                 pass

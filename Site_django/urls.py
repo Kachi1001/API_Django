@@ -17,17 +17,22 @@ Including another URLconf
 from django.urls import path , include
 from django.conf import settings
 
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from django.http import HttpResponse
+def status(request):
+    return HttpResponse("Estamos online!!")
 
 
 urlpatterns = [
     path('token', TokenObtainPairView.as_view()),
     path('token/refresh', TokenRefreshView.as_view()),
+    path('token/valid', TokenVerifyView.as_view()),
+    path('status', status, name='status'),
 ]
         
 for app in settings.INTERNAL_APP:
     try:
-        url = app + '/' if app != 'Home' else ''
+        url = app + '/'
         urlpatterns.append(path(f'{url}', include(f'{app}.urls')))
     except Exception as e:
         print(f'App sem configuração de url <{app}> <{e}>')

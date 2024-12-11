@@ -95,3 +95,13 @@ class Diarias(models.Model):
     class Meta:
         managed = False
         db_table = 'diarias_ok'
+
+
+class Indicadores(models.Model):
+    competencia = models.CharField(primary_key=True)
+    indice = models.CharField()
+    numeric = models.IntegerField()
+    
+    class Meta:
+        db_table = 'indicadores'
+        managed = False
