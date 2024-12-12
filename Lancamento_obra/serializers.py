@@ -57,6 +57,10 @@ class SupervisorSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Supervisor   
         fields = '__all__'  # Ou liste os campos que deseja expor na API    
+class DiaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Dia   
+        fields = '__all__'  # Ou liste os campos que deseja expor na API    
 
 # Select
 class FuncaoSelect(serializers.ModelSerializer):

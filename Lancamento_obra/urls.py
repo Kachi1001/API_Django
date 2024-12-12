@@ -26,8 +26,10 @@ urlpatterns = [
     path('diarioobra/<str:pk>', api.Diarioobra_detail.as_view()),
     path('diarioobra_impressao', api.diario_impressao),
     
-    path('programacao', api.Programacao_list.as_view()),
-    path('programacao/<str:pk>', api.Programacao_detail.as_view()),
+    path('dia', api.dia_list.as_view()),
+
+    path('localizacaoprogramada', api.Programacao_list.as_view()),
+    path('localizacaoprogramada/<str:pk>', api.Programacao_detail.as_view()),
     
     path('select/<str:resource>', api.select),
     path('resource/<str:name>', api.resource),

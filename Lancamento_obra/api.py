@@ -148,6 +148,8 @@ resources['atividade']['select'].append('colaborador')
 resources['diarioobra']['select'].append('encarregado')
 resources['encarregado'] = resources['colaborador']
 resources['colaborador']['select'].append('funcao')
+resources['localizacaoprogramada']['select'].append('colaborador')
+resources['localizacaoprogramada']['select'].append('encarregado')
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
@@ -210,13 +212,21 @@ class Atividade_detail(util.RUD):
     queryset = serializer_class.Meta.model.objects.all()
 
 from rest_framework.parsers import MultiPartParser, FormParser
-from django.views.decorators.csrf import csrf_exempt
 class Diarioobra_list(util.LC):
     serializer_class = DiarioobraSerializer
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['diario']
     parser_classes = [MultiPartParser, FormParser]
 
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        parametro = request.POST
+        print(parametro)
+        print(request.FILES)
+        if media.upload('diarioobra',request.FILES['file'],parametro.get('imagem')).status_code:
+            return super().create(request, *args, **kwargs)
+        else: 
+            return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
             
     
 class Diarioobra_detail(util.RUD):
@@ -232,7 +242,7 @@ class Programacao_list(util.LC):
     def create(self, request, *args, **kwargs):
         parametro = json.loads(request.POST.get('parametro'))
 
-        if media.upload('programacao',request.FILES.get('file'),parametro.get('imagem')).status_code:
+        if media.upload('localizacaoprogramada',request.FILES.get('file'),parametro.get('imagem')).status_code:
             for a in json.loads(parametro.get('lanc')):
                 a['iniciosemana'] = parametro.get('iniciosemana')
                 a['id'] = 'qualquer'
@@ -250,3 +260,8 @@ class Programacao_list(util.LC):
 class Programacao_detail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProgramacaoSerializer
     queryset = serializer_class.Meta.model.objects.all()
+
+
+class dia_list(util.LC):
+    serializer_class = DiaSerializer
+    queryset = serializer_class.Meta.model.objects.all().order_by('-dia')

@@ -8,7 +8,7 @@ from django.conf import settings
 caminhos = {
     'carro': 'Reservas/carros/',
     'diarioobra': 'Lancamento_obra/diarioobra/',
-    'programacao': 'Lancamento_obra/programacao/'
+    'localizacaoprogramada': 'Lancamento_obra/localizacaoprogramada/'
 }
 def upload(metodo, file, fileName):
     img = Image.open(file).convert('RGB')
@@ -17,7 +17,7 @@ def upload(metodo, file, fileName):
 
     try:
         nome = fileName.split('.')[0]
-        img.save(path + nome + '.jpeg')
+        img.save(path + nome + '.jpeg',"JPEG",optimize=True, quality=50)
     except FileExistsError:
         return Response(status=200)
     except:
