@@ -37,6 +37,15 @@ class Colaborador(models.Model):
         db_table = 'colaborador_'
 
 
+class CustoFolha(models.Model):
+    id = models.CharField(primary_key=True)
+    valor = models.DecimalField(max_digits=15, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'custo_folha'
+
+
 class Dia(models.Model):
     id = models.DateField(primary_key=True)
     feriado = models.BooleanField()

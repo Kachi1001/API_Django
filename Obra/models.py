@@ -117,6 +117,9 @@ class FdOrcado(models.Model):
     endereco = models.CharField(blank=True, null=True)
     data = models.DateField()
     urgencia = models.BooleanField()
+    devolver_cotacao = models.BooleanField()
+    valor_final = models.BooleanField()
+    faturado_direto = models.BooleanField()
 
     class Meta:
         managed = False
