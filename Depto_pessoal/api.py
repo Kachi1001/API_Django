@@ -171,6 +171,7 @@ class ocupacao_detail(util.RUD):
     serializer_class = OcupacaoSerializer
     queryset = serializer_class.Meta.model.objects.all()
     
+    
 from django.shortcuts import get_object_or_404
 @api_view(['POST','GET'])
 @permission_classes([IsAuthenticated]) 
