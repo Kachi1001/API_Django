@@ -58,24 +58,6 @@ def funcao(request, funcao):
         return funçãoSQL(f"{funcao}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
 
 
-
-dictModels = {
-    'funcao': Funcao,
-    'diario': Diarioobra,
-    'obra': Obra,
-    'programacao': Localizacaoprogramada,
-    'atividade': Atividade,
-    'supervisor': Supervisor,
-    'funcao': Funcao,
-    'colaborador': Colaborador,
-    'descontos_resumo': DescontosResumo,
-    'diarias':Diarias,
-    'efetividade':Efetividade,
-    # 'hora_mes':HoraMes,
-    'incompletos':Incompletos,
-    'fechados': Tecnicon,
-    'alocacoes': Alocacoes,
-}
 from . import models, views
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)

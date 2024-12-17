@@ -150,8 +150,8 @@ class Log(models.Model):
 
 
 class Pendencia(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='user')
-    first_login = models.BooleanField(blank=True, null=True)
+    password_change = models.BooleanField(blank=True, null=True)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING, primary_key=True)
 
     class Meta:
         managed = False
