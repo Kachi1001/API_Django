@@ -12,3 +12,5 @@ openpyxl
 pandas
 django-redis
 django-filter
+channels 
+channels-redis

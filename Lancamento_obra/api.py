@@ -203,8 +203,6 @@ class Diarioobra_list(util.LC):
     @util.database_exception
     def create(self, request, *args, **kwargs):
         parametro = request.POST
-        print(parametro)
-        print(request.FILES)
         if media.upload('diarioobra',request.FILES['file'],parametro.get('imagem')).status_code:
             return super().create(request, *args, **kwargs)
         else: 
@@ -239,7 +237,7 @@ class Programacao_list(util.LC):
         else: 
             return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
         
-class Programacao_detail(generics.RetrieveUpdateDestroyAPIView):
+class Programacao_detail(util.RUD):
     serializer_class = ProgramacaoSerializer
     queryset = serializer_class.Meta.model.objects.all()
 

@@ -155,8 +155,10 @@ def buildTable(request, table, queryset):
                 # final = x[0] + '__' + x[1] 
                 preset |= Q(**{f"{final}__icontains":search_value})
                 
-            
-        queryset = queryset.filter(preset)  # Ajuste o campo conforme necessário
+        try:
+            queryset = queryset.filter(preset)  # Ajuste o campo conforme necessário
+        except Exception as e:
+            print(e)
 
     # Ordenando os dados
     if sort_order == 'asc':
