@@ -21,8 +21,8 @@ class ExtratoBancario(models.Model):
     cod_conta = models.IntegerField()
     data = models.DateField()
     historico = models.CharField()
-    debito = models.DecimalField(max_digits=65535, decimal_places=2, blank=True, null=True)
-    credito = models.DecimalField(max_digits=65535, decimal_places=2, blank=True, null=True)
+    debito = models.DecimalField(max_digits=65535, decimal_places=65535)
+    credito = models.DecimalField(max_digits=65535, decimal_places=65535)
 
     class Meta:
         managed = False
@@ -32,7 +32,7 @@ class ExtratoBancario(models.Model):
 class SaldoInicial(models.Model):
     cod_conta = models.IntegerField(primary_key=True)
     data = models.DateField()
-    valor = models.DecimalField(max_digits=65535, decimal_places=2)
+    valor = models.DecimalField(max_digits=65535, decimal_places=65535)
 
     class Meta:
         managed = False

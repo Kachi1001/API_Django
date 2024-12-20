@@ -31,6 +31,7 @@ class Colaborador(models.Model):
     avaliacao = models.ForeignKey(ColabAvaliacao, models.DO_NOTHING, db_column='avaliacao', blank=True, null=True)
     avaliacao_descricao = models.CharField(blank=True, null=True)
     avaliacao_recontratar = models.BooleanField(blank=True, null=True)
+    pasta_servidor = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -116,6 +117,51 @@ class Funcao(models.Model):
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'inconsistencias'
 # The error was: user mapping not found for "dev_api"
+
+
+class Integracao(models.Model):
+    colaborador = models.IntegerField()
+    cr = models.IntegerField()
+    validade = models.DateField(blank=True, null=True)
+    descricao = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'integracao'
+
+
+class IntegracaoEpi(models.Model):
+    id = models.IntegerField(primary_key=True)
+    colaborador = models.IntegerField()
+    aso = models.BooleanField()
+    aso_valid = models.DateField(blank=True, null=True)
+    epi = models.BooleanField()
+    epi_valid = models.DateField(blank=True, null=True)
+    os = models.BooleanField()
+    os_valid = models.DateField(blank=True, null=True)
+    observacao = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'integracao_epi'
+
+
+class IntegracaoNr(models.Model):
+    nr = models.ForeignKey('IntegracaoNrTipo', models.DO_NOTHING, db_column='nr')
+    validade = models.DateField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
+
+    class Meta:
+        managed = False
+        db_table = 'integracao_nr'
+
+
+class IntegracaoNrTipo(models.Model):
+    id = models.CharField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'integracao_nr_tipo'
 
 
 class Lembrete(models.Model):

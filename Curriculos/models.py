@@ -8,6 +8,18 @@
 from django.db import models
 
 
+class Anexos(models.Model):
+    id = models.CharField(primary_key=True)
+    candidato = models.ForeignKey('Candidato', models.DO_NOTHING, db_column='candidato')
+    nome = models.CharField()
+    link = models.CharField(blank=True, null=True)
+    tipo = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'anexos'
+
+
 class AvaliacaoTipo(models.Model):
     id = models.CharField(primary_key=True)
 
@@ -20,7 +32,7 @@ class Candidato(models.Model):
     nome = models.CharField()
     cpf = models.CharField(blank=True, null=True)
     rg = models.CharField(blank=True, null=True)
-    chn = models.ForeignKey('Cnh', models.DO_NOTHING, db_column='chn', blank=True, null=True)
+    cnh = models.ForeignKey('Cnh', models.DO_NOTHING, db_column='cnh', blank=True, null=True)
     telefone = models.CharField(blank=True, null=True)
     telefone2 = models.CharField(blank=True, null=True)
     nascimento = models.DateField(blank=True, null=True)
@@ -66,7 +78,7 @@ class EntrevistaClassificacao(models.Model):
 class Escolaridade(models.Model):
     candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
     escolaridade = models.ForeignKey('EscolaridadeTipo', models.DO_NOTHING, db_column='escolaridade')
-    instituicao = models.CharField()
+    detalhe = models.CharField()
     conclusao = models.DateField(blank=True, null=True)
 
     class Meta:
@@ -76,6 +88,7 @@ class Escolaridade(models.Model):
 
 class EscolaridadeTipo(models.Model):
     id = models.CharField(primary_key=True)
+    indice = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -91,13 +104,13 @@ class EstadoCivil(models.Model):
 
 
 class Experiencia(models.Model):
-    candidato = models.IntegerField()
+    candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
     empresa = models.CharField()
-    cargo = models.CharField()
     data_inicio = models.DateField(blank=True, null=True)
     data_fim = models.DateField(blank=True, null=True)
     tempo_anos = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
     tempo_servico = models.CharField(blank=True, null=True)
+    profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
 
     class Meta:
         managed = False
@@ -114,7 +127,7 @@ class Grupo(models.Model):
 
 class Percepcao(models.Model):
     candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
-    percepcao = models.CharField()
+    percepcao = models.CharField(blank=True, null=True)
     pesquisa_rh = models.BooleanField()
     origem = models.CharField()
     digitalizacao = models.CharField(blank=True, null=True)
@@ -123,16 +136,6 @@ class Percepcao(models.Model):
     class Meta:
         managed = False
         db_table = 'percepcao'
-
-
-class Pretensao(models.Model):
-    candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
-    profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
-    salario = models.DecimalField(max_digits=10, decimal_places=2)
-
-    class Meta:
-        managed = False
-        db_table = 'pretensao'
 
 
 class Profissoes(models.Model):
@@ -146,7 +149,6 @@ class Profissoes(models.Model):
 
 class Questionario(models.Model):
     candidato = models.IntegerField()
-    data = models.DateField()
     funcionario_antigo = models.BooleanField()
     disponibilidade = models.BooleanField()
     fumante = models.BooleanField()
@@ -166,6 +168,7 @@ class Questionario(models.Model):
     policiais_motivo = models.CharField(blank=True, null=True)
     judicial_sn = models.BooleanField()
     judicial_motivo = models.CharField(blank=True, null=True)
+    data = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False

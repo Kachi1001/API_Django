@@ -40,6 +40,7 @@ def make_move(request, game_id):
 
         # Validações
         if winner:
+            
             return JsonResponse({"error": f"O jogo já acabou! Vencedor: {winner}"}, status=400)
         if turn != player:
             return JsonResponse({"error": "Não é a vez desse jogador!"}, status=400)
@@ -49,7 +50,6 @@ def make_move(request, game_id):
         # Atualiza o tabuleiro
         board[position] = player
         winner = check_winner(board)
-
         # Atualiza o turno e salva no Redis
         turn = "O" if turn == "X" else "X"
         redis_client.hmset(f"game_{game_id}", {"board": json.dumps(board), "turn": turn, "winner": winner})
@@ -78,6 +78,7 @@ def check_winner(board):
     ]
     for combo in winning_combinations:
         if board[combo[0]] != "-" and board[combo[0]] == board[combo[1]] == board[combo[2]]:
+            print(board[combo[0]])
             return board[combo[0]]  # Retorna o vencedor (X ou O)
     if "-" not in board:
         return "Empate"
