@@ -4,7 +4,6 @@ from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
 from .models import *
-from .tables import buildTable
 from Site_django import util 
 from . import models, views
 from PIL import Image
@@ -182,6 +181,9 @@ class experiencia_list(util.LC):
     def list(self, request, *args, **kwargs):
         experiencia_list.serializer_class = serializers.Experiencia.Table
         return super().list(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        experiencia_list.serializer_class = serializers.Experiencia
+        return super().create(request, *args, **kwargs)
         
 class experiencia_detail(util.RUD):
     serializer_class = serializers.Experiencia

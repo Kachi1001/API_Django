@@ -124,6 +124,7 @@ class Dia(models.Model):
         db_table = 'dia'
 
 
+
 class Diarioobra(models.Model):
     data = models.DateField()
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')

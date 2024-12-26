@@ -72,6 +72,7 @@ class Entrevista(serializers.ModelSerializer):
     class Meta:
         model = models.Entrevista
         fields = '__all__'  # Ou liste os campos que deseja expor na API
+        
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.CharField(source='id')

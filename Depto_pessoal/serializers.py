@@ -147,12 +147,56 @@ class TipoAvaliacaoSelect(serializers.ModelSerializer):
             fields = ['value','text']  # Ou liste os campos que deseja expor na API   
     
         
+
+class IntegracaoNrSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = IntegracaoNr
+        fields = '__all__' # Ou liste os campos que deseja expor na API
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='nome'
+     )
+        class Meta:
+            model = IntegracaoNr 
+            fields = '__all__' # Ou liste os campos que deseja expor na API
+class IntegracaoEpiSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = IntegracaoNr
+        fields = '__all__' # Ou liste os campos que deseja expor na API
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='nome'
+     )
+        class Meta:
+            model = IntegracaoEpi
+            fields = '__all__' # Ou liste os campos que deseja expor na API
+class IntegracaoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = IntegracaoNr
+        fields = '__all__' # Ou liste os campos que deseja expor na API
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='nome'
+     )
+        class Meta:
+            model = Integracao
+            fields = '__all__' # Ou liste os campos que deseja expor na API
+            
 Select = {
-        'colaborador': ColaboradorSelect,
-        'equipe': EquipeSelect,
-        'periodo_aquisitivo': PeriodoAquisitivoSelect,
-        'funcao': FuncaoSelect,
-        'avaliacao': TipoAvaliacaoSelect,
-        'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
-        'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
+    'colaborador': ColaboradorSelect,
+    'equipe': EquipeSelect,
+    'periodo_aquisitivo': PeriodoAquisitivoSelect,
+    'funcao': FuncaoSelect,
+    'avaliacao': TipoAvaliacaoSelect,
+    'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
+    'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
 }    

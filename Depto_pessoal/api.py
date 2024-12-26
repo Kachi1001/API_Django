@@ -71,6 +71,9 @@ dictModels = {
     'ponto': Lembrete,
     'avaliacao': Colaborador.objects.all().filter(avaliacao__isnull=False),
     'feriasmensagem': views.FeriasMensagem.objects.all(),
+    'integracao_epi': IntegracaoEpi.objects.all(),
+    'integracao_nr': IntegracaoNr.objects.all(),
+    'integracao': Integracao.objects.all(),
 }
 
    
@@ -306,3 +309,10 @@ def app_feriado(request):
     except Feriado.DoesNotExist: return Response(0)
     else: return Response(1)
 
+class IntegracaoNr_list():
+    serializer_class = FeriadoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+
+class IntegracaoNr_detail(util.RUD):
+    serializer_class = FeriadoSerializer    
+    queryset = serializer_class.Meta.model.objects.all()

@@ -13,12 +13,18 @@ def buildTable(request, table, queryset):
         'ponto':Q(colaborador__icontains=search_value),
         'feriassaldos':Q(colaborador__icontains=search_value),
         'avaliacao':Q(nome__icontains=search_value) | Q(avaliacao__id__icontains=search_value) | Q(cpf__icontains=search_value) | Q(rg__icontains=search_value),
+        'integracao_nr': Q(colaborador__nome__icontains=search_value) | Q(nr__id__icontains=search_value) ,
+        'integracao_epi': Q(colaborador__nome__icontains=search_value),
+        'integracao': Q(colaborador__nome__icontains=search_value),
     }
     serializadores= {
         'feriasprocessadas': FeriasProcessadasTable,
         'feriasutilizadas': FeriasUtilizadasTable,
         'periodoaquisitivo': PeriodoAquisitivoTable,
         'avaliacao': AvaliacaoTable,
+        'integracao_nr': IntegracaoNrSerializer.Table,
+        'integracao_epi': IntegracaoEpiSerializer.Table,
+        'integracao': IntegracaoSerializer.Table,
     }
     sort_order = request.GET.get('order', 'desc')
     sort_order = 'desc' if sort_order == 'undefined' else sort_order

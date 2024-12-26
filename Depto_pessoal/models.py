@@ -120,7 +120,7 @@ class Funcao(models.Model):
 
 
 class Integracao(models.Model):
-    colaborador = models.IntegerField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     cr = models.IntegerField()
     validade = models.DateField(blank=True, null=True)
     descricao = models.CharField(blank=True, null=True)
@@ -132,7 +132,7 @@ class Integracao(models.Model):
 
 class IntegracaoEpi(models.Model):
     id = models.IntegerField(primary_key=True)
-    colaborador = models.IntegerField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     aso = models.BooleanField()
     aso_valid = models.DateField(blank=True, null=True)
     epi = models.BooleanField()

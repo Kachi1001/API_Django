@@ -25,6 +25,8 @@ class Cidade(models.Model):
         db_table = 'cidade'
 # Unable to inspect table 'colaborador'
 # The error was: user mapping not found for "dev_api"
+# Unable to inspect table 'colaborador_'
+# The error was: user mapping not found for "dev_api"
 
 
 class CotComposicao(models.Model):
@@ -181,6 +183,30 @@ class MatCategoria(models.Model):
     class Meta:
         managed = False
         db_table = 'mat_categoria'
+
+
+class MatEpiCadastro(models.Model):
+    produto = models.ForeignKey('MatProduto', models.DO_NOTHING, db_column='produto')
+    ca = models.CharField()
+    validade = models.DateField()
+    observacao = models.CharField(blank=True, null=True)
+    tamanho = models.CharField()
+    fabricante = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'mat_epi_cadastro'
+
+
+class MatEpiMovimentacao(models.Model):
+    produto = models.ForeignKey('MatProduto', models.DO_NOTHING, db_column='produto')
+    quantidade = models.DecimalField(max_digits=65535, decimal_places=65535)
+    colaborador = models.IntegerField()
+    cr = models.ForeignKey('Obra', models.DO_NOTHING, db_column='cr')
+
+    class Meta:
+        managed = False
+        db_table = 'mat_epi_movimentacao'
 
 
 class MatFornecedor(models.Model):
