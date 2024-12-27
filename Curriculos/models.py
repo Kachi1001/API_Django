@@ -112,7 +112,7 @@ class Experiencia(models.Model):
     tempo_anos = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
     tempo_servico = models.CharField(blank=True, null=True)
     profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
-    revisar = models.BooleanField()
+    revisar = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
