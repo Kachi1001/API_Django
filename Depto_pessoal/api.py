@@ -49,6 +49,7 @@ def funcao(request, metodo):
     try:
         funcoes = {
             'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
+            # 'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('equipe')})',  #nova funcao sql
             'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
             'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
@@ -99,6 +100,7 @@ resources['periodoaquisitivo'] = resources['periodo_aquisitivo']
 resources['ponto'] = resources['lembrete'] 
 resources['ponto']['select'].append('padrao') 
 resources['desligamento'] = {'text':['data', 'id']}
+resources['integracao']['select'].append('obra')
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
@@ -309,10 +311,30 @@ def app_feriado(request):
     except Feriado.DoesNotExist: return Response(0)
     else: return Response(1)
 
-class IntegracaoNr_list():
-    serializer_class = FeriadoSerializer
+class IntegracaoNr_list(util.LC):
+    serializer_class = IntegracaoNrSerializer
     queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['colaborador','id']
 
 class IntegracaoNr_detail(util.RUD):
-    serializer_class = FeriadoSerializer    
+    serializer_class = IntegracaoNrSerializer    
     queryset = serializer_class.Meta.model.objects.all()
+    
+class Integracao_list(util.LC):
+    serializer_class = IntegracaoSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['colaborador','id']
+
+class Integracao_detail(util.RUD):
+    serializer_class = IntegracaoSerializer    
+    queryset = serializer_class.Meta.model.objects.all()
+    
+class IntegracaoEpi_list(util.LC):
+    serializer_class = IntegracaoEpiSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['colaborador','id']
+
+class IntegracaoEpi_detail(util.RUD):
+    serializer_class = IntegracaoEpiSerializer    
+    queryset = serializer_class.Meta.model.objects.all()
+    

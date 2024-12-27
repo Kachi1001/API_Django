@@ -36,6 +36,12 @@ urlpatterns = [
   path('feriado', Feriado_list.as_view()),
   path('feriado/<str:pk>', Feriado_detail.as_view()),
 
+  path('integracao', Integracao_list.as_view()),
+  path('integracao/<str:pk>', Integracao_detail.as_view()),
+  path('integracao_nr', IntegracaoNr_list.as_view()),
+  path('integracao_nr/<str:pk>', IntegracaoNr_detail.as_view()),
+  path('integracao_epi', IntegracaoEpi_list.as_view()),
+  path('integracao_epi/<str:pk>', IntegracaoEpi_detail.as_view()),
   
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),

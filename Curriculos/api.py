@@ -147,7 +147,7 @@ class Anexos_list(util.LC):
                     for chunk in file.chunks():
                         pdf_file.write(chunk)
                         
-            new_request['link'] = f'http://tecnikaengenharia.ddns.net/media/Curriculos/Anexos/{new_request['id']}.{file_ext}'
+            new_request['link'] = f'http://tecnikaengenharia.ddns.net/media/Curriculos/Anexos/{new_request['id']}.{file_ext or 'file'}'
             new_request['tipo'] = file_ext
             
             serializer = self.serializer_class(data=new_request)

@@ -111,6 +111,8 @@ class LC(generics.ListCreateAPIView):
     
     @database_exception
     def list(self, request, *args, **kwargs):
+        try: self.serializer_class = self.serializer_class.Table
+        except: pass
         return super().list(request, *args, **kwargs)
 
     @database_exception

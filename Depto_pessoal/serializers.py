@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from Obra import serializers as ObraSerializer
 
         
         
@@ -154,43 +155,37 @@ class IntegracaoNrSerializer(serializers.ModelSerializer):
         model = IntegracaoNr
         fields = '__all__' # Ou liste os campos que deseja expor na API
     class Table(serializers.ModelSerializer):
-        colaborador = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='nome'
-     )
         class Meta:
             model = IntegracaoNr 
-            fields = '__all__' # Ou liste os campos que deseja expor na API
+            fields =  ['id','validade','nr'] # Ou liste os campos que deseja expor na API
 class IntegracaoEpiSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = IntegracaoNr
+        model = IntegracaoEpi
         fields = '__all__' # Ou liste os campos que deseja expor na API
     class Table(serializers.ModelSerializer):
-        colaborador = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='nome'
-     )
         class Meta:
             model = IntegracaoEpi
-            fields = '__all__' # Ou liste os campos que deseja expor na API
+            fields = ['id','aso','aso_valid','epi','epi_valid','os','os_valid','observacao'] # Ou liste os campos que deseja expor na API
 class IntegracaoSerializer(serializers.ModelSerializer):
-
     class Meta:
-        model = IntegracaoNr
+        model = Integracao
         fields = '__all__' # Ou liste os campos que deseja expor na API
     class Table(serializers.ModelSerializer):
-        colaborador = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='nome'
-     )
         class Meta:
             model = Integracao
-            fields = '__all__' # Ou liste os campos que deseja expor na API
-            
+            fields = ['id','obra','validade','descricao'] # Ou liste os campos que deseja expor na API
+
+
+class NrTipoSerializer(serializers.ModelSerializer):
+
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='id')
+        class Meta:
+            model = IntegracaoNrTipo
+            fields = ['value','text']
+
 Select = {
     'colaborador': ColaboradorSelect,
     'equipe': EquipeSelect,
@@ -199,4 +194,6 @@ Select = {
     'avaliacao': TipoAvaliacaoSelect,
     'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
     'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
+    'obra': ObraSerializer.Select['obra_depto'],
+    'nr': NrTipoSerializer.Select,
 }    

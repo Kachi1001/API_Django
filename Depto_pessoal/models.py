@@ -121,7 +121,7 @@ class Funcao(models.Model):
 
 class Integracao(models.Model):
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
-    cr = models.IntegerField()
+    obra = models.IntegerField()
     validade = models.DateField(blank=True, null=True)
     descricao = models.CharField(blank=True, null=True)
 
