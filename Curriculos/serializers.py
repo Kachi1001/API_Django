@@ -132,7 +132,7 @@ Select = {
     'cnh': Cnh.Select,
     'estado_civil': EstadoCivil.Select,
     'escolaridade': Escolaridade.Select(models.EscolaridadeTipo.objects.all().order_by('indice'), many=True).data,
-    'profissao': Profissoes.Select,
+    'profissao': Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data,
     'banco_talentos': Entrevista_classificacao.Select,
     'grupo': Grupo.Select,
 }    
