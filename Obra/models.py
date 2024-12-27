@@ -199,10 +199,14 @@ class MatEpiCadastro(models.Model):
 
 
 class MatEpiMovimentacao(models.Model):
-    produto = models.ForeignKey('MatProduto', models.DO_NOTHING, db_column='produto')
+    epi = models.ForeignKey('MatProduto', models.DO_NOTHING, db_column='epi')
     quantidade = models.DecimalField(max_digits=65535, decimal_places=65535)
     colaborador = models.IntegerField()
     cr = models.ForeignKey('Obra', models.DO_NOTHING, db_column='cr')
+    data_entrega = models.DateField()
+    baixado = models.BooleanField()
+    data_baixa = models.DateField(blank=True, null=True)
+    devolvido = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -222,6 +226,7 @@ class MatProduto(models.Model):
     produto = models.CharField()
     categoria = models.CharField(blank=True, null=True)
     descricao = models.CharField(blank=True, null=True)
+    durabilidade = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
 
     class Meta:
         managed = False

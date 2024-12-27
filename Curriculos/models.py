@@ -61,6 +61,7 @@ class Entrevista(models.Model):
     pretensao = models.DecimalField(max_digits=7, decimal_places=2)
     banco_talentos = models.ForeignKey('EntrevistaClassificacao', models.DO_NOTHING, db_column='banco_talentos')
     avaliacao_final = models.CharField()
+    revisar_periodo = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -78,7 +79,7 @@ class EntrevistaClassificacao(models.Model):
 class Escolaridade(models.Model):
     candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
     escolaridade = models.ForeignKey('EscolaridadeTipo', models.DO_NOTHING, db_column='escolaridade')
-    detalhe = models.CharField()
+    detalhe = models.CharField(blank=True, null=True)
     conclusao = models.DateField(blank=True, null=True)
 
     class Meta:
@@ -111,6 +112,7 @@ class Experiencia(models.Model):
     tempo_anos = models.DecimalField(max_digits=5, decimal_places=1, blank=True, null=True)
     tempo_servico = models.CharField(blank=True, null=True)
     profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
+    revisar = models.BooleanField()
 
     class Meta:
         managed = False
@@ -131,7 +133,8 @@ class Percepcao(models.Model):
     pesquisa_rh = models.BooleanField()
     origem = models.CharField()
     digitalizacao = models.CharField(blank=True, null=True)
-    recebido_em = models.DateField()
+    recebido_em = models.DateField(blank=True, null=True)
+    consulta = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -169,6 +172,7 @@ class Questionario(models.Model):
     judicial_sn = models.BooleanField()
     judicial_motivo = models.CharField(blank=True, null=True)
     data = models.DateField(blank=True, null=True)
+    consulta = models.BooleanField()
 
     class Meta:
         managed = False
