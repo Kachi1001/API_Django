@@ -220,7 +220,7 @@ class entrevista_detail(util.RUD):
 
 class Profissoes_list(util.LC):
     serializer_class = serializers.Profissoes
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('funcao')
 
 
 class Profissoes_detail(util.RUD):

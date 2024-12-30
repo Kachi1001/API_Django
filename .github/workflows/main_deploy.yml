@@ -1,4 +1,4 @@
-name: Django [MAIN] CI / DEPLOY
+name: Django [MAIN] DEPLOY
 
 on:
   push:

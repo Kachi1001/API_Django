@@ -37,12 +37,14 @@ class agendasala_list(generics.ListCreateAPIView):
     
     def create(self, request):
         data = request.data['reservas']
-            
+        
         # Verificar se é possivel reservar
         conflito = []
+        queryset = AgendaSalas.objects.all().filter(data=data[0].get('data'), sala=data[0].get('sala'))
         for reserva in data:
-            banco = AgendaSalas.objects.all().filter(data=reserva.get('data'), sala=reserva.get('sala'), hora=reserva.get('hora')).exists()
-            if banco:
+            filtered = queryset.filter(hora=reserva.get('hora')).exists()
+
+            if filtered:
                 conflito.append(reserva['hora'] + '-' + reserva['responsavel'])
 
 
@@ -53,7 +55,6 @@ class agendasala_list(generics.ListCreateAPIView):
         msg = []
         resp = None
         for a in data:
-
             if resp == None:
                 resp = a.get('responsavel')
                 
@@ -68,8 +69,8 @@ class agendasala_list(generics.ListCreateAPIView):
             msg.append(z.hora)
             mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp.strip()}_\nhttp://tecnikaengenharia.ddns.net/Reservas/sala/{z.sala}?data={z.data}'
             
+    
         whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
-        
         cache.set('Reservas:lastick:sala',random.randint(1,100))
         
         return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
