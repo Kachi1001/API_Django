@@ -2,9 +2,8 @@ from django.urls import path
 from . import api
 
 urlpatterns = [
-    path('register', api.register),
-    path('get', api.get),
-    path('delete', api.delete),
-    path('edit', api.edit),
-    path('reservasala', api.reservaSala),
+    path('agendasala', api.agendasala_list.as_view()),
+    path('agendasala/<int:pk>', api.agendasala_detail.as_view()),
+    path('agendasala_quadro', api.agendasala_quadro),
+    path('lastick/<str:resource>', api.lastick),
 ]

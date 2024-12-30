@@ -1,10 +1,10 @@
 from django.urls import path
 from .api import *
-odio = {'get':'get', 'post':'post'}
+
 urlpatterns = [
   path('colaborador', colaborador_list.as_view()),
   path('colaborador/<int:pk>', colaborador_detail.as_view()),
-  path('colaborador_desligamento/<int:pk>', colaborador_desligamento),
+  path('colaborador_desligamento', colaborador_desligamento),
 
   path('funcao', funcao_list.as_view()),
   path('funcao/<str:pk>', funcao_detail.as_view()),
@@ -20,18 +20,38 @@ urlpatterns = [
   path('feriasprocessadas', FeriasProcessadas_list.as_view()),
   path('feriasprocessadas/<str:pk>', FeriasProcessadas_detail.as_view()),
 
-  path('periodo_aquisitivo', PeriodoAquisitivo_list.as_view()),
-  path('periodo_aquisitivo_funcao', PeriodoAquisitivo_funcao),
-  path('periodo_aquisitivo/<str:pk>', PeriodoAquisitivo_detail.as_view()),
+  path('periodoaquisitivo', PeriodoAquisitivo_list.as_view()),
+  path('periodoaquisitivo_funcao', PeriodoAquisitivo_funcao),
+  path('periodoaquisitivo/<str:pk>', PeriodoAquisitivo_detail.as_view()),
   
   path('feriasutilizadas', FeriasUtilizadas_list.as_view()),
   path('feriasutilizadas/<str:pk>', FeriasUtilizadas_detail.as_view()),
 
-  path('tabela/<str:table>', tabela),
+  path('avaliacao', Avaliacao_list.as_view()),
+  path('avaliacao/<str:pk>', Avaliacao_detail.as_view()),
 
-  path('select/<str:resource>', select),
-  path('lembrete', Lembrete_list.as_view()),
-  path('lembrete/<str:pk>', Lembrete_detail.as_view()),
+  path('tipoavaliacao', TipoAvaliacao_list.as_view()),
+  path('tipoavaliacao/<str:pk>', TipoAvaliacao_detail.as_view()),
+
+  path('feriado', Feriado_list.as_view()),
+  path('feriado/<str:pk>', Feriado_detail.as_view()),
+
+  path('integracao', Integracao_list.as_view()),
+  path('integracao/<str:pk>', Integracao_detail.as_view()),
+  path('integracao_nr', IntegracaoNr_list.as_view()),
+  path('integracao_nr/<str:pk>', IntegracaoNr_detail.as_view()),
+  path('integracao_epi', IntegracaoEpi_list.as_view()),
+  path('integracao_epi/<str:pk>', IntegracaoEpi_detail.as_view()),
   
-  path('app', app_menu),
+  path('tabela/<str:table>', tabela),
+  path('resource/<str:name>', resource),
+  path('select/<str:resource>', select),
+  path('grafico/<str:resource>', grafico),
+  
+
+  path('ponto', Lembrete_list.as_view()),
+  path('ponto/<str:pk>', Lembrete_detail.as_view()),
+  
+  path('app/feriado', app_feriado),
+  path('app/<str:app>', app_menu),
 ]

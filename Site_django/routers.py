@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def isHome(x):
-    if x == 'home' or x == 'sessions' or x == 'auth' or x == 'admin' or x == 'contenttypes':
+    if x == 'Home' or x == 'sessions' or x == 'auth' or x == 'admin' or x == 'contenttypes':
         return True
     else:
         return False

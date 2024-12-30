@@ -15,9 +15,10 @@ jobs:
     - uses: actions/checkout@v4  # Faz o checkout do código fonte
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Create virtual environment
       run: python -m venv venv  # Cria o ambiente virtual localmente no servidor de produção
@@ -26,14 +27,14 @@ jobs:
       run: |
         source venv/bin/activate
         pip install -r requirements.txt
-        
+
     - name: Copiando .env
       run: cp /home/tecnika/TK/django/env/teste_api.env .env
       
     - name: Run Tests
       run: |
         source venv/bin/activate  
-        # python manage.py test
+        python manage.py test
 
   deploy:
     needs: test
@@ -55,14 +56,15 @@ jobs:
       working-directory: /home/tecnika/bat
       run: sudo bash django-stop.sh $branch $app #Fecha os serviços do django
 
+    - name: Atualizando arquivos
+      run: |
+        sudo git pull origin $branch
+        
     - name: Baixando bibliotecas
       run: |
         source venv/bin/activate
         pip install -r requirements.txt
         
-    - name: Atualizando arquivos
-      run: |
-        sudo git pull origin $branch
         
     - name: Copiando .env
       run: |

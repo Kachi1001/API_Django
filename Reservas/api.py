@@ -12,123 +12,6 @@ retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
 
 
-@api_view(['GET'])
-def get(request):
-    metodo = request.GET.get('metodo')
-    parametro = request.GET.get('parametro')
-    if metodo == 'carro':
-        try:
-            serializer = CarrosSerializer(Carros.objects.get(placa=parametro))
-            return Response(serializer.data)
-        except Carros.DoesNotExist:
-            return retorno404
-    elif metodo in ['atendimento','apoio', 'reunião', 'auxiliar']:
-        return reservaSala(request)
-    elif metodo == 'latestTick':
-        result = cache.get('Reservas:latestTick')
-        
-        if not result:
-            result = random.random()
-            cache.set('Reservas:latestTick', result)
-            
-        return Response(data=result)
-    else:
-        return Response({'message':'Método não encontrado','method':'Requisição'}, status=400)
-        
-@api_view(['DELETE'])
-def delete(request):
-    metodo = request.POST.get('metodo')
-    parametro = json.loads(request.POST.get('parametro'))
-    if metodo == "sala":
-        try:    
-            x = AgendaSalas.objects.get(id=parametro.get('id'))
-            x.delete()
-
-        except AgendaSalas.DoesNotExist:
-            return Response({'method':'Delete','message':'Reserva não existe mais'}, status=400)
-        else:
-            return Response({'method':'Delete','message':'Concluído a exclusão com exito'}, status=200)
-            
-    else:
-        return retorno400
-    
-@api_view(['PATCH'])
-def edit(request):
-    metodo = request.POST.get('metodo')
-    parametro = json.loads(request.POST.get('parametro'))
-    if metodo == 'sala':
-        try:
-            x = AgendaSalas.objects.get(id=parametro.get('id'))
-            x.responsavel = parametro.get('responsavel')
-            x.descricao = parametro.get('descricao')
-            x.save()
-        except AgendaSalas.DoesNotExist:
-            return retorno404
-        else:
-            return Response({'method':'Edição','message':'Concluído a exclusão com exito'}, status=200)
-            
-    else:
-        return retorno400
-
-
-@api_view(['POST'])
-def register(request):
-    metodo = request.POST.get('metodo')
-    parametro = json.loads(request.POST.get('parametro'))
-    if metodo == 'carro':
-        if parametro.get('placa'):
-            if media.upload('carro',request.FILES.get('file'),parametro.get('imagem')):
-                c = Carros.objects.create(placa=parametro.get('placa'), modelo=parametro.get('modelo'),marca=parametro.get('marca'),imagem=parametro.get('imagem'))
-                return retorno200
-            else:
-                return retorno400
-        else:
-            return Response({'message': f'Erro ao adicionar carro: Placa não pode ser nulo'}, status=400)
-    elif metodo == 'reservar_sala':
-        horas = json.loads(parametro.get('reservas'))
-        
-        conflito = []
-        reservas = AgendaSalas.objects.all().filter(data=parametro.get('data'), sala=parametro.get('sala'))
-        for x in horas:
-            for y in reservas:
-                if x.get('hora') == y.hora:
-                    conflito.append(y.hora + '-' + y.responsavel + '-' + y.descricao)
-                    
-        if len(conflito) > 0:
-            return Response({'method':'Conflitos','message':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
-        else:
-            msg = []
-            resp = None
-            for a in horas:
-                if resp == None:
-                    resp = a.get('responsavel')
-
-                z = AgendaSalas(hora=a.get('hora'), data=parametro.get('data'), responsavel=a.get('responsavel'), sala=parametro.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
-                z.save()
-                
-                if resp != a.get('responsavel'):
-                    whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
-                    resp = a.get('responsavel')
-                    msg = []
-                msg.append(z.hora)
-                mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp}_\nHorários: _{msg}_'
-                
-            whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
-            cache.set('reservas:latestTick',random.random())
-            return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
-    else:
-        return Response({'method':'Erro desconhecido', 'message':'Método não encontrado'})
-
-def gerarListaCarros(reservados, listaCarros):
-    resultado = []
-    for carro in listaCarros:
-        a = AgendaCarros(carro=carro,reservado='Disponível',responsavel="",destino="")
-        b = reservados.filter(carro=carro)
-        for c in b:
-            a = AgendaCarros(carro=carro,data=c.data,responsavel=c.responsavel,destino=c.destino,reservado=c.reservado)
-        resultado.append(a)
-    return(resultado)
-
 def gerarLista(reservados, horarios):
     resultado = []
     for horario in horarios:
@@ -141,24 +24,83 @@ def gerarLista(reservados, horarios):
     return resultado
 
 from Site_django import util
-def reservaSala(request):
-    horarios_dict = {
-        'manha': ["07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30"],
-        'tarde': ["13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"]
-    }
-    metodo = request.GET.get('metodo')
-    parametro = json.loads(request.GET.get('parametro'))
-    date = parametro.get('data') if parametro.get('data') != None else util.formatarHTML(util.get_hoje())
-    reservados = AgendaSalas.objects.all().filter(sala=metodo, data=date).values('hora','responsavel','reservado','descricao')
 
-    return Response({'dados':gerarLista(reservados, horarios_dict.get(parametro.get('horario'))), 'method':'Carregar dados','message':'Sucesso em ler'}) 
 
 
 
 from rest_framework import generics, viewsets, status
 
-class agenda_salas(generics.ListCreateAPIView):
+class agendasala_list(generics.ListCreateAPIView):
     serializer_class = AgendaSalasSerializer
-    queryset = AgendaSalasSerializer.Meta.model.objects.all()
+    queryset = AgendaSalas.objects.all()
+    filterset_fields = ['sala','data','hora']
     
-    filterset_fields = ['sala','data']
+    def create(self, request):
+        data = request.data['reservas']
+            
+        # Verificar se é possivel reservar
+        conflito = []
+        for reserva in data:
+            banco = AgendaSalas.objects.all().filter(data=reserva.get('data'), sala=reserva.get('sala'), hora=reserva.get('hora')).exists()
+            if banco:
+                conflito.append(reserva['hora'] + '-' + reserva['responsavel'])
+
+
+        # Reservar senão possuir conflito   
+        if len(conflito) > 0:
+            return Response({'Conflitos':'Esses seguintes horários já estão reservados '+str(conflito)},status=406)
+        
+        msg = []
+        resp = None
+        for a in data:
+
+            if resp == None:
+                resp = a.get('responsavel')
+                
+            z = AgendaSalas(hora=a.get('hora'), data=a.get('data'), responsavel=a.get('responsavel'), sala=a.get('sala'), descricao=a.get('descricao'),reservado='checked disabled')
+            z.save()
+            
+            if resp != a.get('responsavel'):
+                whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
+                resp = a.get('responsavel')
+                msg = []
+                
+            msg.append(z.hora)
+            mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp.strip()}_\nhttp://tecnikaengenharia.ddns.net/Reservas/sala/{z.sala}?data={z.data}'
+            
+        whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
+        
+        cache.set('Reservas:lastick:sala',random.randint(1,100))
+        
+        return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
+        # return super().create(request, *args, **kwargs)
+
+
+class agendasala_detail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AgendaSalasSerializer
+    queryset = AgendaSalas.objects.all()
+    
+    
+@api_view(['GET'])
+def agendasala_quadro(request):
+            horarios_dict = {
+                'manha': ["07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30"],
+                'tarde': ["13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"]
+            }
+            # metodo = request.GET.get('metodo')
+            parametro = request.GET
+            date = parametro.get('data', util.formatarHTML(util.get_hoje()))
+            reservados = AgendaSalas.objects.all().filter(sala=parametro.get('sala','atendimento'), data=date).values('hora','responsavel','reservado','descricao')
+
+            return Response({'dados':gerarLista(reservados, horarios_dict.get(parametro.get('horario','manha'))), 'method':'Carregar dados','message':'Sucesso em ler'}) 
+            
+
+@api_view(['GET'])
+def lastick(request, resource):
+    result = cache.get(f'Reservas:{resource}:lastick')
+        
+    if not result:
+        result = random.randint(1,100)
+        cache.set('Reservas:lastick:sala',result)
+            
+    return Response(data=result)

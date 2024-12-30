@@ -14,18 +14,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.http import HttpResponse
 from django.urls import path , include
 from django.conf import settings
+
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from django.http import HttpResponse
 def status(request):
     return HttpResponse("Estamos online!!")
 
-urlpatterns = [
-    path("status", status),
-]
 
+urlpatterns = [
+    path('token', TokenObtainPairView.as_view()),
+    path('token/refresh', TokenRefreshView.as_view()),
+    path('token/valid', TokenVerifyView.as_view()),
+    path('status', status, name='status'),
+]
+        
 for app in settings.INTERNAL_APP:
     try:
-        urlpatterns.append(path(f'{app}/', include(f'{app}.urls')))
+        url = app + '/'
+        urlpatterns.append(path(f'{url}', include(f'{app}.urls')))
     except Exception as e:
-        print(f'App sem urls <{app}> <{e}>')
+        print(f'App sem configuração de url <{app}> <{e}>')

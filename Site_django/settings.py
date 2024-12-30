@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from decouple import config
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,28 +36,28 @@ ALLOWED_HOSTS = config("DJ_ALLOWED_HOSTS", default="10.0.0.139").split(",")
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'django_filters',
     ]
-INTERNAL_APP = [
-    'Home',
-    'Lancamento_obra',
-    'Ti',
-    'Reservas',
-    'Depto_pessoal',
-]
+
+INTERNAL_APP = []
+for app in BASE_DIR.iterdir():
+    app = app.stem
+    if os.path.exists('/'.join([str(BASE_DIR),app,'urls.py'])) and app != 'Site_django':
+        INTERNAL_APP.append(str(app))
+            
 INSTALLED_APPS += INTERNAL_APP
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -68,7 +68,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:80",  # Domínio que está fazendo a requisição
     "http://10.0.0.139:80", # Produção
     "http://10.0.0.139:81", # Teste
-    "http://10.0.0.211:81" # Debug
+    "http://10.0.0.211:83" # Debug
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -100,23 +100,37 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASE_ROUTERS = ['Site_django.routers.AppRouter']
 DATABASES = {}
-x = 1
+
 for app in INTERNAL_APP:
-    DATABASES[app if app != 'Home' else 'default']  = {
+    db = app
+    if app == "Home":
+        app = 'default'
+        db = 'Site_Django'
+    DATABASES[app]  = {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": app if app != INTERNAL_APP[0] else config("DB_NAME", "Site_django"),
+        "NAME": db,
         "USER": config("DB_USER", "django"),
         "PASSWORD": config("DB_PASSWORD", 'django@senha'),
-        "HOST": config("DB_HOST", '10.0.0.139'),
+        "HOST": config("DB_HOST", '127.0.0.1'),
         "PORT": config("DB_PORT", '5432'),
     }
-    x = x + 1
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = []
-
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -153,6 +167,25 @@ CACHES = {
         }
     }
 }
-REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('10.0.0.139', 6379)],  # Substitua pelo seu host Redis
+        },
+    },  
 }
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework_simplejwt.authentication.JWTAuthentication']
+}
+APPEND_SLASH = True
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+}
+
+DATA_UPLOAD_MAX_MEMORY_SIZE= 10485760

@@ -1,0 +1,45 @@
+name: Django [MAIN] CI / DEPLOY
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  deploy:
+    runs-on: self-hosted  # O runner self-hosted está no servidor de produção
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.12]
+    env:
+      branch: main
+      app: api
+    defaults:
+      run:
+        working-directory: /home/tecnika/TK/django/main/api
+
+    steps:
+      # Deploy no servidor de produção
+    - name: Finalizando servidor
+      working-directory: /home/tecnika/bat
+      run: sudo bash django-stop.sh $branch $app #Fecha os serviços do django
+
+    - name: Atualizando arquivos
+      run: |
+        sudo git pull origin $branch
+        
+    - name: Baixando bibliotecas
+      run: |
+        source venv/bin/activate
+        pip install -r requirements.txt
+        
+        
+    - name: Copiando .env
+      run: |
+        cp /home/tecnika/TK/django/env/main_api.env .env
+
+    - name: Reiniciando servidor
+      working-directory: /home/tecnika/bat
+      run: sudo bash django-reload.sh $branch $app #Reinicia o processo do django
+

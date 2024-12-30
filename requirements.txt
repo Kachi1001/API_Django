@@ -4,6 +4,7 @@ psycopg2-binary
 python-decouple
 pillow
 djangorestframework
+djangorestframework-simplejwt==5.3.1
 django-cors-headers
 requests
 gunicorn
@@ -11,3 +12,5 @@ openpyxl
 pandas
 django-redis
 django-filter
+channels 
+channels-redis

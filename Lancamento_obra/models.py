@@ -30,7 +30,7 @@ class Atividade(models.Model):
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
     diario = models.CharField(max_length=30, blank=True, null=True)
     meiadiaria = models.BooleanField(blank=True, null=True)
-    supervisor = models.CharField(max_length=100, blank=True, null=True)
+    supervisor = models.ForeignKey('Supervisor', models.DO_NOTHING, db_column='supervisor', blank=True, null=True)
     motivo = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
@@ -89,6 +89,14 @@ class BaseTerceiros(models.Model):
         db_table = 'base_terceiros'
 
 
+class Cartoes(models.Model):
+    nome = models.CharField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cartoes'
+
+
 class Colaborador(models.Model):
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(max_length=255)
@@ -116,20 +124,6 @@ class Dia(models.Model):
         db_table = 'dia'
 
 
-class Diarias(models.Model):
-    colaborador = models.CharField(max_length=255, blank=True, null=True)
-    competencia = models.TextField(blank=True, null=True)
-    diaria = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    horas = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    valor_diarias = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
-    valor_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
-    total = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'diarias'
-
-
 class Diarioobra(models.Model):
     data = models.DateField()
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
@@ -137,7 +131,7 @@ class Diarioobra(models.Model):
     climamanha = models.CharField(max_length=20, blank=True, null=True)
     climatarde = models.CharField(max_length=20, blank=True, null=True)
     imagem = models.CharField(max_length=255, blank=True, null=True)
-    diario = models.CharField(max_length=50)
+    diario = models.CharField(max_length=50, blank=True, null=True)
     indice = models.IntegerField()
     descricao = models.CharField(blank=True, null=True)
 
@@ -187,6 +181,16 @@ class Etapa(models.Model):
         unique_together = (('cr', 'etapa'),)
 
 
+class Feriado(models.Model):
+    dia = models.DateField(primary_key=True)
+    descricao = models.CharField()
+    recorrente = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'feriado'
+
+
 class Funcao(models.Model):
     id = models.BigAutoField(primary_key=True)
     funcao = models.CharField(max_length=100)
@@ -217,6 +221,18 @@ class Localizacaoprogramada(models.Model):
         managed = False
         db_table = 'localizacaoprogramada'
         unique_together = (('colaborador', 'iniciosemana', 'obra'),)
+
+
+class Log(models.Model):
+    user = models.CharField()
+    action = models.CharField()
+    text = models.CharField()
+    resource = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'log'
 
 
 class Obra(models.Model):
@@ -251,7 +267,7 @@ class RevisaoTerceiros(models.Model):
 
 
 class Supervisor(models.Model):
-    supervisor = models.CharField(primary_key=True, max_length=100)
+    id = models.CharField(primary_key=True, max_length=100)
     ativo = models.BooleanField()
 
     class Meta:
