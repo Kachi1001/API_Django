@@ -187,7 +187,8 @@ class Supervisor_detail(util.RUD):
 class Atividade_list(util.LC):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
-
+    filterset_fields = ['colaborador','dia']
+    
 
 class Atividade_detail(util.RUD):
     serializer_class = AtividadeSerializer
