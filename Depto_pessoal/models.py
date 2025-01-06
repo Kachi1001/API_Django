@@ -32,6 +32,7 @@ class Colaborador(models.Model):
     avaliacao_descricao = models.CharField(blank=True, null=True)
     avaliacao_recontratar = models.BooleanField(blank=True, null=True)
     pasta_servidor = models.CharField(blank=True, null=True)
+    aviso_ponto = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -107,6 +108,7 @@ class Funcao(models.Model):
     id = models.CharField(primary_key=True)
     categoria = models.CharField()
     insalubridade = models.BooleanField(blank=True, null=True)
+    horario_padrao = models.CharField()
 
     class Meta:
         managed = False

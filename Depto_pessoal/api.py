@@ -108,7 +108,7 @@ def resource(request, name):
   
 from . import views
 graficos = {
-    'ativos_rovatatividade': views.ativos_rotatividade,
+    'rotatividade': views.ativos_rotatividade,
 }
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 

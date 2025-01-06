@@ -194,6 +194,6 @@ Select = {
     'avaliacao': TipoAvaliacaoSelect,
     'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
     'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
-    'obra': ObraSerializer.Select['obra_depto'],
+    'obra': ObraSerializer.Select['obra']['depto'],
     'nr': NrTipoSerializer.Select,
 }    

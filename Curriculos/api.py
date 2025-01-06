@@ -3,14 +3,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
-from .models import *
 from Site_django import util 
-from . import models, views
+from . import models, views, serializers
 from PIL import Image
 import os
-retorno200 = Response({'message':'Sucesso'}, status=200)
-retorno400 = Response({'message':'Método não encontrado'}, status=400)
-retorno404 = Response({'message':'Registro não encontrado'}, status=404)
+
     
 # Configurações de conexão com o banco de dados PostgreSQL
 app = __name__.split('.')[0]
@@ -59,7 +56,6 @@ def funcao(request, metodo):
 
     return funcao_sql(sql)
 
-from . import models, views, serializers
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
 @api_view(['GET'])
@@ -166,7 +162,7 @@ class Anexos_detail(util.RUD):
     
     def destroy(self, request, *args, **kwargs):
         try:
-            obj = Anexos.objects.get(pk=kwargs['pk'])
+            obj = self.serializer_class.Meta.model.objects.get(pk=kwargs['pk'])
             rota = obj.link.replace('http://tecnikaengenharia.ddns.net/media/','')
             os.remove(os.path.join(settings.MEDIA_ROOT, rota))
         except:
