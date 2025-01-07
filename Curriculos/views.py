@@ -1,12 +1,19 @@
 from django.db import models
 
-# class ativos_rotatividade(models.Model):
-#     cpt = models.CharField(primary_key=True)
-#     ativos = models.BigIntegerField()
-#     admissoes = models.BigIntegerField()
-#     desligamentos = models.BigIntegerField()
+class resumo(models.Model):
+    id = models.IntegerField(primary_key=True)
+    nome = models.CharField(max_length=255)
+    funcao_pretendida = models.CharField(max_length=255)
+    pretensao = models.IntegerField()
+    banco_talentos = models.CharField(max_length=255)
+    ficha = models.BooleanField()
+    disponibilidade = models.BooleanField()
+    anos_exp = models.IntegerField()
+    avaliacao_final = models.CharField(max_length=255)
+    experiencia = models.CharField(max_length=255)
+    revisar_dp = models.BooleanField()
     
-#     class Meta:
-#         managed = False
-#         db_table = 'grafico_ativos_rotatividade'
+    class Meta:
+        managed = False
+        db_table = 'resumo'
         

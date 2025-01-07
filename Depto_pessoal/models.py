@@ -85,6 +85,7 @@ class FeriasProcessadas(models.Model):
     data_inicio = models.DateField(blank=True, null=True)
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
     consumido = models.BooleanField()
+    observacao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -98,6 +99,7 @@ class FeriasUtilizadas(models.Model):
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
     antecipacao_periodo = models.BooleanField()
     consumido = models.BooleanField()
+    observacao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -152,6 +154,7 @@ class IntegracaoNr(models.Model):
     nr = models.ForeignKey('IntegracaoNrTipo', models.DO_NOTHING, db_column='nr')
     validade = models.DateField()
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
+    observacao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
