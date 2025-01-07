@@ -127,6 +127,15 @@ class Anexos(serializers.ModelSerializer):
         model = models.Anexos
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
 
+
+class Indicacao():
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='nome')
+        class Meta:
+            from Depto_pessoal.models import Colaborador
+            model = Colaborador
+            fields = ['value']
+        
 Select = {
     'candidato': Candidato.Select,
     'cnh': Cnh.Select,
@@ -135,4 +144,5 @@ Select = {
     'profissao': Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data,
     'banco_talentos': Entrevista_classificacao.Select,
     'grupo': Grupo.Select,
+    'indicacao': Indicacao.Select,
 }    

@@ -41,6 +41,8 @@ class Candidato(models.Model):
     endereco = models.CharField(blank=True, null=True)
     bairro = models.CharField(blank=True, null=True)
     cidade = models.CharField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
+    indicacao = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -62,6 +64,7 @@ class Entrevista(models.Model):
     banco_talentos = models.ForeignKey('EntrevistaClassificacao', models.DO_NOTHING, db_column='banco_talentos')
     avaliacao_final = models.CharField()
     revisar_periodo = models.BooleanField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -81,6 +84,7 @@ class Escolaridade(models.Model):
     escolaridade = models.ForeignKey('EscolaridadeTipo', models.DO_NOTHING, db_column='escolaridade')
     detalhe = models.CharField(blank=True, null=True)
     conclusao = models.DateField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -113,6 +117,7 @@ class Experiencia(models.Model):
     tempo_servico = models.CharField(blank=True, null=True)
     profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
     revisar = models.BooleanField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
