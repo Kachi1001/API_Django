@@ -86,6 +86,7 @@ class FeriasProcessadas(models.Model):
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
     consumido = models.BooleanField()
     observacao = models.CharField(blank=True, null=True)
+    utilizar = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -117,6 +118,16 @@ class Funcao(models.Model):
         db_table = 'funcao_'
 # Unable to inspect table 'horas_mes'
 # The error was: user mapping not found for "dev_api"
+
+
+class HorasPonto(models.Model):
+    colaborador = models.IntegerField()
+    extras = models.DurationField()
+    data = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'horas_ponto'
 # Unable to inspect table 'horas_totais'
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'inconsistencias'
@@ -229,18 +240,6 @@ class ProximoPeriodo(models.Model):
     class Meta:
         managed = False
         db_table = 'proximo_periodo'
-
-
-class TesteHorasQuentes(models.Model):
-    colaborador = models.CharField()
-    mes = models.DateField()
-    competencia = models.CharField(blank=True, null=True)
-    hora50 = models.DurationField(blank=True, null=True)
-    hora100 = models.DurationField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'teste_horas_quentes'
 
 
 class Ultimo(models.Model):

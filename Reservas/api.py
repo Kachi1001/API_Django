@@ -2,15 +2,16 @@ from .serializers import *
 from .models import *
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-import json
-from Site_django import media, whatsapp
 from datetime import datetime
+from Site_django import whatsapp
 import random
 from django.core.cache import cache
+import asyncio
+
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
-
+    
 
 def gerarLista(reservados, horarios):
     resultado = []
@@ -28,7 +29,7 @@ from Site_django import util
 
 
 
-from rest_framework import generics, viewsets, status
+from rest_framework import generics
 
 class agendasala_list(generics.ListCreateAPIView):
     serializer_class = AgendaSalasSerializer
@@ -62,19 +63,18 @@ class agendasala_list(generics.ListCreateAPIView):
             z.save()
             
             if resp != a.get('responsavel'):
-                whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
+                whatsapp.enviarMSG('5584543627',mensagem,'gestao-dados')
+                
                 resp = a.get('responsavel')
                 msg = []
                 
             msg.append(z.hora)
-            mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{z.data}_\nResponsável: _{resp.strip()}_\nhttp://tecnikaengenharia.ddns.net/Reservas/sala/{z.sala}?data={z.data}'
+            mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{datetime.strptime(z.data, '%Y-%m-%d').strftime('%d/%m/%Y')}_\nResponsável: _{resp.strip()}_\nhttp://tecnikaengenharia.ddns.net/Reservas/sala/{z.sala}?data={z.data}'
             
-    
-        whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
+        whatsapp.enviarMSG('5584543627',mensagem,'gestao-dados')
         cache.set('Reservas:lastick:sala',random.randint(1,100))
         
         return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
-        # return super().create(request, *args, **kwargs)
 
 
 class agendasala_detail(generics.RetrieveUpdateDestroyAPIView):

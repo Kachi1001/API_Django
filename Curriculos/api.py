@@ -46,9 +46,6 @@ def funcao(request, metodo):
 
     try:
         funcoes = {
-            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
-            'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
-            'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
         sql = funcoes.get(metodo)
     except:

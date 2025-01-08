@@ -43,6 +43,7 @@ class Candidato(models.Model):
     cidade = models.CharField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
     indicacao = models.CharField(max_length=255, blank=True, null=True)
+    idade = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
 
     class Meta:
         managed = False

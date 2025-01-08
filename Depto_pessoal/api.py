@@ -45,11 +45,15 @@ def funcao(request, metodo):
         if value != None:
             return "'" + str(value) + "'"
         return 'null'
-
+    def bol_sql(value):
+        value = request.get(value)
+        if value != None:
+            return str(value)
+        return 'null'
+        
     try:
         funcoes = {
-            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
-            # 'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('equipe')})',  #nova funcao sql
+            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('terceiro')},{format_sql('equipe')})',  #nova funcao sql
             'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
             'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
