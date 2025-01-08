@@ -63,7 +63,7 @@ class agendasala_list(generics.ListCreateAPIView):
             z.save()
             
             if resp != a.get('responsavel'):
-                whatsapp.enviarMSG('5584543627',mensagem,'gestao-dados')
+                whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
                 
                 resp = a.get('responsavel')
                 msg = []
@@ -71,7 +71,7 @@ class agendasala_list(generics.ListCreateAPIView):
             msg.append(z.hora)
             mensagem = f'*Sala Reservada*\nSala: _{z.sala}_\nData: _{datetime.strptime(z.data, '%Y-%m-%d').strftime('%d/%m/%Y')}_\nResponsável: _{resp.strip()}_\nhttp://tecnikaengenharia.ddns.net/Reservas/sala/{z.sala}?data={z.data}'
             
-        whatsapp.enviarMSG('5584543627',mensagem,'gestao-dados')
+        whatsapp.enviarMSG('5535126392',mensagem,'gestao-dados')
         cache.set('Reservas:lastick:sala',random.randint(1,100))
         
         return Response({'method':'Reserva de sala', 'message':'Reservas realizadas com sucesso!'})
