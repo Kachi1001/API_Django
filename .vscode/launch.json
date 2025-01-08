@@ -13,7 +13,7 @@
                 "10.0.0.211:83"
             ],
             "django": true,
-            "program": "${workspaceFolder}\\manage.py"
+            "program": "${workspaceFolder}\\manage.py",
         }
     ]
 }
