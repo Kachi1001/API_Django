@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 from Obra import serializers as ObraSerializer
 
-        
+from . import views
         
 class ColaboradorSerializer(serializers.ModelSerializer):
     # ferias_utilizadas = serializers.StringRelatedField(many=True)
@@ -110,6 +110,13 @@ class LembreteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lembrete
         fields = '__all__' # Ou liste os campos que deseja expor na API     
+
+class LembreteSerial(serializers.ModelSerializer):
+    
+    class Meta:
+        model = views.Lembrete2
+        fields = '__all__' # Ou liste os campos que deseja expor na API     
+
 class FeriadoSerializer(serializers.ModelSerializer):
     
     class Meta:

@@ -42,3 +42,12 @@ class FeriasMensagem(models.Model):
     class Meta:
         managed = False
         db_table = 'ferias_mensagem'
+        
+class Lembrete2(models.Model):
+    nome = models.CharField(primary_key=True)
+    horario_padrao = models.CharField()
+    fone = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'lembrete_'

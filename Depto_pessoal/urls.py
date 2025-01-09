@@ -51,6 +51,8 @@ urlpatterns = [
 
   path('ponto', Lembrete_list.as_view()),
   path('ponto/<str:pk>', Lembrete_detail.as_view()),
+
+  path('lembrete', Lembrete.as_view()),
   
   path('app/feriado', app_feriado),
   path('app/<str:app>', app_menu),

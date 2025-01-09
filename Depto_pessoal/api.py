@@ -342,3 +342,8 @@ class IntegracaoEpi_detail(util.RUD):
     serializer_class = IntegracaoEpiSerializer    
     queryset = serializer_class.Meta.model.objects.all()
     
+# Feriado
+class Lembrete(util.LC):
+    serializer_class = LembreteSerial
+    queryset = serializer_class.Meta.model.objects.all()
+        
