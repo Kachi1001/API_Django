@@ -44,6 +44,7 @@ class Candidato(models.Model):
     data_cadastro = models.DateField(blank=True, null=True)
     indicacao = models.CharField(max_length=255, blank=True, null=True)
     idade = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    estado = models.ForeignKey('Estados', models.DO_NOTHING, db_column='estado', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -107,6 +108,15 @@ class EstadoCivil(models.Model):
     class Meta:
         managed = False
         db_table = 'estado_civil'
+
+
+class Estados(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'estados'
 
 
 class Experiencia(models.Model):

@@ -79,6 +79,7 @@ dictModels = {
     'integracao_epi': IntegracaoEpi.objects.all(),
     'integracao_nr': IntegracaoNr.objects.all(),
     'integracao': Integracao.objects.all(),
+    'epi_nr': views.EpiNr,
 }
 
    

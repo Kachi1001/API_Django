@@ -43,6 +43,18 @@ class FeriasMensagem(models.Model):
         managed = False
         db_table = 'ferias_mensagem'
         
+class EpiNr(models.Model):
+    id = models.IntegerField(primary_key=True)
+    colaborador = models.CharField()
+    tipo = models.CharField()
+    emitido = models.BooleanField()
+    validade = models.DateField()
+    observacao = models.CharField()
+    
+    class Meta:
+        managed = False
+        db_table = 'epi_nr'
+        
 class Lembrete2(models.Model):
     nome = models.CharField(primary_key=True)
     horario_padrao = models.CharField()

@@ -135,6 +135,14 @@ class Indicacao():
             from Depto_pessoal.models import Colaborador
             model = Colaborador
             fields = ['value']
+            
+class Estado():
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='nome')
+        class Meta:
+            model = models.Estados
+            fields = ['value','text']
         
 Select = {
     'candidato': Candidato.Select,
@@ -145,4 +153,5 @@ Select = {
     'banco_talentos': Entrevista_classificacao.Select,
     'grupo': Grupo.Select,
     'indicacao': Indicacao.Select,
+    'estado': Estado.Select
 }    
