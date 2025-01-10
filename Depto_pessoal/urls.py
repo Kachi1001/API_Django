@@ -43,6 +43,9 @@ urlpatterns = [
   path('integracao_epi', IntegracaoEpi_list.as_view()),
   path('integracao_epi/<str:pk>', IntegracaoEpi_detail.as_view()),
   
+  path('insalubridade', Insalubridade_list.as_view()),
+  path('insalubridade/<str:pk>', Insalubridade_detail.as_view()),
+  
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),
   path('select/<str:resource>', select),

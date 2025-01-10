@@ -134,6 +134,15 @@ class HorasPonto(models.Model):
 # The error was: user mapping not found for "dev_api"
 
 
+class Insalubridade(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'insalubridade'
+
+
 class Integracao(models.Model):
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     obra = models.IntegerField()
@@ -181,9 +190,9 @@ class IntegracaoNrTipo(models.Model):
 
 
 class Lembrete(models.Model):
-    colaborador = models.CharField()
-    padrao = models.CharField()
-    telefone = models.CharField()
+    nome = models.CharField()
+    horario_padrao = models.CharField()
+    fone = models.CharField()
 
     class Meta:
         managed = False

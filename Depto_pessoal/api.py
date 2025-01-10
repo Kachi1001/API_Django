@@ -348,3 +348,10 @@ class Lembrete(util.LC):
     serializer_class = LembreteSerial
     queryset = serializer_class.Meta.model.objects.all()
         
+class Insalubridade_list(util.LC):
+    serializer_class = InsalubridadeSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+class Insalubridade_detail(util.RUD):
+    serializer_class = InsalubridadeSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+        
