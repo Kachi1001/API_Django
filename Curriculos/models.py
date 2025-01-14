@@ -20,6 +20,14 @@ class Anexos(models.Model):
         db_table = 'anexos'
 
 
+class AreaAtuacao(models.Model):
+    area = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'area_atuacao'
+
+
 class AvaliacaoTipo(models.Model):
     id = models.CharField(primary_key=True)
 
@@ -49,6 +57,16 @@ class Candidato(models.Model):
     class Meta:
         managed = False
         db_table = 'candidato'
+
+
+class Classificacao(models.Model):
+    candidato = models.IntegerField()
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    grupo = models.ForeignKey('Grupo', models.DO_NOTHING, db_column='grupo', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'classificacao'
 
 
 class Cnh(models.Model):
@@ -136,7 +154,7 @@ class Experiencia(models.Model):
 
 
 class Grupo(models.Model):
-    id = models.CharField(primary_key=True)
+    grupo = models.CharField()
 
     class Meta:
         managed = False
@@ -159,7 +177,6 @@ class Percepcao(models.Model):
 
 class Profissoes(models.Model):
     funcao = models.CharField()
-    grupo = models.ForeignKey(Grupo, models.DO_NOTHING, db_column='grupo')
 
     class Meta:
         managed = False

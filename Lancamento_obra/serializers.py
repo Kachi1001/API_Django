@@ -61,6 +61,10 @@ class DiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Dia   
         fields = '__all__'  # Ou liste os campos que deseja expor na API    
+class ValorHoraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ValorHora   
+        fields = '__all__'  # Ou liste os campos que deseja expor na API    
 
 # Select
 class FuncaoSelect(serializers.ModelSerializer):

@@ -113,6 +113,7 @@ class Anexos_list(util.LC):
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['candidato']
 
+    @util.database_exception
     def create(self, request, *args, **kwargs):
         import mimetypes
 
@@ -158,6 +159,7 @@ class Anexos_detail(util.RUD):
     serializer_class = serializers.Anexos
     queryset = serializer_class.Meta.model.objects.all()
     
+    @util.database_exception
     def destroy(self, request, *args, **kwargs):
         try:
             obj = self.serializer_class.Meta.model.objects.get(pk=kwargs['pk'])
@@ -172,9 +174,12 @@ class experiencia_list(util.LC):
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['candidato']
 
+    @util.database_exception
     def list(self, request, *args, **kwargs):
         experiencia_list.serializer_class = serializers.Experiencia.Table
         return super().list(request, *args, **kwargs)
+
+    @util.database_exception
     def create(self, request, *args, **kwargs):
         experiencia_list.serializer_class = serializers.Experiencia
         return super().create(request, *args, **kwargs)
@@ -229,3 +234,27 @@ def select(request, resource):
 
     return util.create_select(request, resource, Select)
         
+class Classificacao_list(util.LC):
+    serializer_class = serializers.Classificacao
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['candidato']
+
+class Classificacao_detail(util.RUD):
+    serializer_class = serializers.Classificacao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class AreaAtuacao_list(util.LC):
+    serializer_class = serializers.AreaAtuacao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class AreaAtuacao_detail(util.RUD):
+    serializer_class = serializers.AreaAtuacao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class Grupo_list(util.LC):
+    serializer_class = serializers.Grupo
+    queryset = serializer_class.Meta.model.objects.all()
+
+class Grupo_detail(util.RUD):
+    serializer_class = serializers.Grupo
+    queryset = serializer_class.Meta.model.objects.all()

@@ -25,6 +25,16 @@ urlpatterns = [
   
   path('anexos', Anexos_list.as_view()),
   path('anexos/<str:pk>', Anexos_detail.as_view()),
+ 
+  path('grupo', Grupo_list.as_view()),
+  path('grupo/<str:pk>', Grupo_detail.as_view()),
+ 
+  path('area_atuacao', AreaAtuacao_list.as_view()),
+  path('area_atuacao/<str:pk>', AreaAtuacao_detail.as_view()),
+ 
+  path('classificacao', Classificacao_list.as_view()),
+  path('classificacao/<str:pk>', Classificacao_detail.as_view()),
+ 
 
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),

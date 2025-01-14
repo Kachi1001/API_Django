@@ -131,6 +131,7 @@ resources['encarregado'] = resources['colaborador']
 resources['colaborador']['select'].append('funcao')
 resources['localizacaoprogramada']['select'].append('colaborador')
 resources['localizacaoprogramada']['select'].append('encarregado')
+resources['valor_hora']['select'].append('colaborador')
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
@@ -245,3 +246,12 @@ class Programacao_detail(util.RUD):
 class dia_list(util.LC):
     serializer_class = DiaSerializer
     queryset = serializer_class.Meta.model.objects.all().order_by('-dia')
+
+
+class ValorHora_list(util.LC):
+    serializer_class = ValorHoraSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+
+class ValorHora_detail(util.RUD):
+    serializer_class = ValorHoraSerializer
+    queryset = serializer_class.Meta.model.objects.all()
