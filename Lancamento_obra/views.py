@@ -82,7 +82,7 @@ class Alocacoes(models.Model):
         managed = False
         db_table = 'alocacoes'
         
-class Diarias(models.Model):
+class DiariasOk(models.Model):
     colaborador = models.CharField(max_length=255, blank=True, primary_key=True)
     competencia = models.TextField(blank=True, null=True)
     diarias = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
@@ -105,3 +105,23 @@ class Indicadores(models.Model):
     class Meta:
         db_table = 'indicadores'
         managed = False
+
+class Fechamento_Revisao(models.Model):
+    obra = models.IntegerField(blank=True, null=False, primary_key=True)
+    orcamento = models.CharField(max_length=20, blank=True, null=True)
+    descricao = models.CharField(max_length=500, blank=True, null=True)
+    horas_normais = models.DurationField(blank=True, null=True)
+    horas_extra_50 = models.DurationField(blank=True, null=True)
+    horas_extra_100 = models.DurationField(blank=True, null=True)
+    total_horas = models.DurationField(blank=True, null=True)
+    valor_normal = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_extra_50 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_extra_100 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    total_rs = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    revisao = models.TextField(blank=True, null=True)
+    nomes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'fechamento'
+

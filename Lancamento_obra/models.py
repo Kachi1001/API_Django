@@ -132,6 +132,20 @@ class Dia(models.Model):
         db_table = 'dia'
 
 
+class Diarias(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    diaria = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    horas = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    valor_diarias = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    valor_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'diarias'
+
+
 class Diarioobra(models.Model):
     data = models.DateField()
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
@@ -187,6 +201,26 @@ class Etapa(models.Model):
         managed = False
         db_table = 'etapa'
         unique_together = (('cr', 'etapa'),)
+
+
+class Fechamento(models.Model):
+    obra = models.IntegerField(blank=True, null=True)
+    orcamento = models.CharField(max_length=20, blank=True, null=True)
+    descricao = models.CharField(max_length=500, blank=True, null=True)
+    horas_normais = models.DurationField(blank=True, null=True)
+    horas_extra_50 = models.DurationField(blank=True, null=True)
+    horas_extra_100 = models.DurationField(blank=True, null=True)
+    total_horas = models.DurationField(blank=True, null=True)
+    valor_normal = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_extra_50 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_extra_100 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    total_rs = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    revisao = models.TextField(blank=True, null=True)
+    nomes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'fechamento'
 
 
 class Feriado(models.Model):

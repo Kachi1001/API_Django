@@ -48,15 +48,14 @@ def funcao(request, funcao):
             return "'" + str(value) + "'"
         return 'null'
         
-    funcao_void = ['atualizar_tabelas',]
-    if funcao in funcao_void:
-        return funçãoSQL(funcao+'()')
     parametro = request.data
     if funcao == 'efetividade':
         return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},{get_formatter("dataini")},{get_formatter("datafim")})")
     elif funcao == 'subconsulta_lancamento':
         return funçãoSQL(f"{funcao}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
-
+    else:
+        return funçãoSQL(funcao+'()')
+        
 
 from . import models, views
 table_models = util.get_classes(models)

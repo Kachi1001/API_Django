@@ -125,7 +125,8 @@ def get_table(request, table ,dicts, serializers = {}):
     serializer = serializers.get(table)
     try:
         return JsonResponse(buildTable(request, dicts.get(table).objects.all(), serializer))
-    except:
+    except Exception as e:
+        print(e)
         try:
             return JsonResponse(buildTable(request, dicts.get(table), serializer))
         except Exception as e:
