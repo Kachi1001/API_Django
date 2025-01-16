@@ -6,6 +6,8 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+# Unable to inspect table 'colaborador'
+# The error was: user mapping not found for "dev_api"
 
 
 class EpiCadastro(models.Model):
@@ -30,11 +32,14 @@ class EpiMovimentacao(models.Model):
     baixado = models.BooleanField()
     data_baixa = models.DateField(blank=True, null=True)
     devolvido = models.BooleanField(blank=True, null=True)
+    assinado = models.BooleanField()
 
     class Meta:
         managed = False
         db_table = 'epi_movimentacao'
 # Unable to inspect table 'obra'
+# The error was: user mapping not found for "dev_api"
+# Unable to inspect table 'ocupacao'
 # The error was: user mapping not found for "dev_api"
 
 

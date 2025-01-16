@@ -354,4 +354,46 @@ class Insalubridade_list(util.LC):
 class Insalubridade_detail(util.RUD):
     serializer_class = InsalubridadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
+
+    
+from openpyxl import load_workbook
+from django.http import HttpResponse
+from datetime import datetime
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+def HorasPonto_import(request):
+        arquivo = load_workbook(request.FILES['file'])
+        try:
+            tabela = arquivo['Relatório xlsx']
+        except KeyError:
+            return Response({'Arquivo':'Arquivo não compatível!'}, status=406)
+        colabs = {}
+        for colab in Colaborador.objects.all().values():
+            colabs[colab.get('nome')] = colab.get('id')
+        conflito = []
+        linha = 2
+        while tabela[f'A{linha}'].value:
+            colab = tabela[f'A{linha}'].value
+            if not colab in colabs:
+                conflito.append(colab)
+            linha += 1
+            
+        if len(conflito) > 0:
+            conflito = ', '.join(conflito)
+            return Response({'Conflito':f'Colaboradores com nomes em conflito: {conflito}'}, status=406)
+        
+        limite = linha
+        linha = 2
+        while linha < limite:
+            try:    
+                data = datetime.strptime(tabela[f'B{linha}'].value.split(', ')[1], '%d/%m/%Y')
+                colab = models.Colaborador.objects.get(id = colabs.get(tabela[f'A{linha}'].value))
+                models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)
+            except Exception as e:
+                print(e)
+                return Response({'Erro': 'Erro ao adicionar no banco'}, status=400)
+            linha += 1 
+        return Response({'Sucesso':'Importado com sucesso!'}, status=203)            
+    
         

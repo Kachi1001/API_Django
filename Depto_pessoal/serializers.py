@@ -134,6 +134,11 @@ class AvaliacaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Colaborador
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
+class HorasPontoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = HorasPonto
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
 
 class AvaliacaoTable(serializers.ModelSerializer):
     avaliacao = serializers.SlugRelatedField(

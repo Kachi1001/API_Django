@@ -45,6 +45,10 @@ urlpatterns = [
   
   path('insalubridade', Insalubridade_list.as_view()),
   path('insalubridade/<str:pk>', Insalubridade_detail.as_view()),
+
+  # path('horas_ponto', HorasPonto_list.as_view()),
+  path('horas_ponto_import', HorasPonto_import),
+  # path('horas_ponto/<str:pk>', HorasPonto_detail.as_view()),
   
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),

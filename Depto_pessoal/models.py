@@ -121,7 +121,7 @@ class Funcao(models.Model):
 
 
 class HorasPonto(models.Model):
-    colaborador = models.IntegerField()
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     extras = models.DurationField()
     data = models.DateField()
 
