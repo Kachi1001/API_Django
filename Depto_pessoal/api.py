@@ -45,11 +45,15 @@ def funcao(request, metodo):
         if value != None:
             return "'" + str(value) + "'"
         return 'null'
-
+    def bol_sql(value):
+        value = request.get(value)
+        if value != None:
+            return str(value)
+        return 'null'
+        
     try:
         funcoes = {
-            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
-            # 'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('equipe')})',  #nova funcao sql
+            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('terceiro')},{format_sql('equipe')})',  #nova funcao sql
             'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
             'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
@@ -75,6 +79,7 @@ dictModels = {
     'integracao_epi': IntegracaoEpi.objects.all(),
     'integracao_nr': IntegracaoNr.objects.all(),
     'integracao': Integracao.objects.all(),
+    'epi_nr': views.EpiNr,
 }
 
    
@@ -108,7 +113,7 @@ def resource(request, name):
   
 from . import views
 graficos = {
-    'ativos_rovatatividade': views.ativos_rotatividade,
+    'rotatividade': views.ativos_rotatividade,
 }
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
@@ -338,3 +343,57 @@ class IntegracaoEpi_detail(util.RUD):
     serializer_class = IntegracaoEpiSerializer    
     queryset = serializer_class.Meta.model.objects.all()
     
+# Feriado
+class Lembrete(util.LC):
+    serializer_class = LembreteSerial
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class Insalubridade_list(util.LC):
+    serializer_class = InsalubridadeSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+class Insalubridade_detail(util.RUD):
+    serializer_class = InsalubridadeSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+
+    
+from openpyxl import load_workbook
+from django.http import HttpResponse
+from datetime import datetime
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+def HorasPonto_import(request):
+        arquivo = load_workbook(request.FILES['file'])
+        try:
+            tabela = arquivo['Relatório xlsx']
+        except KeyError:
+            return Response({'Arquivo':'Arquivo não compatível!'}, status=406)
+        colabs = {}
+        for colab in Colaborador.objects.all().values():
+            colabs[colab.get('nome')] = colab.get('id')
+        conflito = []
+        linha = 2
+        while tabela[f'A{linha}'].value:
+            colab = tabela[f'A{linha}'].value
+            if not colab in colabs:
+                conflito.append(colab)
+            linha += 1
+            
+        if len(conflito) > 0:
+            conflito = ', '.join(conflito)
+            return Response({'Conflito':f'Colaboradores com nomes em conflito: {conflito}'}, status=406)
+        
+        limite = linha
+        linha = 2
+        while linha < limite:
+            try:    
+                data = datetime.strptime(tabela[f'B{linha}'].value.split(', ')[1], '%d/%m/%Y')
+                colab = models.Colaborador.objects.get(id = colabs.get(tabela[f'A{linha}'].value))
+                models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)
+            except Exception as e:
+                print(e)
+                return Response({'Erro': 'Erro ao adicionar no banco'}, status=400)
+            linha += 1 
+        return Response({'Sucesso':'Importado com sucesso!'}, status=203)            
+    
+        

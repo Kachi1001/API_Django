@@ -32,6 +32,7 @@ class Colaborador(models.Model):
     avaliacao_descricao = models.CharField(blank=True, null=True)
     avaliacao_recontratar = models.BooleanField(blank=True, null=True)
     pasta_servidor = models.CharField(blank=True, null=True)
+    aviso_ponto = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -84,6 +85,8 @@ class FeriasProcessadas(models.Model):
     data_inicio = models.DateField(blank=True, null=True)
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
     consumido = models.BooleanField()
+    observacao = models.CharField(blank=True, null=True)
+    utilizar = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -97,6 +100,7 @@ class FeriasUtilizadas(models.Model):
     periodo_aquisitivo = models.ForeignKey('PeriodoAquisitivo', models.DO_NOTHING, db_column='periodo_aquisitivo', blank=True, null=True)
     antecipacao_periodo = models.BooleanField()
     consumido = models.BooleanField()
+    observacao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -107,16 +111,36 @@ class Funcao(models.Model):
     id = models.CharField(primary_key=True)
     categoria = models.CharField()
     insalubridade = models.BooleanField(blank=True, null=True)
+    horario_padrao = models.CharField()
 
     class Meta:
         managed = False
         db_table = 'funcao_'
 # Unable to inspect table 'horas_mes'
 # The error was: user mapping not found for "dev_api"
+
+
+class HorasPonto(models.Model):
+    colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
+    extras = models.DurationField()
+    data = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'horas_ponto'
 # Unable to inspect table 'horas_totais'
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'inconsistencias'
 # The error was: user mapping not found for "dev_api"
+
+
+class Insalubridade(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'insalubridade'
 
 
 class Integracao(models.Model):
@@ -150,6 +174,7 @@ class IntegracaoNr(models.Model):
     nr = models.ForeignKey('IntegracaoNrTipo', models.DO_NOTHING, db_column='nr')
     validade = models.DateField()
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
+    observacao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -165,9 +190,9 @@ class IntegracaoNrTipo(models.Model):
 
 
 class Lembrete(models.Model):
-    colaborador = models.CharField()
-    padrao = models.CharField()
-    telefone = models.CharField()
+    nome = models.CharField()
+    horario_padrao = models.CharField()
+    fone = models.CharField()
 
     class Meta:
         managed = False
@@ -224,18 +249,6 @@ class ProximoPeriodo(models.Model):
     class Meta:
         managed = False
         db_table = 'proximo_periodo'
-
-
-class TesteHorasQuentes(models.Model):
-    colaborador = models.CharField()
-    mes = models.DateField()
-    competencia = models.CharField(blank=True, null=True)
-    hora50 = models.DurationField(blank=True, null=True)
-    hora100 = models.DurationField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'teste_horas_quentes'
 
 
 class Ultimo(models.Model):

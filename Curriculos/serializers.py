@@ -115,17 +115,68 @@ class Entrevista_classificacao(serializers.ModelSerializer):
             fields = ['value']  # Ou liste os campos que deseja expor na API 
             
             
-class Grupo():
+class Grupo(serializers.ModelSerializer):
+    class Meta:
+        model = models.Grupo
+        fields = '__all__'  # Ou liste os campos que deseja expor na API 
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
+        text = serializers.CharField(source='grupo')
         class Meta:
             model = models.Grupo
-            fields = ['value']
+            fields = ['value','text']
             
 class Anexos(serializers.ModelSerializer):
     class Meta:
         model = models.Anexos
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
+
+
+class Indicacao():
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='nome')
+        class Meta:
+            from Depto_pessoal.models import Colaborador
+            model = Colaborador
+            fields = ['value']
+            
+class Estado():
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='nome')
+        class Meta:
+            model = models.Estados
+            fields = ['value','text']
+            
+class AreaAtuacao(serializers.ModelSerializer):
+    class Meta:
+        model = models.AreaAtuacao
+        fields = '__all__'  # Ou liste os campos que deseja expor na API 
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='area')
+        class Meta:
+            model = models.AreaAtuacao
+            fields = ['value','text']
+        
+class Classificacao(serializers.ModelSerializer):
+    class Meta:
+        model = models.Classificacao
+        fields = '__all__'  # Ou liste os campos que deseja expor na API 
+    class Table(serializers.ModelSerializer):
+        grupo = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='grupo'
+        )
+        area_atuacao = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='area'
+        )
+        class Meta:
+            model = models.Classificacao
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
 
 Select = {
     'candidato': Candidato.Select,
@@ -135,4 +186,7 @@ Select = {
     'profissao': Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data,
     'banco_talentos': Entrevista_classificacao.Select,
     'grupo': Grupo.Select,
+    'indicacao': Indicacao.Select,
+    'estado': Estado.Select,
+    'area_atuacao': AreaAtuacao.Select
 }    

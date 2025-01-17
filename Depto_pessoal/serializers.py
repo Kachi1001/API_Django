@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 from Obra import serializers as ObraSerializer
 
-        
+from . import views
         
 class ColaboradorSerializer(serializers.ModelSerializer):
     # ferias_utilizadas = serializers.StringRelatedField(many=True)
@@ -100,6 +100,11 @@ class FeriasUtilizadasTable(serializers.ModelSerializer):
         fields = '__all__'  # Ou liste os campos que deseja expor na API
 
    
+class InsalubridadeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Insalubridade
+        fields = '__all__' # Ou liste os campos que deseja expor na API     
+   
 class OcupacaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ocupacao
@@ -110,6 +115,13 @@ class LembreteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lembrete
         fields = '__all__' # Ou liste os campos que deseja expor na API     
+
+class LembreteSerial(serializers.ModelSerializer):
+    
+    class Meta:
+        model = views.Lembrete2
+        fields = '__all__' # Ou liste os campos que deseja expor na API     
+
 class FeriadoSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -121,6 +133,11 @@ class AvaliacaoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Colaborador
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+class HorasPontoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = HorasPonto
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
 
 class AvaliacaoTable(serializers.ModelSerializer):
@@ -194,6 +211,6 @@ Select = {
     'avaliacao': TipoAvaliacaoSelect,
     'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
     'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
-    'obra': ObraSerializer.Select['obra_depto'],
+    'obra': ObraSerializer.Select['obra']['depto'],
     'nr': NrTipoSerializer.Select,
 }    

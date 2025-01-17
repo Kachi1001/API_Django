@@ -3,14 +3,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
-from .models import *
 from Site_django import util 
-from . import models, views
+from . import models, views, serializers
 from PIL import Image
 import os
-retorno200 = Response({'message':'Sucesso'}, status=200)
-retorno400 = Response({'message':'Método não encontrado'}, status=400)
-retorno404 = Response({'message':'Registro não encontrado'}, status=404)
+
     
 # Configurações de conexão com o banco de dados PostgreSQL
 app = __name__.split('.')[0]
@@ -49,9 +46,6 @@ def funcao(request, metodo):
 
     try:
         funcoes = {
-            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')})',
-            'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
-            'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
         sql = funcoes.get(metodo)
     except:
@@ -59,7 +53,6 @@ def funcao(request, metodo):
 
     return funcao_sql(sql)
 
-from . import models, views, serializers
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
 @api_view(['GET'])
@@ -70,6 +63,7 @@ def tabela(request, table):
     return util.get_table(request, table, dicts)
 
 resources = util.get_resources(models)
+resources['candidato']['select'] += ['indicacao']
 @api_view(['GET'])
 def resource(request, name):
     if resources.get(name):
@@ -119,6 +113,7 @@ class Anexos_list(util.LC):
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['candidato']
 
+    @util.database_exception
     def create(self, request, *args, **kwargs):
         import mimetypes
 
@@ -164,9 +159,10 @@ class Anexos_detail(util.RUD):
     serializer_class = serializers.Anexos
     queryset = serializer_class.Meta.model.objects.all()
     
+    @util.database_exception
     def destroy(self, request, *args, **kwargs):
         try:
-            obj = Anexos.objects.get(pk=kwargs['pk'])
+            obj = self.serializer_class.Meta.model.objects.get(pk=kwargs['pk'])
             rota = obj.link.replace('http://tecnikaengenharia.ddns.net/media/','')
             os.remove(os.path.join(settings.MEDIA_ROOT, rota))
         except:
@@ -178,9 +174,12 @@ class experiencia_list(util.LC):
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['candidato']
 
+    @util.database_exception
     def list(self, request, *args, **kwargs):
         experiencia_list.serializer_class = serializers.Experiencia.Table
         return super().list(request, *args, **kwargs)
+
+    @util.database_exception
     def create(self, request, *args, **kwargs):
         experiencia_list.serializer_class = serializers.Experiencia
         return super().create(request, *args, **kwargs)
@@ -220,7 +219,7 @@ class entrevista_detail(util.RUD):
 
 class Profissoes_list(util.LC):
     serializer_class = serializers.Profissoes
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('funcao')
 
 
 class Profissoes_detail(util.RUD):
@@ -235,3 +234,27 @@ def select(request, resource):
 
     return util.create_select(request, resource, Select)
         
+class Classificacao_list(util.LC):
+    serializer_class = serializers.Classificacao
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['candidato']
+
+class Classificacao_detail(util.RUD):
+    serializer_class = serializers.Classificacao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class AreaAtuacao_list(util.LC):
+    serializer_class = serializers.AreaAtuacao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class AreaAtuacao_detail(util.RUD):
+    serializer_class = serializers.AreaAtuacao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class Grupo_list(util.LC):
+    serializer_class = serializers.Grupo
+    queryset = serializer_class.Meta.model.objects.all()
+
+class Grupo_detail(util.RUD):
+    serializer_class = serializers.Grupo
+    queryset = serializer_class.Meta.model.objects.all()

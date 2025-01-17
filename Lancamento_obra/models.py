@@ -8,6 +8,14 @@
 from django.db import models
 
 
+class Ancora(models.Model):
+    ancora = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'ancora'
+
+
 class Atividade(models.Model):
     id = models.BigAutoField(primary_key=True)
     colaborador = models.CharField(max_length=255)
@@ -124,6 +132,20 @@ class Dia(models.Model):
         db_table = 'dia'
 
 
+class Diarias(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    diaria = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    horas = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    valor_diarias = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    valor_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'diarias'
+
+
 class Diarioobra(models.Model):
     data = models.DateField()
     obra = models.ForeignKey('Obra', models.DO_NOTHING, db_column='obra')
@@ -181,6 +203,26 @@ class Etapa(models.Model):
         unique_together = (('cr', 'etapa'),)
 
 
+class Fechamento(models.Model):
+    obra = models.IntegerField(blank=True, null=True)
+    orcamento = models.CharField(max_length=20, blank=True, null=True)
+    descricao = models.CharField(max_length=500, blank=True, null=True)
+    horas_normais = models.DurationField(blank=True, null=True)
+    horas_extra_50 = models.DurationField(blank=True, null=True)
+    horas_extra_100 = models.DurationField(blank=True, null=True)
+    total_horas = models.DurationField(blank=True, null=True)
+    valor_normal = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_extra_50 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_extra_100 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    total_rs = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    revisao = models.TextField(blank=True, null=True)
+    nomes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'fechamento'
+
+
 class Feriado(models.Model):
     dia = models.DateField(primary_key=True)
     descricao = models.CharField()
@@ -199,6 +241,24 @@ class Funcao(models.Model):
     class Meta:
         managed = False
         db_table = 'funcao'
+
+
+class FuncaoHoraExtra(models.Model):
+    dia = models.DateField(blank=True, null=True)
+    obra = models.IntegerField(blank=True, null=True)
+    horaini = models.DurationField(blank=True, null=True)
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    total = models.DurationField(blank=True, null=True)
+    feriado = models.BooleanField(blank=True, null=True)
+    ds = models.IntegerField(blank=True, null=True)
+    contrato = models.CharField(max_length=20, blank=True, null=True)
+    normal = models.DurationField(blank=True, null=True)
+    extra50 = models.DurationField(blank=True, null=True)
+    extra100 = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'funcao_hora_extra'
 
 
 class Indiceobra(models.Model):
@@ -324,3 +384,15 @@ class TipoAtividade(models.Model):
     class Meta:
         managed = False
         db_table = 'tipo_atividade'
+
+
+class ValorHora(models.Model):
+    colaborador = models.CharField(primary_key=True)
+    horanormal = models.DecimalField(max_digits=5, decimal_places=2)
+    hora50 = models.DecimalField(max_digits=5, decimal_places=2)
+    hora100 = models.DecimalField(max_digits=5, decimal_places=2)
+    autorizado = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'valor_hora'

@@ -28,6 +28,9 @@ urlpatterns = [
     
     path('dia', api.dia_list.as_view()),
 
+    path('valor_hora', api.ValorHora_list.as_view()),
+    path('valor_hora/<str:pk>', api.ValorHora_detail.as_view()),
+
     path('localizacaoprogramada', api.Programacao_list.as_view()),
     path('localizacaoprogramada/<str:pk>', api.Programacao_detail.as_view()),
     

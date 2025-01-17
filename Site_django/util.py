@@ -121,18 +121,18 @@ class LC(generics.ListCreateAPIView):
     
 
 
-def get_table(request, table ,dicts):
-    queryset = None
+def get_table(request, table ,dicts, serializers = {}):
+    serializer = serializers.get(table)
     try:
-        queryset = dicts.get(table).objects.all()
-    except:
+        return JsonResponse(buildTable(request, dicts.get(table).objects.all(), serializer))
+    except Exception as e:
+        print(e)
         try:
-            queryset = dicts.get(table)
-        except:
-            return Response({'error':'Tabela não existe no banco ou está desativada'})
-    return JsonResponse(buildTable(request, table, queryset))
+            return JsonResponse(buildTable(request, dicts.get(table), serializer))
+        except Exception as e:
+            return Response({'error':f'Tabela não existe no banco ou está desativada {e}'},404)
 
-def buildTable(request, table, queryset):   
+def buildTable(request, queryset, serializer):   
     from django.core.paginator import Paginator
     from django.db.models import Q
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
@@ -144,10 +144,10 @@ def buildTable(request, table, queryset):
     sort_field = 'pk' if sort_field == 'undefined' else sort_field
     
     page_number = int(request.GET.get('offset', 1))
-    # print(json.loads(request.GET.get('filter',))) 
+
     page_size = int(request.GET.get('limit', 25))
     # Filtrando com base na busca
-    if search_value and table:
+    if search_value:
         preset = Q()
         for x in fields:
             final = x
@@ -171,9 +171,11 @@ def buildTable(request, table, queryset):
     paginator = Paginator(queryset, page_size)
     page_obj = paginator.get_page(page_number / page_size + 1)
 
+    rows = serializer(page_obj.object_list, many=True).data if serializer else list(page_obj.object_list.values())
+
     data = {
         'total': paginator.count,
-        'rows': list(page_obj.object_list.values())  # Ajuste os campos conforme necessário
+        'rows': rows  # Ajuste os campos conforme necessário
     }
     return data
 
@@ -207,5 +209,9 @@ def get_classes(package):
     result = {}
     classes = [nome for nome in dir(package) if nome.startswith('') and callable(getattr(package, nome))]
     for classe in classes:
-        result[classe.lower()] = getattr(package, classe) 
+        for field, valor in vars(getattr(package, classe)).items():
+            if field == '_meta':
+                for key, value in vars(valor).items():
+                    if key == 'db_table':
+                        result[value] = getattr(package, classe) 
     return result

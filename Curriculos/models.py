@@ -20,6 +20,14 @@ class Anexos(models.Model):
         db_table = 'anexos'
 
 
+class AreaAtuacao(models.Model):
+    area = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'area_atuacao'
+
+
 class AvaliacaoTipo(models.Model):
     id = models.CharField(primary_key=True)
 
@@ -41,10 +49,24 @@ class Candidato(models.Model):
     endereco = models.CharField(blank=True, null=True)
     bairro = models.CharField(blank=True, null=True)
     cidade = models.CharField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
+    indicacao = models.CharField(max_length=255, blank=True, null=True)
+    idade = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
+    estado = models.ForeignKey('Estados', models.DO_NOTHING, db_column='estado', blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'candidato'
+
+
+class Classificacao(models.Model):
+    candidato = models.IntegerField()
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    grupo = models.ForeignKey('Grupo', models.DO_NOTHING, db_column='grupo', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'classificacao'
 
 
 class Cnh(models.Model):
@@ -62,6 +84,7 @@ class Entrevista(models.Model):
     banco_talentos = models.ForeignKey('EntrevistaClassificacao', models.DO_NOTHING, db_column='banco_talentos')
     avaliacao_final = models.CharField()
     revisar_periodo = models.BooleanField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -81,6 +104,7 @@ class Escolaridade(models.Model):
     escolaridade = models.ForeignKey('EscolaridadeTipo', models.DO_NOTHING, db_column='escolaridade')
     detalhe = models.CharField(blank=True, null=True)
     conclusao = models.DateField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -104,6 +128,15 @@ class EstadoCivil(models.Model):
         db_table = 'estado_civil'
 
 
+class Estados(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'estados'
+
+
 class Experiencia(models.Model):
     candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
     empresa = models.CharField()
@@ -113,6 +146,7 @@ class Experiencia(models.Model):
     tempo_servico = models.CharField(blank=True, null=True)
     profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
     revisar = models.BooleanField(blank=True, null=True)
+    data_cadastro = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -120,7 +154,7 @@ class Experiencia(models.Model):
 
 
 class Grupo(models.Model):
-    id = models.CharField(primary_key=True)
+    grupo = models.CharField()
 
     class Meta:
         managed = False
@@ -143,7 +177,6 @@ class Percepcao(models.Model):
 
 class Profissoes(models.Model):
     funcao = models.CharField()
-    grupo = models.ForeignKey(Grupo, models.DO_NOTHING, db_column='grupo')
 
     class Meta:
         managed = False
@@ -155,22 +188,14 @@ class Questionario(models.Model):
     funcionario_antigo = models.BooleanField()
     disponibilidade = models.BooleanField()
     fumante = models.BooleanField()
-    bebidas_sn = models.BooleanField()
-    bebidas_freq = models.CharField(blank=True, null=True)
-    medicacao_sn = models.BooleanField()
-    medicacao_freq = models.CharField(blank=True, null=True)
-    acidente_sn = models.BooleanField()
-    acidente_motivo = models.CharField(blank=True, null=True)
-    processo_sn = models.BooleanField()
-    processo_motivo = models.CharField(blank=True, null=True)
-    bo_sn = models.BooleanField()
-    bo_motivo = models.CharField(blank=True, null=True)
-    criminais_sn = models.BooleanField()
-    criminais_motivo = models.CharField(blank=True, null=True)
-    policiais_sn = models.BooleanField()
-    policiais_motivo = models.CharField(blank=True, null=True)
-    judicial_sn = models.BooleanField()
-    judicial_motivo = models.CharField(blank=True, null=True)
+    bebidas = models.CharField(blank=True, null=True)
+    medicacao = models.CharField(blank=True, null=True)
+    acidente = models.CharField(blank=True, null=True)
+    processo = models.CharField(blank=True, null=True)
+    bo = models.CharField(blank=True, null=True)
+    criminais = models.CharField(blank=True, null=True)
+    policiais = models.CharField(blank=True, null=True)
+    judicial = models.CharField(blank=True, null=True)
     data = models.DateField(blank=True, null=True)
     consulta = models.BooleanField()
 

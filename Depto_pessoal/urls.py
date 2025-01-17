@@ -43,6 +43,13 @@ urlpatterns = [
   path('integracao_epi', IntegracaoEpi_list.as_view()),
   path('integracao_epi/<str:pk>', IntegracaoEpi_detail.as_view()),
   
+  path('insalubridade', Insalubridade_list.as_view()),
+  path('insalubridade/<str:pk>', Insalubridade_detail.as_view()),
+
+  # path('horas_ponto', HorasPonto_list.as_view()),
+  path('horas_ponto_import', HorasPonto_import),
+  # path('horas_ponto/<str:pk>', HorasPonto_detail.as_view()),
+  
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),
   path('select/<str:resource>', select),
@@ -51,6 +58,8 @@ urlpatterns = [
 
   path('ponto', Lembrete_list.as_view()),
   path('ponto/<str:pk>', Lembrete_detail.as_view()),
+
+  path('lembrete', Lembrete.as_view()),
   
   path('app/feriado', app_feriado),
   path('app/<str:app>', app_menu),

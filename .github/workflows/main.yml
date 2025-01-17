@@ -1,4 +1,4 @@
-name: Django [MAIN] CI / DEPLOY
+name: Django [MAIN] TESTE
 
 on:
   pull_request:

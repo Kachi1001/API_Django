@@ -48,15 +48,14 @@ def funcao(request, funcao):
             return "'" + str(value) + "'"
         return 'null'
         
-    funcao_void = ['atualizar_tabelas',]
-    if funcao in funcao_void:
-        return funçãoSQL(funcao+'()')
     parametro = request.data
     if funcao == 'efetividade':
         return funçãoSQL(f"get_efetividade({get_formatter('colaborador')},{get_formatter('obra')},{get_formatter("dataini")},{get_formatter("datafim")})")
     elif funcao == 'subconsulta_lancamento':
         return funçãoSQL(f"{funcao}('{parametro.get("colaborador", '')}','{parametro.get("dia", '2050-01-01')}')")
-
+    else:
+        return funçãoSQL(funcao+'()')
+        
 
 from . import models, views
 table_models = util.get_classes(models)
@@ -132,6 +131,7 @@ resources['encarregado'] = resources['colaborador']
 resources['colaborador']['select'].append('funcao')
 resources['localizacaoprogramada']['select'].append('colaborador')
 resources['localizacaoprogramada']['select'].append('encarregado')
+resources['valor_hora']['select'].append('colaborador')
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
@@ -187,7 +187,8 @@ class Supervisor_detail(util.RUD):
 class Atividade_list(util.LC):
     serializer_class = AtividadeSerializer
     queryset = serializer_class.Meta.model.objects.all()
-
+    filterset_fields = ['colaborador','dia']
+    
 
 class Atividade_detail(util.RUD):
     serializer_class = AtividadeSerializer
@@ -245,3 +246,12 @@ class Programacao_detail(util.RUD):
 class dia_list(util.LC):
     serializer_class = DiaSerializer
     queryset = serializer_class.Meta.model.objects.all().order_by('-dia')
+
+
+class ValorHora_list(util.LC):
+    serializer_class = ValorHoraSerializer
+    queryset = serializer_class.Meta.model.objects.all()
+
+class ValorHora_detail(util.RUD):
+    serializer_class = ValorHoraSerializer
+    queryset = serializer_class.Meta.model.objects.all()
