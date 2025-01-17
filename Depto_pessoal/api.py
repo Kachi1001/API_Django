@@ -357,7 +357,6 @@ class Insalubridade_detail(util.RUD):
 
     
 from openpyxl import load_workbook
-from django.http import HttpResponse
 from datetime import datetime
 
 @api_view(['POST'])
@@ -371,6 +370,7 @@ def HorasPonto_import(request):
         colabs = {}
         for colab in Colaborador.objects.all().values():
             colabs[colab.get('nome')] = colab.get('id')
+
         conflito = []
         linha = 2
         while tabela[f'A{linha}'].value:
@@ -388,11 +388,12 @@ def HorasPonto_import(request):
         while linha < limite:
             try:    
                 data = datetime.strptime(tabela[f'B{linha}'].value.split(', ')[1], '%d/%m/%Y')
-                colab = models.Colaborador.objects.get(id = colabs.get(tabela[f'A{linha}'].value))
+                queryset_colab = models.Colaborador.objects.all()
+                colab = queryset_colab.get(id = colabs.get(tabela[f'A{linha}'].value))
                 models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)
             except Exception as e:
                 print(e)
-                return Response({'Erro': 'Erro ao adicionar no banco'}, status=400)
+                return Response({'Erro': f'Erro ao adicionar no banco, linha: {linha}'}, status=400)
             linha += 1 
         return Response({'Sucesso':'Importado com sucesso!'}, status=203)            
     

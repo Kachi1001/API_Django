@@ -115,15 +115,15 @@ class Entrevista_classificacao(serializers.ModelSerializer):
             fields = ['value']  # Ou liste os campos que deseja expor na API 
             
             
-class Grupo(serializers.ModelSerializer):
+class Setor(serializers.ModelSerializer):
     class Meta:
-        model = models.Grupo
+        model = models.Setor
         fields = '__all__'  # Ou liste os campos que deseja expor na API 
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
-        text = serializers.CharField(source='grupo')
+        text = serializers.CharField(source='setor')
         class Meta:
-            model = models.Grupo
+            model = models.Setor
             fields = ['value','text']
             
 class Anexos(serializers.ModelSerializer):
@@ -164,10 +164,10 @@ class Classificacao(serializers.ModelSerializer):
         model = models.Classificacao
         fields = '__all__'  # Ou liste os campos que deseja expor na API 
     class Table(serializers.ModelSerializer):
-        grupo = serializers.SlugRelatedField(
+        setor = serializers.SlugRelatedField(
             many=False,
             read_only=True,
-            slug_field='grupo'
+            slug_field='setor'
         )
         area_atuacao = serializers.SlugRelatedField(
             many=False,
@@ -185,7 +185,7 @@ Select = {
     'escolaridade': Escolaridade.Select(models.EscolaridadeTipo.objects.all().order_by('indice'), many=True).data,
     'profissao': Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data,
     'banco_talentos': Entrevista_classificacao.Select,
-    'grupo': Grupo.Select,
+    'setor': Setor.Select,
     'indicacao': Indicacao.Select,
     'estado': Estado.Select,
     'area_atuacao': AreaAtuacao.Select
