@@ -26,8 +26,8 @@ urlpatterns = [
   path('anexos', Anexos_list.as_view()),
   path('anexos/<str:pk>', Anexos_detail.as_view()),
  
-  path('grupo', Grupo_list.as_view()),
-  path('grupo/<str:pk>', Grupo_detail.as_view()),
+  path('setor', Setor_list.as_view()),
+  path('setor/<str:pk>', Setor_detail.as_view()),
  
   path('area_atuacao', AreaAtuacao_list.as_view()),
   path('area_atuacao/<str:pk>', AreaAtuacao_detail.as_view()),

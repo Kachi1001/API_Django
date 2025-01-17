@@ -62,7 +62,8 @@ class Candidato(models.Model):
 class Classificacao(models.Model):
     candidato = models.IntegerField()
     area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
-    grupo = models.ForeignKey('Grupo', models.DO_NOTHING, db_column='grupo', blank=True, null=True)
+    setor = models.ForeignKey('Setor', models.DO_NOTHING, db_column='setor', blank=True, null=True)
+    pontos = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -75,6 +76,16 @@ class Cnh(models.Model):
     class Meta:
         managed = False
         db_table = 'cnh'
+
+
+class Conversao(models.Model):
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    area_relacionada = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_relacionada', related_name='conversao_area_relacionada_set')
+    porcentagem = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'conversao'
 
 
 class Entrevista(models.Model):
@@ -147,18 +158,11 @@ class Experiencia(models.Model):
     profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
     revisar = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
 
     class Meta:
         managed = False
         db_table = 'experiencia'
-
-
-class Grupo(models.Model):
-    grupo = models.CharField()
-
-    class Meta:
-        managed = False
-        db_table = 'grupo'
 
 
 class Percepcao(models.Model):
@@ -202,3 +206,11 @@ class Questionario(models.Model):
     class Meta:
         managed = False
         db_table = 'questionario'
+
+
+class Setor(models.Model):
+    setor = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'setor'

@@ -17,3 +17,14 @@ class resumo(models.Model):
         managed = False
         db_table = 'resumo'
         
+class pontuacao_experiencias(models.Model):
+    candidato = models.IntegerField(primary_key=True)
+    nome = models.CharField(max_length=255)
+    area = models.CharField(max_length=255)
+    nota = models.IntegerField()
+    setor = models.CharField(max_length=255)
+    
+    class Meta:
+        managed = False
+        db_table = 'pontuacao_experiencias'
+        

@@ -251,10 +251,10 @@ class AreaAtuacao_detail(util.RUD):
     serializer_class = serializers.AreaAtuacao
     queryset = serializer_class.Meta.model.objects.all()
 
-class Grupo_list(util.LC):
-    serializer_class = serializers.Grupo
+class Setor_list(util.LC):
+    serializer_class = serializers.Setor
     queryset = serializer_class.Meta.model.objects.all()
 
-class Grupo_detail(util.RUD):
-    serializer_class = serializers.Grupo
+class Setor_detail(util.RUD):
+    serializer_class = serializers.Setor
     queryset = serializer_class.Meta.model.objects.all()
