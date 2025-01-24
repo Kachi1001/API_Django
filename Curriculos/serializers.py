@@ -42,6 +42,11 @@ class Experiencia(serializers.ModelSerializer):
             read_only=True,
             slug_field='nome'
         )
+        area_atuacao = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='area'
+        )
         class Meta:
             model = models.Experiencia
             fields = '__all__'  # Ou liste os campos que deseja expor na API

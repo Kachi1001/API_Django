@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from . import models
 
-        
+from Depto_pessoal import serializers as depto
+from Obra import serializers as obra     
         
 class Produto(serializers.ModelSerializer):
     class Meta:
@@ -58,9 +59,26 @@ class EpiMovimentacao(serializers.ModelSerializer):
         class Meta:
             model = models.EpiMovimentacao
             fields = '__all__'  # Ou liste os campos que deseja expor na API
+class Numeracao(serializers.ModelSerializer):
+    class Meta:
+        model = models.Numeracao
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='id')
+        
+        class Meta:
+            model = models.Numeracao
+            fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SerializerMethodField()
+        class Meta:
+            model = models.Numeracao
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
     
-from Depto_pessoal import serializers as depto
-from Obra import serializers as obra
+        def get_colaborador(self, obj):
+            colabs = depto.Colaborador.objects.all()
+            return f"{colabs.get(id=obj.colaborador).nome}"
 Select = {
     'obra': obra.Select['obra']['almox'],
     'colaborador': depto.ColaboradorSelect,

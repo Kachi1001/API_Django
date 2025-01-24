@@ -7,3 +7,8 @@ class Pendencia(serializers.ModelSerializer):
         model = models.Pendencia
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
         
+class Log(serializers.ModelSerializer):
+    class Meta:
+        model = models.Log
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+        

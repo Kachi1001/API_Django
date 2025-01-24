@@ -257,9 +257,8 @@ class Obra(models.Model):
     segmento = models.CharField(blank=True, null=True)
     supervisor = models.CharField(blank=True, null=True)
     indice = models.CharField(blank=True, null=True)
-    data_inicio = models.DateField(blank=True, null=True)
-    data_fim = models.DateField(blank=True, null=True)
-    finaliza_medicoes = models.BooleanField()
+    finalizado = models.BooleanField()
+    tecnicon = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False

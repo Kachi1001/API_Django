@@ -1,3 +1,7 @@
+from . import models, views, serializers
+from Site_django import media, util
+
+
 import json
 import redis
 from django.http import JsonResponse
@@ -83,3 +87,13 @@ def check_winner(board):
     if "-" not in board:
         return "Empate"
     return ""
+
+
+class Log_list(util.LC):
+    serializer_class = serializers.Log
+    queryset = serializer_class.Meta.model.objects.all().order_by('id')
+
+
+class Log_detail(util.RUD):
+    serializer_class = serializers.Log
+    queryset = serializer_class.Meta.model.objects.all()

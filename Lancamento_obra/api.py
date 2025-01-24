@@ -57,9 +57,10 @@ def funcao(request, funcao):
         return funçãoSQL(funcao+'()')
         
 
-from . import models, views
+from . import models, views, graficos
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):
@@ -70,13 +71,10 @@ def tabela(request, table):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def grafico(request, resource):
-    from . import views
-    graficos = {
-        'horas': views.Graficos,
-    }
+    graficos_dict = util.get_classes(graficos)
     from django.core.exceptions import ObjectDoesNotExist
     try:
-        dados = graficos.get(resource).objects.all().values()
+        dados = graficos_dict.get('grafico_' + resource).objects.all().values()
         dados = dados[len(dados) -36:]
         return Response(dados,status=200)
     except ObjectDoesNotExist:
@@ -139,7 +137,7 @@ def resource(request, name):
     return Response(resources.get(name))
 
 
-from rest_framework import generics, status
+from rest_framework import status
 class Colaborador_list(util.LC):
     serializer_class = ColaboradorSerializer
     queryset = ColaboradorSerializer.Meta.model.objects.all().order_by('nome')

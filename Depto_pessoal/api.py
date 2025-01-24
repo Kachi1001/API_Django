@@ -80,6 +80,7 @@ dictModels = {
     'integracao_nr': IntegracaoNr.objects.all(),
     'integracao': Integracao.objects.all(),
     'epi_nr': views.EpiNr,
+    'fechamentomensal': FechamentoMensal,
 }
 
    

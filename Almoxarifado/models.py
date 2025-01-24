@@ -29,14 +29,40 @@ class EpiMovimentacao(models.Model):
     colaborador = models.IntegerField()
     obra = models.IntegerField()
     data_entrega = models.DateField()
-    baixado = models.BooleanField()
+    baixado = models.BooleanField(blank=True, null=True)
     data_baixa = models.DateField(blank=True, null=True)
     devolvido = models.BooleanField(blank=True, null=True)
-    assinado = models.BooleanField()
+    assinado = models.BooleanField(blank=True, null=True)
+    ficha = models.ForeignKey('Ficha', models.DO_NOTHING, db_column='ficha', blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'epi_movimentacao'
+
+
+class Ficha(models.Model):
+    id = models.CharField(primary_key=True)
+    colaborador = models.IntegerField()
+    pagina = models.IntegerField()
+    completa = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'ficha'
+
+
+class Numeracao(models.Model):
+    id = models.IntegerField(primary_key=True)
+    colaborador = models.IntegerField()
+    bota = models.IntegerField(blank=True, null=True)
+    botina = models.IntegerField(blank=True, null=True)
+    luva = models.CharField(blank=True, null=True)
+    camisa = models.CharField(blank=True, null=True)
+    calca = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'numeracao'
 # Unable to inspect table 'obra'
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'ocupacao'

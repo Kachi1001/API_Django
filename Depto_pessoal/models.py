@@ -69,6 +69,27 @@ class Equipe(models.Model):
         db_table = 'equipe'
 
 
+class FechamentoMensal(models.Model):
+    colaborador = models.CharField(blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    h50 = models.DurationField(blank=True, null=True)
+    h100 = models.DurationField(blank=True, null=True)
+    horas_escritorio = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    salario_insalub = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    hora = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    dispensas = models.DurationField(blank=True, null=True)
+    h50_pf = models.DurationField(blank=True, null=True)
+    h100_pf = models.DurationField(blank=True, null=True)
+    horas_totais = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_menos_quentes = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    saldo_negativo_acumulado = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_pagar = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'fechamento_mensal'
+
+
 class Feriado(models.Model):
     id = models.DateField(primary_key=True)
     descricao = models.CharField()
