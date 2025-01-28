@@ -9,6 +9,8 @@ urlpatterns = [
   path('produto/<int:pk>', produto_detail.as_view()),
   path('numeracao', Numeracao_list.as_view()),
   path('numeracao/<int:pk>', Numeracao_detail.as_view()),
+  path('ficha', Ficha_list.as_view()),
+  path('ficha/<str:pk>', Ficha_detail.as_view()),
   
   
   path('funcao/<str:method>', funcao),

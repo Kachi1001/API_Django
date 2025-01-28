@@ -6,6 +6,17 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+
+
+class AdicionalPf(models.Model):
+    colaborador = models.ForeignKey('Colaborador', models.DO_NOTHING, db_column='colaborador')
+    data_inicial = models.DateField()
+    data_final = models.DateField(blank=True, null=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'adicional_pf'
 # Unable to inspect table 'atividade'
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'atividade_horas'
@@ -270,6 +281,15 @@ class ProximoPeriodo(models.Model):
     class Meta:
         managed = False
         db_table = 'proximo_periodo'
+
+
+class TetoQuinquenio(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'teto_quinquenio'
 
 
 class Ultimo(models.Model):

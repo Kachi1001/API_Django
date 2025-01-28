@@ -79,12 +79,35 @@ class Numeracao(serializers.ModelSerializer):
         def get_colaborador(self, obj):
             colabs = depto.Colaborador.objects.all()
             return f"{colabs.get(id=obj.colaborador).nome}"
+class Ficha(serializers.ModelSerializer):
+    class Meta:
+        model = models.Ficha
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.SerializerMethodField()
+        class Meta:
+            model = models.Ficha
+            fields = ['value', 'text','colaborador']  # Ou liste os campos que deseja expor na API 
+        def get_text(self, obj):
+            comp = 'Completa' if obj.completa else 'Incompleta'
+            return f"Página - {obj.pagina} | {comp}" 
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SerializerMethodField()
+        class Meta:
+            model = models.Ficha
+            fields = ['id','colaborador','pagina','completa']  # Ou liste os campos que deseja expor na API
+
+        def get_colaborador(self, obj):
+            colabs = depto.Colaborador.objects.all()
+            return f"{colabs.get(id=obj.colaborador).nome}"
 Select = {
     'obra': obra.Select['obra']['almox'],
     'colaborador': depto.ColaboradorSelect,
     'epi_movimentacao': EpiMovimentacao.Select,
     'epi_cadastro': EpiCadastro.Select,
     'produto': Produto.Select,
+    'ficha': Ficha.Select,
 }    
 Table = {
     'epi_cadastro': EpiCadastro.Table,

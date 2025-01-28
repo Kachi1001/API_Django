@@ -34,7 +34,11 @@ def tabela(request, table):
 
 resources = util.get_resources(models)
 resources['epi_movimentacao']['select'] += ['colaborador','obra','produto']
+resources['ficha']['select'] += ['colaborador']
+resources['epi_movimentacao']['text'] += ['ficha']
+resources['epi_movimentacao']['select'].remove('ficha')
 resources['numeracao']['select'] += ['colaborador']
+
 
 
 @api_view(['GET'])
@@ -103,4 +107,14 @@ class Numeracao_list(util.LC):
 
 class Numeracao_detail(util.RUD):
     serializer_class = serializers.Numeracao
+    queryset = serializer_class.Meta.model.objects.all()
+    
+# Numeração
+class Ficha_list(util.LC):
+    serializer_class = serializers.Ficha
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['colaborador']
+    
+class Ficha_detail(util.RUD):
+    serializer_class = serializers.Ficha
     queryset = serializer_class.Meta.model.objects.all()

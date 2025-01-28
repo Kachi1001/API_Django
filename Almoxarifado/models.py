@@ -34,6 +34,7 @@ class EpiMovimentacao(models.Model):
     devolvido = models.BooleanField(blank=True, null=True)
     assinado = models.BooleanField(blank=True, null=True)
     ficha = models.ForeignKey('Ficha', models.DO_NOTHING, db_column='ficha', blank=True, null=True)
+    papel = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -44,7 +45,8 @@ class Ficha(models.Model):
     id = models.CharField(primary_key=True)
     colaborador = models.IntegerField()
     pagina = models.IntegerField()
-    completa = models.BooleanField()
+    completa = models.BooleanField(blank=True, null=True)
+    url = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -72,7 +74,7 @@ class Numeracao(models.Model):
 class Produto(models.Model):
     produto = models.CharField()
     descricao = models.CharField(blank=True, null=True)
-    durabilidade = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    durabilidade = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
