@@ -78,7 +78,10 @@ def create_select(request, resource, Select):
         queryset = serial.Meta.model.objects.all()
         values = serial(queryset.order_by('pk'), many= True).data
     except:
-        values = serial
+        try:
+            values = serial()
+        except :
+            values = serial
     return Response(values)
 
 from rest_framework import generics
