@@ -185,6 +185,7 @@ class Profissoes(models.Model):
     class Meta:
         managed = False
         db_table = 'profissoes'
+        
 
 
 class Questionario(models.Model):

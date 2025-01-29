@@ -27,4 +27,4 @@ class pontuacao_experiencias(models.Model):
     class Meta:
         managed = False
         db_table = 'pontuacao_experiencias'
-        
+

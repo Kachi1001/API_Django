@@ -27,6 +27,9 @@ class Escolaridade(serializers.ModelSerializer):
             model = models.EscolaridadeTipo
             fields = '__all__'  # Ou liste os campos que deseja expor na API
             
+    def Select_ordered():   
+        return Escolaridade.Select(models.EscolaridadeTipo.objects.all().order_by('indice'), many=True).data
+    
 class Experiencia(serializers.ModelSerializer):
     class Meta:
         model = models.Experiencia
@@ -69,10 +72,13 @@ class Profissoes(serializers.ModelSerializer):
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.CharField(source='funcao')
-
         class Meta:
             model = models.Profissoes
-            fields =  ['value','text']  # Ou liste os campos que deseja expor na API
+            fields =  ['value','text']  # Ou liste os campos que deseja expor na API7
+    def Select_ordered():
+        response = Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data
+        return response
+    
 class Entrevista(serializers.ModelSerializer):
     class Meta:
         model = models.Entrevista
@@ -187,8 +193,8 @@ Select = {
     'candidato': Candidato.Select,
     'cnh': Cnh.Select,
     'estado_civil': EstadoCivil.Select,
-    'escolaridade': Escolaridade.Select(models.EscolaridadeTipo.objects.all().order_by('indice'), many=True).data,
-    'profissao': Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data,
+    'escolaridade': Escolaridade.Select_ordered,
+    'profissao': Profissoes.Select_ordered,
     'banco_talentos': Entrevista_classificacao.Select,
     'setor': Setor.Select,
     'indicacao': Indicacao.Select,
