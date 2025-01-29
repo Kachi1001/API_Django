@@ -99,7 +99,9 @@ class ColaboradorSelect(serializers.ModelSerializer):
     
     class Meta:
         model = ColaboradorSerializer.Meta.model
-        fields = ['value','text']  # Ou liste os campos que deseja expor na API    
+        fields = ['value','text']  # Ou liste os campos que deseja expor na API
+    def Select_encarregado():
+        return ColaboradorSelect(models.Colaborador.objects.all().filter(encarregado=True, demissao__isnull=True),many=True).data
 
 class TipoAtividadeSelect(serializers.ModelSerializer):
     value = serializers.CharField(source='tipo')
@@ -118,5 +120,5 @@ Select = {
     'colaborador': ColaboradorSelect,
     'atividade': TipoAtividadeSelect,
     'indice': [{'text':'ATESTADO'},{'text':'DISPENSAS E FOLGAS'},{'text':'FALTAS'},{'text':'FÉRIAS'},{'text':'OBRAS ENGENHARIA'},{'text':'RETRABALHOS'},{'text':'SERVIÇOS INTERNOS'},{'text':'SERVIÇOS INTERNOS'}, {'text':'TREINAMENTO'},{'text':'SERVIÇOS PARA O GRUPO'}],
-    'encarregado': ColaboradorSelect(models.Colaborador.objects.all().filter(encarregado=True, demissao__isnull=True),many=True).data
+    'encarregado': ColaboradorSelect.Select_encarregado
 }    
