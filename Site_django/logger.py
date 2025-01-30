@@ -3,6 +3,7 @@ from django.utils.deprecation import MiddlewareMixin
 from Home.models import LogEntry
 import time
 from decouple import config
+from datetime import datetime
 
 logger = logging.getLogger('Site_django')
 
@@ -22,6 +23,7 @@ class LoggingMiddleware(MiddlewareMixin):
             server = config('DJ_SERVER')
             version = config('DJ_VERSION')
             LogEntry.objects.create(
+                timestamp=datetime.now(),
                 ip_address=ip_address,
                 username=username,
                 endpoint=endpoint,
