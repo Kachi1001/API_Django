@@ -96,6 +96,7 @@ class Entrevista(models.Model):
     avaliacao_final = models.CharField()
     revisar_periodo = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
 
     class Meta:
         managed = False
@@ -205,6 +206,7 @@ class Questionario(models.Model):
     possui_trabalhista = models.BooleanField(blank=True, null=True)
     possui_criminal = models.BooleanField(blank=True, null=True)
     teve_acidente = models.BooleanField(blank=True, null=True)
+    consome_alcool = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
