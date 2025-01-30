@@ -185,7 +185,6 @@ class Profissoes(models.Model):
     class Meta:
         managed = False
         db_table = 'profissoes'
-        
 
 
 class Questionario(models.Model):
@@ -203,6 +202,9 @@ class Questionario(models.Model):
     judicial = models.CharField(blank=True, null=True)
     data = models.DateField(blank=True, null=True)
     consulta = models.BooleanField()
+    possui_trabalhista = models.BooleanField(blank=True, null=True)
+    possui_criminal = models.BooleanField(blank=True, null=True)
+    teve_acidente = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False

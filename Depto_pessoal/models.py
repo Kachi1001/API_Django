@@ -8,6 +8,21 @@
 from django.db import models
 
 
+class AdicionaisCustos(models.Model):
+    id = models.DateField(primary_key=True)
+    trabalhista = models.DecimalField(max_digits=10, decimal_places=2)
+    epi_uniforme = models.DecimalField(max_digits=10, decimal_places=2)
+    vale_transporte = models.DecimalField(max_digits=10, decimal_places=2)
+    auxilio_escolar = models.DecimalField(max_digits=10, decimal_places=2)
+    serplamed = models.DecimalField(max_digits=10, decimal_places=2)
+    seguro_vida = models.DecimalField(max_digits=10, decimal_places=2)
+    treinamento_nrs = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'adicionais_custos'
+
+
 class AdicionalPf(models.Model):
     colaborador = models.ForeignKey('Colaborador', models.DO_NOTHING, db_column='colaborador')
     data_inicial = models.DateField()
@@ -17,6 +32,15 @@ class AdicionalPf(models.Model):
     class Meta:
         managed = False
         db_table = 'adicional_pf'
+
+
+class Alimentacao(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'alimentacao'
 # Unable to inspect table 'atividade'
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'atividade_horas'
@@ -255,6 +279,7 @@ class Ocupacao(models.Model):
     terceiro = models.BooleanField()
     diaria = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     equipe = models.ForeignKey(Equipe, models.DO_NOTHING, db_column='equipe')
+    extra = models.BooleanField()
 
     class Meta:
         managed = False
