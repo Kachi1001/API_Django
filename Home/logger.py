@@ -23,7 +23,6 @@ class LoggingMiddleware(MiddlewareMixin):
             server = config('DJ_SERVER')
             version = config('DJ_VERSION')
             LogEntry.objects.create(
-                timestamp=datetime.now(),
                 ip_address=ip_address,
                 username=username,
                 endpoint=endpoint,
