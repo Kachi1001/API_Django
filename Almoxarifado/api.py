@@ -4,6 +4,25 @@ from Site_django import util
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+def funcao(request, method):
+    def sql(value): 
+        from Site_django.util import format_sql
+        return format_sql(request.data,value)
+
+    try:
+        funcoes = {
+            'baixar_tecnicon': f'baixar_tecnicon({sql('epi')},{sql('obra')})',  #nova funcao sql
+            'assinar': f'assinar({sql('colab')},{sql('data')})',  #nova funcao sql
+        }
+        func = funcoes.get(method)
+    except:
+        return util.funcao_sql(request, method +'()')
+
+    return util.funcao_sql(request, func)
+
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
 @api_view(['GET'])
@@ -15,8 +34,15 @@ def tabela(request, table):
 
 resources = util.get_resources(models)
 resources['epi_movimentacao']['select'] += ['colaborador','obra','produto']
+resources['ficha']['select'] += ['colaborador']
+resources['epi_movimentacao']['text'] += ['ficha']
+resources['epi_movimentacao']['select'].remove('ficha')
+resources['numeracao']['select'] += ['colaborador']
+
+
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
 def resource(request, name):
     if resources.get(name):
         return Response(resources.get(name))
@@ -74,3 +100,21 @@ class produto_detail(util.RUD):
     serializer_class = serializers.Produto
     queryset = serializer_class.Meta.model.objects.all()
     
+# Numeração
+class Numeracao_list(util.LC):
+    serializer_class = serializers.Numeracao
+    queryset = serializer_class.Meta.model.objects.all()
+
+class Numeracao_detail(util.RUD):
+    serializer_class = serializers.Numeracao
+    queryset = serializer_class.Meta.model.objects.all()
+    
+# Numeração
+class Ficha_list(util.LC):
+    serializer_class = serializers.Ficha
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['colaborador']
+    
+class Ficha_detail(util.RUD):
+    serializer_class = serializers.Ficha
+    queryset = serializer_class.Meta.model.objects.all()

@@ -20,7 +20,7 @@ class ColaboradorSelect(serializers.ModelSerializer):
 
     class Meta:
         model = Colaborador
-        fields = ['value','text']  # Ou liste os campos que deseja expor na API    
+        fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
 
 
 class PeriodoAquisitivoSerializer(serializers.ModelSerializer):

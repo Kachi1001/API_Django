@@ -6,6 +6,41 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+
+
+class AdicionaisCustos(models.Model):
+    id = models.DateField(primary_key=True)
+    trabalhista = models.DecimalField(max_digits=10, decimal_places=2)
+    epi_uniforme = models.DecimalField(max_digits=10, decimal_places=2)
+    vale_transporte = models.DecimalField(max_digits=10, decimal_places=2)
+    auxilio_escolar = models.DecimalField(max_digits=10, decimal_places=2)
+    serplamed = models.DecimalField(max_digits=10, decimal_places=2)
+    seguro_vida = models.DecimalField(max_digits=10, decimal_places=2)
+    treinamento_nrs = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'adicionais_custos'
+
+
+class AdicionalPf(models.Model):
+    colaborador = models.ForeignKey('Colaborador', models.DO_NOTHING, db_column='colaborador')
+    data_inicial = models.DateField()
+    data_final = models.DateField(blank=True, null=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'adicional_pf'
+
+
+class Alimentacao(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'alimentacao'
 # Unable to inspect table 'atividade'
 # The error was: user mapping not found for "dev_api"
 # Unable to inspect table 'atividade_horas'
@@ -67,6 +102,27 @@ class Equipe(models.Model):
     class Meta:
         managed = False
         db_table = 'equipe'
+
+
+class FechamentoMensal(models.Model):
+    colaborador = models.CharField(blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    h50 = models.DurationField(blank=True, null=True)
+    h100 = models.DurationField(blank=True, null=True)
+    horas_escritorio = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    salario_insalub = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    hora = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    dispensas = models.DurationField(blank=True, null=True)
+    h50_pf = models.DurationField(blank=True, null=True)
+    h100_pf = models.DurationField(blank=True, null=True)
+    horas_totais = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_menos_quentes = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    saldo_negativo_acumulado = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    valor_pagar = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'fechamento_mensal'
 
 
 class Feriado(models.Model):
@@ -223,6 +279,7 @@ class Ocupacao(models.Model):
     terceiro = models.BooleanField()
     diaria = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     equipe = models.ForeignKey(Equipe, models.DO_NOTHING, db_column='equipe')
+    extra = models.BooleanField()
 
     class Meta:
         managed = False
@@ -249,6 +306,15 @@ class ProximoPeriodo(models.Model):
     class Meta:
         managed = False
         db_table = 'proximo_periodo'
+
+
+class TetoQuinquenio(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'teto_quinquenio'
 
 
 class Ultimo(models.Model):

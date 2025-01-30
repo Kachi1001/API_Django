@@ -5,6 +5,38 @@ from django.http import JsonResponse
 from django.core.cache import cache
 from Home.models import AuthUser
 from functools import wraps
+
+from django.conf import settings
+import psycopg2
+def funcao_sql(request, sql): 
+    app = request.META['PATH_INFO'][1:].split('/')[0]
+    db = settings.DATABASES['default']
+    conn = psycopg2.connect(dbname=app, user=db['USER'], password=db['PASSWORD'], host=db['HOST'], port=db['PORT'])
+    cursor = conn.cursor()
+    print(sql)
+    try:
+        # Executando a função
+        cursor.execute(f"SELECT {sql}")
+        conn.commit()
+        # Retornando uma resposta de sucesso
+    except psycopg2.Error as e:
+        e = str(e)
+        if 'null value' in e:
+            e = f'Campo "{e.split('DETAIL:')[0].split('"')[1]}", não pode ser vazio'
+        return Response({'banco de dados': [str(e.split('CONTEXT:')[0])]}, status=400)
+    else:
+        return Response({'Atualizar':'Executado com sucesso com sucesso'}, status=200)
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def format_sql(request, value):
+    value = request.get(value)
+    if value != None:
+        return "'" + str(value) + "'"
+    return 'null'
+
 def cached(ttl=60):  # TTL (tempo de vida) em segundos
     def decorator(func):
         @wraps(func)
@@ -46,7 +78,10 @@ def create_select(request, resource, Select):
         queryset = serial.Meta.model.objects.all()
         values = serial(queryset.order_by('pk'), many= True).data
     except:
-        values = serial
+        try:
+            values = serial()
+        except :
+            values = serial
     return Response(values)
 
 from rest_framework import generics
