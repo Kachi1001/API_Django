@@ -3,7 +3,7 @@ from django.utils.deprecation import MiddlewareMixin
 from Home.models import LogEntry
 import time
 from decouple import config
-from datetime import datetime
+
 
 logger = logging.getLogger('Site_django')
 
@@ -32,6 +32,5 @@ class LoggingMiddleware(MiddlewareMixin):
                 server=server,
                 version=version,
             )
-
 
         return response
