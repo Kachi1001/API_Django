@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_filters',
-    'django_db_logger',
     ]
 
 INTERNAL_APP = []
