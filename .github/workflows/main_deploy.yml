@@ -27,7 +27,7 @@ jobs:
 
     - name: Atualizando arquivos
       run: |
-        sudo git pull origin $branch
+        sudo git pull origin $branch --force
         
     - name: Baixando bibliotecas
       run: |
