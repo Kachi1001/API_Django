@@ -20,18 +20,19 @@ class LoggingMiddleware(MiddlewareMixin):
             status_code = response.status_code
             server = config('DJ_SERVER')
             version = config('DJ_VERSION')
-            try:
-                LogEntry.objects.using('default').create(
-                    timestamp=timezone.now(),
-                    ip_address=ip_address or '0.0.0.0',
-                    username=username,
-                    endpoint=endpoint,
-                    method=method,
-                    status_code=status_code,
-                    response_time=duration,
-                    server=server,
-                    version=version,
-                )
-            except: pass
+            if method != 'HEAD':
+                try:
+                    LogEntry.objects.using('default').create(
+                        timestamp=timezone.now(),
+                        ip_address=ip_address or '0.0.0.0',
+                        username=username,
+                        endpoint=endpoint,
+                        method=method,
+                        status_code=status_code,
+                        response_time=duration,
+                        server=server,
+                        version=version,
+                    )
+                except: pass
 
         return response
