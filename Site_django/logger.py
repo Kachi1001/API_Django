@@ -1,11 +1,9 @@
-import logging
 from django.utils.deprecation import MiddlewareMixin
 from Home.models import LogEntry
 import time
 from decouple import config
+from django.utils import timezone
 
-
-logger = logging.getLogger('Site_django')
 
 class LoggingMiddleware(MiddlewareMixin):
     def process_request(self, request):
@@ -22,7 +20,8 @@ class LoggingMiddleware(MiddlewareMixin):
             status_code = response.status_code
             server = config('DJ_SERVER')
             version = config('DJ_VERSION')
-            LogEntry.objects.create(
+            LogEntry.objects.using('default').create(
+                timestamp=timezone.now(),
                 ip_address=ip_address,
                 username=username,
                 endpoint=endpoint,
@@ -32,5 +31,6 @@ class LoggingMiddleware(MiddlewareMixin):
                 server=server,
                 version=version,
             )
+
 
         return response
