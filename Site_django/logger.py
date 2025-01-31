@@ -24,7 +24,7 @@ class LoggingMiddleware(MiddlewareMixin):
                 try:
                     LogEntry.objects.using('default').create(
                         timestamp=timezone.now(),
-                        ip_address=ip_address or '0.0.0.0',
+                        ip_address=ip_address or request.META,
                         username=username,
                         endpoint=endpoint,
                         method=method,
