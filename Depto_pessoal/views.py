@@ -64,4 +64,11 @@ class Lembrete2(models.Model):
         managed = False
         db_table = 'lembrete_'
         
+class AvisoRetornoFerias(models.Model):
+    texto = models.CharField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'aviso_retorno_ferias'
+        
         

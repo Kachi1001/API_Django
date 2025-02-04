@@ -81,9 +81,15 @@ dictModels = {
     'integracao': Integracao.objects.all(),
     'epi_nr': views.EpiNr,
     'fechamentomensal': FechamentoMensal,
+    'aviso_retorno_ferias':views.AvisoRetornoFerias,
 }
 
    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def tabela_list(request): 
+    return Response(dictModels.keys())
+        
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table): 

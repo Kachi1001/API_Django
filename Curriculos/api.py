@@ -55,6 +55,13 @@ def funcao(request, metodo):
 
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def tabela_list(request): 
+    result = {'tabelas':table_models.keys(),'view':table_views.keys()}
+    return Response(result)
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):

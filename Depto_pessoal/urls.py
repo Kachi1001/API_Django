@@ -50,6 +50,7 @@ urlpatterns = [
   path('horas_ponto_import', HorasPonto_import),
   # path('horas_ponto/<str:pk>', HorasPonto_detail.as_view()),
   
+  path('tabela', tabela_list),
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),
   path('select/<str:resource>', select),
