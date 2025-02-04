@@ -366,23 +366,25 @@ def HorasPonto_import(request):
         arquivo = load_workbook(request.FILES['file'])
         try:
             tabela = arquivo['Relatório xlsx']
-        except KeyError:
-            return Response({'Arquivo':'Arquivo não compatível!'}, status=406)
+        except KeyError as e:
+            return Response({'Arquivo':'Arquivo não compatível!','detalhe':str(e)}, status=406)
         colabs = {}
         for colab in Colaborador.objects.all().values():
             colabs[colab.get('nome')] = colab.get('id')
 
         conflito = []
         linha = 2
-        while tabela[f'A{linha}'].value:
+        while tabela[f'A{linha}'].value and tabela[f'A{linha}'].value != 'Resumo':
             colab = tabela[f'A{linha}'].value
-            if not colab in colabs:
+            if not (colab in colabs) and not (colab in conflito):
                 conflito.append(colab)
             linha += 1
             
         if len(conflito) > 0:
-            conflito = ', '.join(conflito)
-            return Response({'Conflito':f'Colaboradores com nomes em conflito: {conflito}'}, status=406)
+            result = {}
+            for x in conflito:
+                result[x] = 'Colaborador não encontrado!'
+            return Response(result, status=406)
         
         limite = linha
         linha = 2
@@ -391,7 +393,7 @@ def HorasPonto_import(request):
                 data = datetime.strptime(tabela[f'B{linha}'].value.split(', ')[1], '%d/%m/%Y')
                 queryset_colab = models.Colaborador.objects.all()
                 colab = queryset_colab.get(id = colabs.get(tabela[f'A{linha}'].value))
-                models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)
+                lanc = models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)        
             except Exception as e:
                 print(e)
                 return Response({'Erro': f'Erro ao adicionar no banco, linha: {linha}'}, status=400)
