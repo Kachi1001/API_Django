@@ -53,6 +53,7 @@ class Candidato(models.Model):
     indicacao = models.CharField(max_length=255, blank=True, null=True)
     idade = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
     estado = models.ForeignKey('Estados', models.DO_NOTHING, db_column='estado', blank=True, null=True)
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao', blank=True, null=True)
 
     class Meta:
         managed = False

@@ -95,28 +95,14 @@ def get_user(request):
 
 def database_exception(funcao):
     def wrapper(*args, **kwargs):
-        action = ''
-        request = args[1]
-        status = 'Sucesso'
-        text = None 
-        path = request.META['PATH_INFO'][1:].split('/')
         try:
-            action = funcao(*args, **kwargs)
-            text = action.data
+            return funcao(*args, **kwargs)
         except DatabaseError as e:
-            status = 'Falhou'
-            text = {'data':request.data,'error':str(e)}
-            action =  Response(
+            return Response(
                 {"banco de dados": (str(e).split('CONTEXT')[0])},
                 status=500
             )            
-        if request.method != 'GET':
-            try:
-                user = get_user(request)
-                Log.objects.create(user_name=user.username, action=request.method, text=text or path[2] ,app=path[0],resource=path[1],status=status)
-            except:
-                pass
-        return action
+        
     return wrapper
 
 from Home.models import Log

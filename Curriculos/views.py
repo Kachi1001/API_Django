@@ -18,11 +18,15 @@ class resumo(models.Model):
         db_table = 'resumo'
         
 class pontuacao_experiencias(models.Model):
-    candidato = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=255)
     area = models.CharField(max_length=255)
-    nota = models.IntegerField()
-    setor = models.CharField(max_length=255)
+    pretensao = models.IntegerField()
+    banco_talentos = models.CharField(max_length=255)
+    endereco = models.CharField(max_length=255)
+    experiencia = models.CharField(max_length=255)
+    anos_exp = models.CharField(max_length=255)
+    disponibilidade = models.BooleanField()
     
     class Meta:
         managed = False

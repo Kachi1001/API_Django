@@ -1,9 +1,10 @@
+import Depto_pessoal.models
 from . import models, views, serializers
 from rest_framework.response import Response
 from Site_django import util
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
+import Depto_pessoal
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
@@ -25,6 +26,8 @@ def funcao(request, method):
 
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
+
+table_models['colaborador'] = Depto_pessoal.models.Colaborador
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):
@@ -33,14 +36,13 @@ def tabela(request, table):
     return util.get_table(request, table, dicts, serializers.Table)
 
 resources = util.get_resources(models)
+resources.update(util.get_resources(views)) 
 resources['epi_movimentacao']['select'] += ['colaborador','obra','produto']
 resources['ficha']['select'] += ['colaborador']
 resources['epi_movimentacao']['text'] += ['ficha']
 resources['epi_movimentacao']['select'].remove('ficha')
 resources['numeracao']['select'] += ['colaborador']
-
-
-
+     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def resource(request, name):
