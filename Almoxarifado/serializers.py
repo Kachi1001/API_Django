@@ -18,6 +18,8 @@ class Produto(serializers.ModelSerializer):
         class Meta:
             model = models.Produto  
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
+    def Select_ordened():
+        return Produto.Select(Produto.Select.Meta.model.objects.all().order_by('produto'), many=True).data
 
 class EpiCadastro(serializers.ModelSerializer):
     class Meta:
@@ -94,6 +96,10 @@ class Ficha(serializers.ModelSerializer):
         def get_text(self, obj):
             comp = 'Completa' if obj.completa else 'Incompleta'
             return f"Página - {obj.pagina} | {comp}" 
+    def Select_ordened():
+        classe = Ficha.Select
+        return classe(classe.Meta.model.objects.all().order_by('-pagina'), many=True).data
+
     class Table(serializers.ModelSerializer):
         colaborador = serializers.SerializerMethodField()
         class Meta:
@@ -131,14 +137,16 @@ class Colaborador(serializers.ModelSerializer):
         class Meta:
             model = models.Colaborador
             fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
+    def Select_ordened():
+        return Colaborador.Select(Colaborador.Select.Meta.model.objects.all().order_by('nome'), many=True).data
 
 Select = {
     'obra': Obra.Select,
-    'colaborador': Colaborador.Select,
+    'colaborador': Colaborador.Select_ordened,
     'epi_movimentacao': EpiMovimentacao.Select,
     'epi_cadastro': EpiCadastro.Select,
-    'produto': Produto.Select,
-    'ficha': Ficha.Select,
+    'produto': Produto.Select_ordened,
+    'ficha': Ficha.Select_ordened,
 }    
 Table = {
     'epi_cadastro': EpiCadastro.Table,
