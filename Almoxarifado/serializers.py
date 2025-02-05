@@ -103,40 +103,24 @@ class Ficha(serializers.ModelSerializer):
         def get_colaborador(self, obj):
             colabs = depto.Colaborador.objects.all()
             return f"{colabs.get(id=obj.colaborador).nome}"
-    class Almoxarifado():
-        def select():
-            class Select(serializers.ModelSerializer):
-                value = serializers.CharField(source='id')
-                text = serializers.SerializerMethodField()
-                
-                class Meta:
-                    model = models.Obra
-                    fields = ['value', 'text']
-
-                def get_text(self, obj):
-                    # Personalize a string combinando os atributos desejados
-                    return f"{obj.id} || {obj.cliente} - {obj.cidade}"
 class Obra(serializers.ModelSerializer):
     class Meta:
-        from Obra.models import Obra   
-        model = Obra
+        model = models.Obra
         fields = '__all__'  # Ou liste os campos que deseja expor na API
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.SerializerMethodField()
         
         class Meta:
-            from Obra.models import Obra   
-            model = Obra
+            model = models.Obra
             fields = ['value', 'text']
 
         def get_text(self, obj):
             # Personalize a string combinando os atributos desejados
-            return f"{obj.id} || {obj.cliente} - {obj.cidade}"
+            return f"{obj.id} || {obj.empresa} - {obj.cidade}"
 class Colaborador(serializers.ModelSerializer):
     class Meta:
-        from Depto_pessoal.models import Colaborador
-        model = Colaborador
+        model =  models.Colaborador
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
            
 
@@ -145,8 +129,7 @@ class Colaborador(serializers.ModelSerializer):
         text = serializers.CharField(source='nome')
 
         class Meta:
-            from Depto_pessoal.models import Colaborador
-            model = Colaborador
+            model = models.Colaborador
             fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
 
 Select = {

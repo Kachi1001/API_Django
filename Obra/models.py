@@ -6,14 +6,51 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-# Unable to inspect table 'alocacoes'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'atividade'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'atividade_horas'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'base_terceiros'
-# The error was: user mapping not found for "dev_api"
+
+
+class Atividade(models.Model):
+    colaborador = models.CharField(max_length=255)
+    dia = models.DateField()
+    descricao = models.CharField(max_length=600, blank=True, null=True)
+    indice = models.IntegerField()
+    diaseguinte = models.BooleanField()
+    horaini1 = models.TimeField()
+    horafim1 = models.TimeField()
+    horaini2 = models.TimeField(blank=True, null=True)
+    horafim2 = models.TimeField(blank=True, null=True)
+    horaini3 = models.TimeField(blank=True, null=True)
+    horafim3 = models.TimeField(blank=True, null=True)
+    perdevale = models.BooleanField(blank=True, null=True)
+    revisaorh = models.CharField(max_length=255, blank=True, null=True)
+    etapa1 = models.IntegerField(blank=True, null=True)
+    etapa2 = models.IntegerField(blank=True, null=True)
+    etapa3 = models.IntegerField(blank=True, null=True)
+    atividade = models.CharField(max_length=30)
+    obra = models.IntegerField()
+    diario = models.CharField(max_length=30, blank=True, null=True)
+    meiadiaria = models.BooleanField(blank=True, null=True)
+    supervisor = models.CharField(max_length=100, blank=True, null=True)
+    motivo = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'atividade'
+
+
+class AtividadeHoras(models.Model):
+    colaborador = models.CharField(blank=True, null=True)
+    dia = models.DateField(blank=True, null=True)
+    obra = models.IntegerField(blank=True, null=True)
+    hn = models.TimeField(blank=True, null=True)
+    h50 = models.TimeField(blank=True, null=True)
+    h100 = models.TimeField(blank=True, null=True)
+    competencia = models.CharField(blank=True, null=True)
+    dispensa = models.TimeField(blank=True, null=True)
+    falta = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'atividade_horas'
 
 
 class Cidade(models.Model):
@@ -23,10 +60,6 @@ class Cidade(models.Model):
     class Meta:
         managed = False
         db_table = 'cidade'
-# Unable to inspect table 'colaborador'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'colaborador_'
-# The error was: user mapping not found for "dev_api"
 
 
 class CotComposicao(models.Model):
@@ -64,20 +97,17 @@ class CustoAdm(models.Model):
     class Meta:
         managed = False
         db_table = 'custo_adm'
-# Unable to inspect table 'descontos_resumo'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'dia'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'diarias'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'diarioobra'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'django_migrations'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'efetividade'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'etapa'
-# The error was: user mapping not found for "dev_api"
+
+
+class Dia(models.Model):
+    dia = models.DateField()
+    diasemana = models.IntegerField()
+    feriado = models.BooleanField()
+    programacao = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'dia'
 
 
 class FdCompra(models.Model):
@@ -154,26 +184,24 @@ class FdSobras(models.Model):
     class Meta:
         managed = False
         db_table = 'fd_sobras'
-# Unable to inspect table 'feriado'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'funcao'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'grafico'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'horas_mes'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'horas_totais'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'incompletos'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'inconsistencias'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'indicadores'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'indiceobra'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'localizacaoprogramada'
-# The error was: user mapping not found for "dev_api"
+
+
+class Indicadores(models.Model):
+    competencia = models.TextField(blank=True, null=True)
+    indice = models.CharField(max_length=100, blank=True, null=True)
+    numeric = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'indicadores'
+
+
+class Indiceobra(models.Model):
+    indice = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'indiceobra'
 
 
 class MatCategoria(models.Model):
@@ -243,8 +271,22 @@ class Medicoes(models.Model):
     class Meta:
         managed = False
         db_table = 'medicoes'
-# Unable to inspect table 'obra'
-# The error was: user mapping not found for "dev_api"
+
+
+class Obra2(models.Model):
+    orcamento = models.CharField(max_length=20)
+    retrabalho = models.CharField(max_length=20, blank=True, null=True)
+    empresa = models.CharField(max_length=100)
+    cidade = models.CharField(max_length=100)
+    descricao = models.CharField(max_length=500, blank=True, null=True)
+    finalizada = models.BooleanField()
+    indice = models.CharField(max_length=100)
+    supervisor = models.CharField(max_length=100, blank=True, null=True)
+    tecnicon = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'obra'
 
 
 class Obra(models.Model):
@@ -325,25 +367,3 @@ class Realizado(models.Model):
     class Meta:
         managed = False
         db_table = 'realizado'
-# Unable to inspect table 'revisao_terceiros'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'sub'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'subconsulta_lancamento'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'supervisor'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'tecnicon'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'temp'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'temp2'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'temp3'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'temp4'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'temp5'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'tipo_atividade'
-# The error was: user mapping not found for "dev_api"

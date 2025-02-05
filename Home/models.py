@@ -157,12 +157,11 @@ class LogEntry(models.Model):
     method = models.CharField(max_length=10, blank=True, null=True)
     status_code = models.IntegerField(blank=True, null=True)
     response_time = models.FloatField(blank=True, null=True)
-    app = models.CharField(max_length=50, blank=True, null=True)
     server = models.CharField(max_length=5, blank=True, null=True)
     version = models.CharField(max_length=5, blank=True, null=True)
     response = models.CharField(max_length=255000, blank=True, null=True)
-    log_api = models.ForeignKey(Log, models.DO_NOTHING, db_column='request', blank=True, null=True)
-    query_params = models.JSONField()
+    log_api = models.ForeignKey(Log, models.DO_NOTHING, db_column='log_api', blank=True, null=True)
+    query_params = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False

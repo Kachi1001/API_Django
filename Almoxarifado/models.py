@@ -9,7 +9,6 @@ from django.db import models
 
 
 class Colaborador(models.Model):
-    id = models.IntegerField(blank=True, primary_key=True)
     nome = models.CharField(blank=True, null=True)
     cpf = models.CharField(blank=True, null=True)
     rg = models.CharField(blank=True, null=True)
@@ -81,7 +80,6 @@ class Numeracao(models.Model):
 
 
 class Obra(models.Model):
-    id = models.IntegerField(primary_key=True)
     orcamento = models.CharField(max_length=20)
     retrabalho = models.CharField(max_length=20, blank=True, null=True)
     empresa = models.CharField(max_length=100)
@@ -90,7 +88,6 @@ class Obra(models.Model):
     finalizada = models.BooleanField()
     indice = models.CharField(max_length=100)
     supervisor = models.CharField(max_length=100, blank=True, null=True)
-    tecnicon = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -98,7 +95,6 @@ class Obra(models.Model):
 
 
 class Ocupacao(models.Model):
-    id = models.IntegerField(blank=True, primary_key=True)
     colaborador = models.IntegerField(blank=True, null=True)
     funcao = models.CharField(blank=True, null=True)
     data_inicio = models.DateField(blank=True, null=True)

@@ -23,6 +23,18 @@ class AdicionaisCustos(models.Model):
         db_table = 'adicionais_custos'
 
 
+class AdicionaisFolha(models.Model):
+    colaborador = models.ForeignKey('Colaborador', models.DO_NOTHING, db_column='colaborador')
+    competencia = models.CharField(max_length=7)
+    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    descricao = models.CharField(blank=True, null=True)
+    horas = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'adicionais_folha'
+
+
 class AdicionalPf(models.Model):
     colaborador = models.ForeignKey('Colaborador', models.DO_NOTHING, db_column='colaborador')
     data_inicial = models.DateField()
@@ -41,10 +53,51 @@ class Alimentacao(models.Model):
     class Meta:
         managed = False
         db_table = 'alimentacao'
-# Unable to inspect table 'atividade'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'atividade_horas'
-# The error was: user mapping not found for "dev_api"
+
+
+class Atividade(models.Model):
+    colaborador = models.CharField(max_length=255)
+    dia = models.DateField()
+    descricao = models.CharField(max_length=600, blank=True, null=True)
+    indice = models.IntegerField()
+    diaseguinte = models.BooleanField()
+    horaini1 = models.TimeField()
+    horafim1 = models.TimeField()
+    horaini2 = models.TimeField(blank=True, null=True)
+    horafim2 = models.TimeField(blank=True, null=True)
+    horaini3 = models.TimeField(blank=True, null=True)
+    horafim3 = models.TimeField(blank=True, null=True)
+    perdevale = models.BooleanField(blank=True, null=True)
+    revisaorh = models.CharField(max_length=255, blank=True, null=True)
+    etapa1 = models.IntegerField(blank=True, null=True)
+    etapa2 = models.IntegerField(blank=True, null=True)
+    etapa3 = models.IntegerField(blank=True, null=True)
+    atividade = models.CharField(max_length=30)
+    obra = models.IntegerField()
+    diario = models.CharField(max_length=30, blank=True, null=True)
+    meiadiaria = models.BooleanField(blank=True, null=True)
+    supervisor = models.CharField(max_length=100, blank=True, null=True)
+    motivo = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'atividade'
+
+
+class AtividadeHoras(models.Model):
+    colaborador = models.CharField(blank=True, null=True)
+    dia = models.DateField(blank=True, null=True)
+    obra = models.IntegerField(blank=True, null=True)
+    hn = models.TimeField(blank=True, null=True)
+    h50 = models.TimeField(blank=True, null=True)
+    h100 = models.TimeField(blank=True, null=True)
+    competencia = models.CharField(blank=True, null=True)
+    dispensa = models.TimeField(blank=True, null=True)
+    falta = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'atividade_horas'
 
 
 class ColabAvaliacao(models.Model):
@@ -90,8 +143,19 @@ class Dia(models.Model):
     class Meta:
         managed = False
         db_table = 'dia'
-# Unable to inspect table 'diarias'
-# The error was: user mapping not found for "dev_api"
+
+
+class Diarias(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    diaria = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    valor_diarias = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    valor_horas = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    horas = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'diarias'
 
 
 class Equipe(models.Model):
@@ -172,8 +236,21 @@ class Funcao(models.Model):
     class Meta:
         managed = False
         db_table = 'funcao_'
-# Unable to inspect table 'horas_mes'
-# The error was: user mapping not found for "dev_api"
+
+
+class HorasMes(models.Model):
+    competencia = models.TextField(blank=True, null=True)
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    contrato = models.CharField(max_length=20, blank=True, null=True)
+    folgas = models.DurationField(blank=True, null=True)
+    faltas = models.DurationField(blank=True, null=True)
+    dispensas = models.DurationField(blank=True, null=True)
+    he50 = models.DurationField(blank=True, null=True)
+    he100 = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'horas_mes'
 
 
 class HorasPonto(models.Model):
@@ -184,10 +261,36 @@ class HorasPonto(models.Model):
     class Meta:
         managed = False
         db_table = 'horas_ponto'
-# Unable to inspect table 'horas_totais'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'inconsistencias'
-# The error was: user mapping not found for "dev_api"
+
+
+class HorasTotais(models.Model):
+    colaborador = models.CharField(blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
+    hn = models.DurationField(blank=True, null=True)
+    h50 = models.DurationField(blank=True, null=True)
+    h100 = models.DurationField(blank=True, null=True)
+    disp = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'horas_totais'
+
+
+class Inconsistencias(models.Model):
+    colaborador = models.CharField(max_length=255, blank=True, null=True)
+    dia = models.DateField(blank=True, null=True)
+    atestados = models.DurationField(blank=True, null=True)
+    dispensas = models.DurationField(blank=True, null=True)
+    faltas = models.DurationField(blank=True, null=True)
+    ferias = models.DurationField(blank=True, null=True)
+    folgas = models.DurationField(blank=True, null=True)
+    treinamento = models.DurationField(blank=True, null=True)
+    atividade = models.DurationField(blank=True, null=True)
+    total = models.DurationField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'inconsistencias'
 
 
 class Insalubridade(models.Model):
@@ -263,10 +366,34 @@ class LembreteLog(models.Model):
     class Meta:
         managed = False
         db_table = 'lembrete_log'
-# Unable to inspect table 'localizacaoprogramada'
-# The error was: user mapping not found for "dev_api"
-# Unable to inspect table 'obra'
-# The error was: user mapping not found for "dev_api"
+
+
+class Localizacaoprogramada(models.Model):
+    colaborador = models.CharField(max_length=255)
+    iniciosemana = models.DateField()
+    encarregado = models.CharField(max_length=100, blank=True, null=True)
+    observacao = models.CharField(max_length=255, blank=True, null=True)
+    obra = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'localizacaoprogramada'
+
+
+class Obra(models.Model):
+    orcamento = models.CharField(max_length=20)
+    retrabalho = models.CharField(max_length=20, blank=True, null=True)
+    empresa = models.CharField(max_length=100)
+    cidade = models.CharField(max_length=100)
+    descricao = models.CharField(max_length=500, blank=True, null=True)
+    finalizada = models.BooleanField()
+    indice = models.CharField(max_length=100)
+    supervisor = models.CharField(max_length=100, blank=True, null=True)
+    tecnicon = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'obra'
 
 
 class Ocupacao(models.Model):
