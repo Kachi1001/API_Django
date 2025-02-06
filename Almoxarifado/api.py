@@ -81,7 +81,11 @@ class epimovimentacao_list(util.LC):
 class epimovimentacao_detail(util.RUD):
     serializer_class = serializers.EpiMovimentacao
     queryset = serializer_class.Meta.model.objects.all()
-
+    
+    # @util.database_exception
+    # def retrieve(self, request, *args, **kwargs):
+    #     self.serializer_class = serializers.EpiMovimentacao.Table
+    #     return super().retrieve(request, *args, **kwargs)
 
 class epicadastro_list(util.LC):
     serializer_class = serializers.EpiCadastro

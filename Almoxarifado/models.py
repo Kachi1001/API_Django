@@ -40,13 +40,16 @@ class EpiMovimentacao(models.Model):
     quantidade = models.IntegerField()
     colaborador = models.IntegerField()
     obra = models.IntegerField()
-    data_entrega = models.DateField()
+    data_entrega = models.DateField(blank=True, null=True)
     baixado = models.BooleanField(blank=True, null=True)
     data_baixa = models.DateField(blank=True, null=True)
     devolvido = models.BooleanField(blank=True, null=True)
     assinado = models.BooleanField(blank=True, null=True)
     ficha = models.ForeignKey('Ficha', models.DO_NOTHING, db_column='ficha', blank=True, null=True)
     papel = models.BooleanField(blank=True, null=True)
+    tamanho = models.CharField()
+    reposicao = models.CharField(blank=True, null=True)
+    produto = models.IntegerField()
 
     class Meta:
         managed = False
@@ -63,6 +66,14 @@ class Ficha(models.Model):
     class Meta:
         managed = False
         db_table = 'ficha'
+
+
+class FichaPadrao(models.Model):
+    produto = models.ForeignKey('Produto', models.DO_NOTHING, db_column='produto')
+
+    class Meta:
+        managed = False
+        db_table = 'ficha_padrao'
 
 
 class Numeracao(models.Model):

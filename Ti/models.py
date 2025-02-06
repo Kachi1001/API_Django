@@ -6,18 +6,8 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-
-
-class Colaborador(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    nome = models.CharField()
-    admissao = models.DateField(blank=True, null=True)
-    setor = models.CharField()
-    funcao = models.CharField()
-
-    class Meta:
-        managed = False
-        db_table = 'colaborador'
+# Unable to inspect table 'colaborador'
+# The error was: user mapping not found for "dev_api"
 
 
 class DjangoMigrations(models.Model):
@@ -31,38 +21,66 @@ class DjangoMigrations(models.Model):
         db_table = 'django_migrations'
 
 
-class Maquina(models.Model):
-    tipo = models.CharField(max_length=50)
-    aquisicao = models.DateField(blank=True, null=True)
-    marca = models.CharField(max_length=50, blank=True, null=True)
-    modelo = models.CharField(max_length=50, blank=True, null=True)
-    serial_number = models.CharField(blank=True, null=True)
-    descricao = models.CharField(blank=True, null=True)
+class Equipamento(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'maquina'
+        db_table = 'equipamento'
 
 
-class Padrao(models.Model):
-    chave = models.CharField()
-    relacionado = models.CharField()
+class EquipamentoModelo(models.Model):
+    marca = models.ForeignKey('Marca', models.DO_NOTHING, db_column='marca')
+    modelo = models.CharField()
+    tipo = models.ForeignKey('EquipamentoTipo', models.DO_NOTHING, db_column='tipo')
 
     class Meta:
         managed = False
-        db_table = 'padrao'
+        db_table = 'equipamento_modelo'
+
+
+class EquipamentoTipo(models.Model):
+    id = models.CharField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'equipamento_tipo'
+
+
+class Marca(models.Model):
+    marca = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'marca'
+
+
+class Modelo(models.Model):
+    marca = models.ForeignKey(Marca, models.DO_NOTHING, db_column='marca')
+    modelo = models.CharField()
+    tipo = models.ForeignKey('Tipo', models.DO_NOTHING, db_column='tipo')
+
+    class Meta:
+        managed = False
+        db_table = 'modelo'
 
 
 class Produto(models.Model):
-    chave = models.CharField()
-    maquina = models.CharField()
-    modelo = models.CharField(blank=True, null=True)
-    fabricante = models.CharField(blank=True, null=True)
-    serial_number = models.CharField(blank=True, null=True)
-    custo = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    data_aquisicao = models.DateField(blank=True, null=True)
+    modelo = models.IntegerField()
+    data_aquisicao = models.DateField()
     data_baixa = models.DateField(blank=True, null=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    quantidade = models.IntegerField()
+    unidade = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'produto'
+
+
+class Tipo(models.Model):
+    tipo = models.CharField()
+    categoria = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tipo'

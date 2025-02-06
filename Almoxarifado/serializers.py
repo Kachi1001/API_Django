@@ -36,7 +36,7 @@ class EpiCadastro(serializers.ModelSerializer):
 
         def get_text(self, obj):
             # Personalize a string combinando os atributos desejados
-            return f"{obj.id} | CA {obj.ca} | {obj.tamanho} | {obj.fabricante}"
+            return f"{obj.id} | {('CA ' + obj.ca) if obj.ca != 'S/CA' else obj.ca} | {obj.fabricante}"
             
     class Table(serializers.ModelSerializer):
         produto = serializers.SlugRelatedField(many=False,read_only=True, slug_field='produto')
@@ -57,6 +57,7 @@ class EpiMovimentacao(serializers.ModelSerializer):
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
     class Table(serializers.ModelSerializer):
         epi_cadastro = EpiCadastro.Table(many=False,read_only=True)
+        
         class Meta:
             model = models.EpiMovimentacao
             fields = '__all__'  # Ou liste os campos que deseja expor na API
