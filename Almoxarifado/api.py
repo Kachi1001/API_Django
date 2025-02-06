@@ -112,8 +112,9 @@ class Numeracao_detail(util.RUD):
 # Numeração
 class Ficha_list(util.LC):
     serializer_class = serializers.Ficha
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('-pagina')
     filterset_fields = ['colaborador']
+    
     
 class Ficha_detail(util.RUD):
     serializer_class = serializers.Ficha
