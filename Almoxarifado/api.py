@@ -39,8 +39,6 @@ resources = util.get_resources(models)
 resources.update(util.get_resources(views)) 
 resources['epi_movimentacao']['select'] += ['colaborador','obra','produto']
 resources['ficha']['select'] += ['colaborador']
-resources['epi_movimentacao']['text'] += ['ficha']
-resources['epi_movimentacao']['select'].remove('ficha')
 resources['numeracao']['select'] += ['colaborador']
      
 @api_view(['GET'])
@@ -120,3 +118,8 @@ class Ficha_list(util.LC):
 class Ficha_detail(util.RUD):
     serializer_class = serializers.Ficha
     queryset = serializer_class.Meta.model.objects.all()
+    
+class EpisValidos(util.LC):
+    serializer_class = serializers.EpisValidos.Table
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['id_colab']

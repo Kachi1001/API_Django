@@ -27,7 +27,7 @@ class EpiCadastro(models.Model):
     ca = models.CharField()
     validade = models.DateField()
     observacao = models.CharField(blank=True, null=True)
-    tamanho = models.CharField()
+    tamanho = models.CharField(blank=True, null=True)
     fabricante = models.CharField()
 
     class Meta:

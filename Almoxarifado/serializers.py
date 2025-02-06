@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 import Obra.models
-from . import models
+from . import models, views
 
 from Depto_pessoal import serializers as depto
 from Obra import serializers as obra     
@@ -39,10 +39,7 @@ class EpiCadastro(serializers.ModelSerializer):
             return f"{obj.id} | CA {obj.ca} | {obj.tamanho} | {obj.fabricante}"
             
     class Table(serializers.ModelSerializer):
-        produto = Produto(
-            many=False,
-            read_only=True,
-        )
+        produto = serializers.SlugRelatedField(many=False,read_only=True, slug_field='produto')
         class Meta:
             model = models.EpiCadastro
             fields = '__all__'  # Ou liste os campos que deseja expor na API
@@ -139,6 +136,13 @@ class Colaborador(serializers.ModelSerializer):
             fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
     def Select_ordened():
         return Colaborador.Select(Colaborador.Select.Meta.model.objects.all().order_by('nome'), many=True).data
+
+class EpisValidos():
+    class Table(serializers.ModelSerializer):
+        class Meta:
+            model = views.EpisValidos
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
+
 
 Select = {
     'obra': Obra.Select,
