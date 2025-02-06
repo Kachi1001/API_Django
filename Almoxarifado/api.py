@@ -74,6 +74,10 @@ def select(request, resource):
     return util.create_select(request, resource, Select)
         
 # Colaborador
+class colaborador(util.RUD):
+    serializer_class = serializers.Colaborador
+    queryset = serializer_class.Meta.model.objects.all()
+    
 class epimovimentacao_list(util.LC):
     serializer_class = serializers.EpiMovimentacao
     queryset = serializer_class.Meta.model.objects.all()
@@ -89,7 +93,7 @@ class epimovimentacao_detail(util.RUD):
 
 class epicadastro_list(util.LC):
     serializer_class = serializers.EpiCadastro
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('-id')
 
 class epicadastro_detail(util.RUD):
     serializer_class = serializers.EpiCadastro
@@ -98,7 +102,7 @@ class epicadastro_detail(util.RUD):
 
 class produto_list(util.LC):
     serializer_class = serializers.Produto
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('-id')
 
 class produto_detail(util.RUD):
     serializer_class = serializers.Produto
@@ -107,7 +111,7 @@ class produto_detail(util.RUD):
 # Numeração
 class Numeracao_list(util.LC):
     serializer_class = serializers.Numeracao
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('-id')
 
 class Numeracao_detail(util.RUD):
     serializer_class = serializers.Numeracao

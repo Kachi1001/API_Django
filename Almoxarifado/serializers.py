@@ -57,6 +57,7 @@ class EpiMovimentacao(serializers.ModelSerializer):
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
     class Table(serializers.ModelSerializer):
         epi_cadastro = EpiCadastro.Table(many=False,read_only=True)
+        produto = serializers.SlugRelatedField(many=False,read_only=True, slug_field='produto')
         
         class Meta:
             model = models.EpiMovimentacao

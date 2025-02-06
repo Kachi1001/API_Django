@@ -1,7 +1,6 @@
 from django.urls import path
 
 from .api import *
-import Depto_pessoal
 urlpatterns = [
   path('epi_movimentacao', epimovimentacao_list.as_view()),
   path('epi_movimentacao/<int:pk>', epimovimentacao_detail.as_view()),
@@ -14,7 +13,7 @@ urlpatterns = [
   path('ficha', Ficha_list.as_view()),
   path('ficha/<str:pk>', Ficha_detail.as_view()),
   path('epis_validos', EpisValidos.as_view()),
-  
+  path('colaborador/<int:pk>', colaborador.as_view()),
   path('funcao/<str:method>', funcao),
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),

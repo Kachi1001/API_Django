@@ -79,7 +79,10 @@ class EpisValidos(models.Model):
     tamanho = models.CharField()
     validade_uso = models.DateField()
     validade_ca = models.DateField()
+    ca = models.CharField()
+    situacao = models.CharField()
     
     class Meta:
+        ordering = ['situacao']
         managed = False
         db_table = 'epis_validos'

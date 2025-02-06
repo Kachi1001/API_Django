@@ -49,7 +49,7 @@ class EpiMovimentacao(models.Model):
     papel = models.BooleanField(blank=True, null=True)
     tamanho = models.CharField()
     reposicao = models.CharField(blank=True, null=True)
-    produto = models.IntegerField()
+    produto = models.ForeignKey('Produto', models.DO_NOTHING, db_column='produto')
 
     class Meta:
         managed = False
