@@ -128,6 +128,13 @@ class Ficha_detail(util.RUD):
     serializer_class = serializers.Ficha
     queryset = serializer_class.Meta.model.objects.all()
     
+class FichaPadrao_list(util.LC):
+    serializer_class = serializers.FichaPadrao
+    queryset = serializer_class.Meta.model.objects.all()
+class FichaPadrao_detail(util.RUD):
+    serializer_class = serializers.FichaPadrao
+    queryset = serializer_class.Meta.model.objects.all()
+    
 class EpisValidos(util.LC):
     serializer_class = serializers.EpisValidos.Table
     queryset = serializer_class.Meta.model.objects.all()

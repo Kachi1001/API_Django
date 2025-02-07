@@ -153,9 +153,10 @@ def get_table(request, table ,dicts, serializers = {}):
         except Exception as e:
             return Response({'error':f'Tabela não existe no banco ou está desativada {e}'},404)
 
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 def buildTable(request, queryset, serializer):   
-    from django.core.paginator import Paginator
-    from django.db.models import Q
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
     search_value = request.GET.get('search', '').strip()
     
@@ -165,22 +166,7 @@ def buildTable(request, queryset, serializer):
     sort_field = 'pk' if sort_field == 'undefined' else sort_field
     
     page_number = int(request.GET.get('offset', 1))
-
     page_size = int(request.GET.get('limit', 25))
-    # Filtrando com base na busca
-    if search_value:
-        preset = Q()
-        for x in fields:
-            final = x
-            if not('_' in x):
-                # x = field.split('_')
-                # final = x[0] + '__' + x[1] 
-                preset |= Q(**{f"{final}__icontains":search_value})
-                
-        try:
-            queryset = queryset.filter(preset)  # Ajuste o campo conforme necessário
-        except Exception as e:
-            print(e)
 
     # Ordenando os dados
     if sort_order == 'asc':
@@ -192,13 +178,32 @@ def buildTable(request, queryset, serializer):
     paginator = Paginator(queryset, page_size)
     page_obj = paginator.get_page(page_number / page_size + 1)
 
+    # Serializar primeiro
     rows = serializer(page_obj.object_list, many=True).data if serializer else list(page_obj.object_list.values())
 
+    # Filtrar APÓS serialização
+    if search_value:
+        search_value = search_value.lower()
+        filtered_rows = []
+        for row in rows:
+            for field in fields:
+                # Percorre os campos e verifica se o valor existe no resultado serializado
+                keys = field.split('.')
+                value = row
+                for key in keys:
+                    value = value.get(key, '') if isinstance(value, dict) else ''
+                if search_value in str(value).lower():
+                    filtered_rows.append(row)
+                    break  # Evita adicionar duplicados
+
+        rows = filtered_rows  # Atualiza os dados com os filtrados
+
     data = {
-        'total': paginator.count,
-        'rows': rows  # Ajuste os campos conforme necessário
+        'total': len(rows),  # Atualiza o total após o filtro
+        'rows': rows
     }
     return data
+
 
 def get_resources(models):
     classes = [nome for nome in dir(models) if nome.startswith('') and callable(getattr(models, nome))]

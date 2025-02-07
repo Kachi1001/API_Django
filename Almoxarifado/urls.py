@@ -12,6 +12,8 @@ urlpatterns = [
   path('numeracao/<int:pk>', Numeracao_detail.as_view()),
   path('ficha', Ficha_list.as_view()),
   path('ficha/<str:pk>', Ficha_detail.as_view()),
+  path('ficha_padrao', FichaPadrao_list.as_view()),
+  path('ficha_padrao/<str:pk>', FichaPadrao_detail.as_view()),
   path('epis_validos', EpisValidos.as_view()),
   path('colaborador/<int:pk>', colaborador.as_view()),
   path('funcao/<str:method>', funcao),
