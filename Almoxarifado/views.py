@@ -72,7 +72,7 @@ class ColabCompleto(models.Model):
         db_table = 'colab_completo'
         
 class EpisValidos(models.Model):
-    id_colab = models.IntegerField(primary_key=True)
+    id_colaborador = models.IntegerField(primary_key=True)
     nome = models.CharField()
     id_produto = models.IntegerField()
     produto = models.CharField()

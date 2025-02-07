@@ -131,4 +131,4 @@ class Ficha_detail(util.RUD):
 class EpisValidos(util.LC):
     serializer_class = serializers.EpisValidos.Table
     queryset = serializer_class.Meta.model.objects.all()
-    filterset_fields = ['id_colab']
+    filterset_fields = ['id_colaborador']
