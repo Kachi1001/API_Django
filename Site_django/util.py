@@ -177,10 +177,10 @@ def buildTable(request, queryset, serializer):
     # Paginação
     paginator = Paginator(queryset, page_size)
     page_obj = paginator.get_page(page_number / page_size + 1)
+    total = paginator.count
 
     # Serializar primeiro
     rows = serializer(page_obj.object_list, many=True).data if serializer else list(page_obj.object_list.values())
-
     # Filtrar APÓS serialização
     if search_value:
         search_value = search_value.lower()
@@ -197,9 +197,10 @@ def buildTable(request, queryset, serializer):
                     break  # Evita adicionar duplicados
 
         rows = filtered_rows  # Atualiza os dados com os filtrados
+        total = len(rows)  # Atualiza o total antes do filtro
 
     data = {
-        'total': len(rows),  # Atualiza o total após o filtro
+        'total': total,  # Atualiza o total após o filtro
         'rows': rows
     }
     return data
