@@ -139,3 +139,20 @@ class EpisValidos(util.LC):
     serializer_class = serializers.EpisValidos.Table
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['id_colaborador']
+    
+class Erros_list(util.LC):
+    serializer_class = serializers.Erros
+    queryset = serializer_class.Meta.model.objects.all()
+class Erros_detail(util.RUD):
+    serializer_class = serializers.Erros
+    queryset = serializer_class.Meta.model.objects.all()
+    
+from .template import template
+from django.http import FileResponse
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_impressao(request):
+    print(request.GET)
+    
+    template.excel_to_pdf_libreoffice("ficha_epi.xlsx", "temp.pdf")
+    return FileResponse(open("template/temp.pdf", 'rb'), as_attachment=True)

@@ -105,7 +105,6 @@ def database_exception(funcao):
         
     return wrapper
 
-from Home.models import Log
 from rest_framework.permissions import IsAuthenticated  
 class RUD(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, )    
@@ -154,7 +153,6 @@ def get_table(request, table ,dicts, serializers = {}):
             return Response({'error':f'Tabela não existe no banco ou está desativada {e}'},404)
 
 from django.core.paginator import Paginator
-from django.db.models import Q
 
 def buildTable(request, queryset, serializer):   
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
@@ -242,3 +240,20 @@ def get_classes(package):
                     if key == 'db_table':
                         result[value] = getattr(package, classe) 
     return result
+    
+import subprocess
+import subprocess
+
+def excel_to_pdf_libreoffice(input_excel, output_pdf):
+  """
+  Converte um arquivo Excel para PDF usando LibreOffice.
+  :param input_excel: Caminho do arquivo Excel de entrada.
+  :param output_pdf: Caminho do arquivo PDF de saída.
+  """
+  
+  libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
+  command = [
+      libreoffice_path, "--headless", "--convert-to", "pdf", "--outdir",
+      "/".join(output_pdf.split("/")[:-1]), input_excel
+  ]
+  subprocess.run(command)

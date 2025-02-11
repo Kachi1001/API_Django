@@ -127,3 +127,10 @@ class Produto(models.Model):
     class Meta:
         managed = False
         db_table = 'produto'
+
+class Erros(models.Model):
+    texto = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'erros'

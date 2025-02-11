@@ -169,7 +169,9 @@ class AreaAtuacao(serializers.ModelSerializer):
         class Meta:
             model = models.AreaAtuacao
             fields = ['value','text']
-        
+    def Select_ordered():   
+        return AreaAtuacao.Select(models.AreaAtuacao.objects.all().order_by('area'), many=True).data
+    
 class Classificacao(serializers.ModelSerializer):
     class Meta:
         model = models.Classificacao
@@ -199,5 +201,5 @@ Select = {
     'setor': Setor.Select,
     'indicacao': Indicacao.Select,
     'estado': Estado.Select,
-    'area_atuacao': AreaAtuacao.Select
+    'area_atuacao': AreaAtuacao.Select_ordered
 }    

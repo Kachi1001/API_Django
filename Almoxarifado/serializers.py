@@ -163,7 +163,10 @@ class EpisValidos():
             model = views.EpisValidos
             fields = '__all__'  # Ou liste os campos que deseja expor na API
 
-
+class Erros(serializers.ModelSerializer):
+    class Meta:
+        model = models.Erros
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
 Select = {
     'obra': Obra.Select,
     'colaborador': Colaborador.Select_ordened,
