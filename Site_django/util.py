@@ -7,6 +7,8 @@ from Home.models import AuthUser
 from functools import wraps
 
 from django.conf import settings
+from decouple import config
+
 import psycopg2
 def funcao_sql(request, sql): 
     app = request.META['PATH_INFO'][1:].split('/')[0]
@@ -251,9 +253,8 @@ def excel_to_pdf_libreoffice(input_excel, output_pdf):
   :param output_pdf: Caminho do arquivo PDF de saída.
   """
   
-  libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
   command = [
-      libreoffice_path, "--headless", "--convert-to", "pdf", "--outdir",
-      "/".join(output_pdf.split("/")[:-1]), input_excel
+      config('LIBRE_ROOT'), "--headless", "--convert-to", "pdf", "--outdir",
+      output_pdf, f'{settings.BASE_DIR}/{input_excel}'
   ]
   subprocess.run(command)
