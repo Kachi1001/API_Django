@@ -223,5 +223,5 @@ Select = {
     'indicacao': Indicacao.Select,
     'estado': Estados.Select_ordered,
     'area_atuacao': AreaAtuacao.Select_ordered,
-    'sub_area': AreaAtuacaoSub.Select_ordered,
+    'area_atuacao_sub': AreaAtuacaoSub.Select_ordered,
 }    

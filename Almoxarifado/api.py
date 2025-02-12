@@ -149,7 +149,6 @@ class Erros_detail(util.RUD):
     
 from decouple import config
 from Site_django import settings
-import shutil
 import os
 from openpyxl import load_workbook
 
@@ -170,12 +169,6 @@ def get_impressao(request):
     output_pdf = os.path.join(config('MEDIA_ROOT'), 'Almoxarifado', 'ficha_epi', f'{ficha}.pdf')
 
     try:
-        # if os.path.exists(output_pdf):
-        #     return Response({'message': 'Arquivo processado', 'pdf_path': f'http://tecnikaengenharia.ddns.net/media/Almoxarifado/ficha_epi/{input_data['ficha']}.pdf'})
-
-        # Converte o arquivo editado para PDF
-        # Supondo que util.excel_to_pdf_libreoffice aceita caminhos completos
-        
         cab = views.CabecalhoFicha.objects.get(ficha=ficha)
         
         arquivo = load_workbook(original)

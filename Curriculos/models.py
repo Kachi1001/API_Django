@@ -63,6 +63,7 @@ class Candidato(models.Model):
     idade = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
     estado = models.ForeignKey('Estados', models.DO_NOTHING, db_column='estado', blank=True, null=True)
     area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao', blank=True, null=True)
+    area_atuacao_sub = models.ForeignKey(AreaAtuacaoSub, models.DO_NOTHING, db_column='area_atuacao_sub', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -160,7 +161,7 @@ class Experiencia(models.Model):
     revisar = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
     area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
-    sub_area = models.ForeignKey(AreaAtuacaoSub, models.DO_NOTHING, db_column='sub_area')
+    area_atuacao_sub = models.ForeignKey(AreaAtuacaoSub, models.DO_NOTHING, db_column='area_atuacao_sub')
 
     class Meta:
         managed = False
