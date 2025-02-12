@@ -181,17 +181,34 @@ def buildTable(request, queryset, serializer):
     # Filtrar APÓS serialização
     if search_value:
         search_value = search_value.lower()
+        search_terms = [term.strip() for term in search_value.split(',')]
         filtered_rows = []
         for row in rows:
-            for field in fields:
-                # Percorre os campos e verifica se o valor existe no resultado serializado
-                keys = field.split('.')
-                value = row
-                for key in keys:
-                    value = value.get(key, '') if isinstance(value, dict) else ''
-                if search_value in str(value).lower():
-                    filtered_rows.append(row)
-                    break  # Evita adicionar duplicados
+            found_all_terms = True  # Assume que todos os termos serão encontrados
+
+            for term in search_terms:
+                if term == '':  # Ignora termos vazios
+                    continue
+                    
+                term_found = False  # Assume que o termo não foi encontrado ainda
+
+                for field in fields:
+                    keys = field.split('.')
+                    value = row
+                    for key in keys:
+                        value = value.get(key, '') if isinstance(value, dict) else ''
+                    
+                    if term in str(value).lower():  # Se o termo está presente no campo
+                        term_found = True
+                        break  # Para de procurar esse termo, pois já foi encontrado
+
+                if not term_found:  # Se um dos termos não foi encontrado, esse registro não serve
+                    found_all_terms = False
+                    break  # Não precisa verificar os outros termos
+
+            if found_all_terms:  # Se todos os termos foram encontrados, adiciona o registro
+                filtered_rows.append(row)
+
 
         rows = filtered_rows  # Atualiza os dados com os filtrados
         total = len(rows)  # Atualiza o total antes do filtro
