@@ -202,7 +202,7 @@ def buildTable(request, queryset, serializer):
     
     data = {
         'total': total,  # Atualiza o total após o filtro
-        'rows': rows
+        'rows': list(page_obj)
     }
     return data
 
