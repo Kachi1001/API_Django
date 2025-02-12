@@ -295,3 +295,7 @@ def excel_to_pdf_libreoffice(input_excel: str, output_pdf: str):
         os.rename(generated_pdf, output_pdf)
     else:
         raise FileNotFoundError("PDF gerado não encontrado após conversão")
+        
+        
+def Select_order_by(serializer, by):
+    return serializer(serializer.Meta.model.objects.all().order_by(by), many=True).data

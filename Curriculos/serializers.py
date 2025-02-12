@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from . import models
-
+from Site_django import util
         
         
 
@@ -35,24 +35,19 @@ class Experiencia(serializers.ModelSerializer):
         model = models.Experiencia
         fields = '__all__'  # Ou liste os campos que deseja expor na API
     class Table(serializers.ModelSerializer):
-        profissao = serializers.SlugRelatedField(
-            many=False,
-            read_only=True,
-            slug_field='funcao'
-        )
-        candidato = serializers.SlugRelatedField(
-            many=False,
-            read_only=True,
-            slug_field='nome'
-        )
         area_atuacao = serializers.SlugRelatedField(
             many=False,
             read_only=True,
             slug_field='area'
         )
+        sub_area = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='sub_area'
+        )
         class Meta:
             model = models.Experiencia
-            fields = '__all__'  # Ou liste os campos que deseja expor na API
+            fields = ['id','candidato','area_atuacao','sub_area','empresa','data_inicio','data_fim','tempo_anos','data_cadastro','revisar'] # Ou liste os campos que deseja expor na API
         
 class Questionario(serializers.ModelSerializer):
     class Meta:
@@ -151,14 +146,16 @@ class Indicacao():
             model = Colaborador
             fields = ['value']
             
-class Estado():
+class Estados():
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.CharField(source='nome')
         class Meta:
             model = models.Estados
             fields = ['value','text']
-            
+    def Select_ordered(): 
+        return util.Select_order_by(Estados.Select, 'nome')
+    
 class AreaAtuacao(serializers.ModelSerializer):
     class Meta:
         model = models.AreaAtuacao
@@ -170,7 +167,8 @@ class AreaAtuacao(serializers.ModelSerializer):
             model = models.AreaAtuacao
             fields = ['value','text']
     def Select_ordered():   
-        return AreaAtuacao.Select(models.AreaAtuacao.objects.all().order_by('area'), many=True).data
+        return util.Select_order_by(AreaAtuacao.Select, 'area')
+        
 
 class AreaAtuacaoSub(serializers.ModelSerializer):
     class Meta:
@@ -185,6 +183,16 @@ class AreaAtuacaoSub(serializers.ModelSerializer):
     def Select_ordered():   
         return AreaAtuacaoSub.Select(models.AreaAtuacaoSub.objects.all().order_by('sub_area'), many=True).data
     
+    class Table(serializers.ModelSerializer):
+        area_atuacao = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='area'
+        )
+        class Meta:
+            model = models.AreaAtuacaoSub
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
+            
 class Classificacao(serializers.ModelSerializer):
     class Meta:
         model = models.Classificacao
@@ -213,7 +221,7 @@ Select = {
     'banco_talentos': Entrevista_classificacao.Select,
     'setor': Setor.Select,
     'indicacao': Indicacao.Select,
-    'estado': Estado.Select,
+    'estado': Estados.Select_ordered,
     'area_atuacao': AreaAtuacao.Select_ordered,
     'sub_area': AreaAtuacaoSub.Select_ordered,
 }    
