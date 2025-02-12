@@ -121,7 +121,7 @@ class Colaborador(models.Model):
     avaliacao_recontratar = models.BooleanField(blank=True, null=True)
     pasta_servidor = models.CharField(blank=True, null=True)
     aviso_ponto = models.BooleanField(blank=True, null=True)
-    ctps = models.CharField()
+    ctps = models.CharField(blank=True, null=True)
     rg_emissor = models.CharField(blank=True, null=True)
 
     class Meta:
