@@ -273,22 +273,6 @@ class Medicoes(models.Model):
         db_table = 'medicoes'
 
 
-class Obra2(models.Model):
-    orcamento = models.CharField(max_length=20)
-    retrabalho = models.CharField(max_length=20, blank=True, null=True)
-    empresa = models.CharField(max_length=100)
-    cidade = models.CharField(max_length=100)
-    descricao = models.CharField(max_length=500, blank=True, null=True)
-    finalizada = models.BooleanField()
-    indice = models.CharField(max_length=100)
-    supervisor = models.CharField(max_length=100, blank=True, null=True)
-    tecnicon = models.CharField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'obra'
-
-
 class Obra(models.Model):
     id = models.IntegerField(primary_key=True)
     orcamento = models.CharField()

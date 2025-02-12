@@ -171,6 +171,19 @@ class AreaAtuacao(serializers.ModelSerializer):
             fields = ['value','text']
     def Select_ordered():   
         return AreaAtuacao.Select(models.AreaAtuacao.objects.all().order_by('area'), many=True).data
+
+class AreaAtuacaoSub(serializers.ModelSerializer):
+    class Meta:
+        model = models.AreaAtuacaoSub
+        fields = '__all__'  # Ou liste os campos que deseja expor na API 
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='sub_area')
+        class Meta: 
+            model = models.AreaAtuacaoSub
+            fields = ['value','text']
+    def Select_ordered():   
+        return AreaAtuacaoSub.Select(models.AreaAtuacaoSub.objects.all().order_by('sub_area'), many=True).data
     
 class Classificacao(serializers.ModelSerializer):
     class Meta:
@@ -201,5 +214,6 @@ Select = {
     'setor': Setor.Select,
     'indicacao': Indicacao.Select,
     'estado': Estado.Select,
-    'area_atuacao': AreaAtuacao.Select_ordered
+    'area_atuacao': AreaAtuacao.Select_ordered,
+    'sub_area': AreaAtuacaoSub.Select_ordered,
 }    

@@ -28,6 +28,15 @@ class AreaAtuacao(models.Model):
         db_table = 'area_atuacao'
 
 
+class AreaAtuacaoSub(models.Model):
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    sub_area = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'area_atuacao_sub'
+
+
 class AvaliacaoTipo(models.Model):
     id = models.CharField(primary_key=True)
 
@@ -77,16 +86,6 @@ class Cnh(models.Model):
     class Meta:
         managed = False
         db_table = 'cnh'
-
-
-class Conversao(models.Model):
-    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
-    area_relacionada = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_relacionada', related_name='conversao_area_relacionada_set')
-    porcentagem = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'conversao'
 
 
 class Entrevista(models.Model):
@@ -161,6 +160,7 @@ class Experiencia(models.Model):
     revisar = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
     area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    sub_area = models.ForeignKey(AreaAtuacaoSub, models.DO_NOTHING, db_column='sub_area')
 
     class Meta:
         managed = False

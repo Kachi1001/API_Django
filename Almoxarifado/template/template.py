@@ -16,4 +16,3 @@ def excel_to_pdf_libreoffice(input_excel, output_pdf):
   ]
   subprocess.run(command)
   
-excel_to_pdf_libreoffice("/template/ficha_epi.xlsx" , f'{config('MEDIA_ROOT')}/Almoxarifado/ficha_epi')

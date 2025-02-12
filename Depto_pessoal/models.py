@@ -121,6 +121,8 @@ class Colaborador(models.Model):
     avaliacao_recontratar = models.BooleanField(blank=True, null=True)
     pasta_servidor = models.CharField(blank=True, null=True)
     aviso_ponto = models.BooleanField(blank=True, null=True)
+    ctps = models.CharField()
+    rg_emissor = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -378,6 +380,20 @@ class Localizacaoprogramada(models.Model):
     class Meta:
         managed = False
         db_table = 'localizacaoprogramada'
+
+
+class Numeracao(models.Model):
+    id = models.IntegerField(primary_key=True)
+    colaborador = models.IntegerField()
+    bota = models.IntegerField(blank=True, null=True)
+    botina = models.IntegerField(blank=True, null=True)
+    luva = models.CharField(blank=True, null=True)
+    camisa = models.CharField(blank=True, null=True)
+    calca = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'numeracao'
 
 
 class Obra(models.Model):

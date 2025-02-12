@@ -86,3 +86,14 @@ class EpisValidos(models.Model):
         ordering = ['situacao']
         managed = False
         db_table = 'epis_validos'
+
+class CabecalhoFicha(models.Model):
+    id = models.IntegerField(primary_key=True)
+    nome = models.CharField()
+    funcao = models.CharField()
+    rg = models.CharField()
+    ctps = models.CharField()
+    ficha = models.CharField()
+    class Meta:
+        managed = False
+        db_table = 'cabecalho_ficha'

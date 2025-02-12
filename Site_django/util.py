@@ -243,18 +243,54 @@ def get_classes(package):
                         result[value] = getattr(package, classe) 
     return result
     
-import subprocess
+import os
 import subprocess
 
-def excel_to_pdf_libreoffice(input_excel, output_pdf):
-  """
-  Converte um arquivo Excel para PDF usando LibreOffice.
-  :param input_excel: Caminho do arquivo Excel de entrada.
-  :param output_pdf: Caminho do arquivo PDF de saída.
-  """
-  
-  command = [
-      config('LIBRE_ROOT'), "--headless", "--convert-to", "pdf", "--outdir",
-      output_pdf, f'{settings.BASE_DIR}/{input_excel}'
-  ]
-  subprocess.run(command)
+def excel_to_pdf_libreoffice(input_excel: str, output_pdf: str):
+    """
+    Converte um arquivo Excel para PDF usando LibreOffice.
+    
+    :param input_excel: Caminho COMPLETO do arquivo Excel de entrada (ex: /pasta/planilha.xlsx).
+    :param output_pdf: Caminho COMPLETO do arquivo PDF de saída (ex: /pasta/resultado.pdf).
+    """
+    # Verifica se o arquivo de entrada existe
+    if not os.path.exists(input_excel):
+        raise FileNotFoundError(f"Arquivo de entrada não encontrado: {input_excel}")
+
+    # Extrai diretório e nome do arquivo de saída
+    output_dir = os.path.dirname(output_pdf)
+    output_filename = os.path.basename(output_pdf)
+
+    # Garante que o diretório de saída existe
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Monta o comando corretamente
+    command = [
+        config('LIBRE_ROOT', default='libreoffice'),  # Permite configuração flexível
+        "--headless",
+        "--convert-to", "pdf",
+        "--outdir", output_dir,
+        input_excel
+    ]
+
+    # Executa o comando e verifica erros
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(f"Erro na conversão: {result.stderr}")
+
+    # O LibreOffice gera o PDF com o mesmo nome do arquivo de entrada
+    generated_pdf = os.path.join(
+        output_dir,
+        os.path.splitext(os.path.basename(input_excel))[0] + ".pdf"
+    )
+
+    # Renomeia para o nome desejado pelo usuário
+    if os.path.exists(generated_pdf):
+        os.rename(generated_pdf, output_pdf)
+    else:
+        raise FileNotFoundError("PDF gerado não encontrado após conversão")

@@ -34,7 +34,10 @@ urlpatterns = [
  
   path('classificacao', Classificacao_list.as_view()),
   path('classificacao/<str:pk>', Classificacao_detail.as_view()),
- 
+  
+  path('area_atuacao_sub', AreaAtuacaoSub_list.as_view()),
+  path('area_atuacao_sub/<str:pk>', AreaAtuacaoSub_detail.as_view()),
+
   path('tabela', tabela_list),
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),

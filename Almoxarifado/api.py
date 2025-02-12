@@ -147,12 +147,72 @@ class Erros_detail(util.RUD):
     serializer_class = serializers.Erros
     queryset = serializer_class.Meta.model.objects.all()
     
-from .template import template
-from django.http import FileResponse
+from decouple import config
+from Site_django import settings
+import shutil
+import os
+from openpyxl import load_workbook
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_impressao(request):
-    print(request.GET)
-    
-    template.excel_to_pdf_libreoffice("ficha_epi.xlsx", "temp.pdf")
-    return FileResponse(open("template/temp.pdf", 'rb'), as_attachment=True)
+    input_data = request.GET
+    if 'ficha' not in input_data:
+        return Response({'message': 'Parâmetro "ficha" não informado'}, status=400)
+
+    # Sanitiza o nome do arquivo para evitar injeção de caminhos
+    ficha = os.path.basename(input_data['ficha'])  # Remove paths
+    # Define caminhos usando os.path.join para compatibilidade entre sistemas
+    template_dir = os.path.join(settings.BASE_DIR, 'template', 'xlsx')
+    original = os.path.join(template_dir, 'ficha_epi.xlsx')
+    copia = os.path.join(template_dir, f'{ficha}.xlsx')
+
+    output_pdf = os.path.join(config('MEDIA_ROOT'), 'Almoxarifado', 'ficha_epi', f'{ficha}.pdf')
+
+    try:
+        # if os.path.exists(output_pdf):
+        #     return Response({'message': 'Arquivo processado', 'pdf_path': f'http://tecnikaengenharia.ddns.net/media/Almoxarifado/ficha_epi/{input_data['ficha']}.pdf'})
+
+        # Converte o arquivo editado para PDF
+        # Supondo que util.excel_to_pdf_libreoffice aceita caminhos completos
+        
+        cab = views.CabecalhoFicha.objects.get(ficha=ficha)
+        
+        arquivo = load_workbook(original)
+        aba = arquivo.active
+        aba['J1'] = cab.nome[:1]
+        aba['C5'] = cab.nome
+        aba['C6'] = cab.funcao
+        aba['C7'] = f'RG:  {cab.rg}'
+        aba['F7'] = f'CTPS:  {cab.ctps}'
+        aba['A7'] = f'FICHA:  {cab.ficha}'
+
+        try:
+            movs = models.EpiMovimentacao.objects.filter(ficha=ficha)
+            tick = 14
+            if len(movs) > 29:
+                return Response({'message': 'Número de movimentações excede o limite de 29'}, status=400)
+            for mov in movs:
+                aba[f'A{tick}'] = mov.quantidade
+                aba[f'B{tick}'] = mov.produto.produto
+                aba[f'D{tick}'] = mov.tamanho
+                aba[f'E{tick}'] = mov.data_entrega.strftime('%d/%m/%Y')
+                aba[f'G{tick}'] = mov.epi_cadastro.fabricante
+                aba[f'H{tick}'] = mov.epi_cadastro.ca
+                aba[f'I{tick}'] = mov.epi_cadastro.validade.strftime('%d/%m/%Y')
+                tick += 1
+        except models.EpiMovimentacao.DoesNotExist:
+            pass
+
+        
+        arquivo.save(copia)
+        util.excel_to_pdf_libreoffice(copia, output_pdf)
+        os.remove(copia)
+        return Response({'message': 'Arquivo processado', 'pdf_path': f'http://tecnikaengenharia.ddns.net/media/Almoxarifado/ficha_epi/{input_data['ficha']}.pdf'})
+
+    except FileNotFoundError as e:
+        return Response({'message': f'Arquivo template não encontrado {str(e)}'}, status=500)
+    except PermissionError:
+        return Response({'message': 'Permissão negada para escrever no diretório'}, status=500)
+    except Exception as e:
+        return Response({'message': f'Erro interno: {str(e)}'}, status=500)
