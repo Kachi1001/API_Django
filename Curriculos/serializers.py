@@ -40,14 +40,14 @@ class Experiencia(serializers.ModelSerializer):
             read_only=True,
             slug_field='area'
         )
-        sub_area = serializers.SlugRelatedField(
+        area_atuacao_sub = serializers.SlugRelatedField(
             many=False,
             read_only=True,
             slug_field='sub_area'
         )
         class Meta:
             model = models.Experiencia
-            fields = ['id','candidato','area_atuacao','sub_area','empresa','data_inicio','data_fim','tempo_anos','data_cadastro','revisar'] # Ou liste os campos que deseja expor na API
+            fields = ['id','candidato','area_atuacao','area_atuacao_sub','empresa','data_inicio','data_fim','tempo_anos','data_cadastro','revisar'] # Ou liste os campos que deseja expor na API
         
 class Questionario(serializers.ModelSerializer):
     class Meta:

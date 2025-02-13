@@ -155,7 +155,17 @@ def get_table(request, table ,dicts, serializers = {}):
             return Response({'error':f'Tabela não existe no banco ou está desativada {e}'},404)
 
 from django.core.paginator import Paginator
+import re
 
+def highlight_text(value, terms):
+    """Destaca os termos de pesquisa dentro do valor."""
+    if not isinstance(value, str):
+        return value
+    for term in terms:
+        regex = re.compile(re.escape(term), re.IGNORECASE)
+        value = regex.sub(f'<mark>{term.upper()}</mark>', value)
+    return value
+    
 def buildTable(request, queryset, serializer):   
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
     search_value = request.GET.get('search', '').strip()
@@ -181,15 +191,12 @@ def buildTable(request, queryset, serializer):
     # Filtrar APÓS serialização
     if search_value:
         search_value = search_value.lower()
-        search_terms = [term.strip() for term in search_value.split(',')]
+        search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
         filtered_rows = []
         for row in rows:
             found_all_terms = True  # Assume que todos os termos serão encontrados
 
             for term in search_terms:
-                if term == '':  # Ignora termos vazios
-                    continue
-                    
                 term_found = False  # Assume que o termo não foi encontrado ainda
 
                 for field in fields:
@@ -207,18 +214,26 @@ def buildTable(request, queryset, serializer):
                     break  # Não precisa verificar os outros termos
 
             if found_all_terms:  # Se todos os termos foram encontrados, adiciona o registro
+            # Destacar os textos que correspondem à pesquisa
+                for field in fields:
+                    keys = field.split('.')
+                    value = row
+                    for key in keys:
+                        if isinstance(value, dict) and key in value:
+                            print(key)
+                            value[key] = highlight_text(value[key], search_terms)
+                        elif key in row:
+                            row[key] = highlight_text(row[key], search_terms)
                 filtered_rows.append(row)
 
 
         rows = filtered_rows  # Atualiza os dados com os filtrados
-        total = len(rows)  # Atualiza o total antes do filtro
 
     paginator = Paginator(rows, page_size)
     page_obj = paginator.get_page(page_number / page_size + 1)
-    total = paginator.count
     
     data = {
-        'total': total,  # Atualiza o total após o filtro
+        'total': paginator.count,  # Atualiza o total após o filtro
         'rows': list(page_obj)
     }
     return data
