@@ -235,9 +235,7 @@ class FeriasProcessadas_detail(util.RUD):
 class FeriasUtilizadas_list(util.LC):
     serializer_class = serializers.FeriasUtilizadas
     queryset = serializer_class.Meta.model.objects.all().order_by('-id')
-    
     filterset_fields = ['colaborador']
-            
 class FeriasUtilizadas_detail(util.RUD):
     serializer_class = serializers.FeriasUtilizadas
     queryset = serializer_class.Meta.model.objects.all()
