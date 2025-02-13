@@ -157,6 +157,43 @@ def get_table(request, table ,dicts, serializers = {}):
 from django.core.paginator import Paginator
 import re
 
+def generate_serializer_dicts(module):
+    """Gera automaticamente os dicionários Select e Table para os serializers."""
+    Select = {}
+    Table = {}
+    
+    # Obtém todas as classes do módulo atual que são subclasses de ModelSerializer
+    for serializer_name in list(module.keys()):
+        serializer_class = module[serializer_name]
+        
+        if (isinstance(serializer_class, type) and
+            issubclass(serializer_class, serializers.ModelSerializer) and
+            hasattr(serializer_class, 'Meta') and
+            hasattr(serializer_class.Meta, 'model')):
+            
+            # Obtém o nome do modelo no formato snake_case
+            model_name = getattr(serializer_class.Meta.model, '_meta').db_table
+            
+            # Verifica se o serializer possui Select_ordened
+            select_ordened = getattr(serializer_class, 'Select_ordened', None)
+            if callable(select_ordened):
+                Select[model_name] = select_ordened
+            else:
+                # Verifica se o serializer possui uma classe Select aninhada
+                select_class = getattr(serializer_class, 'Select', None)
+                if (select_class and 
+                    isinstance(select_class, type) and 
+                    issubclass(select_class, serializers.ModelSerializer)):
+                    Select[model_name] = select_class
+            
+            # Verifica se o serializer possui uma classe Table aninhada
+            table_class = getattr(serializer_class, 'Table', None)
+            if (table_class and 
+                isinstance(table_class, type) and 
+                issubclass(table_class, serializers.ModelSerializer)):
+                Table[model_name] = table_class
+                
+    return {'Select': Select, 'Table': Table}
 def highlight_text(value, terms):
     """Destaca os termos de pesquisa dentro do valor."""
     if not isinstance(value, str):
@@ -331,3 +368,27 @@ def excel_to_pdf_libreoffice(input_excel: str, output_pdf: str):
         
 def Select_order_by(serializer, by):
     return serializer(serializer.Meta.model.objects.all().order_by(by), many=True).data
+
+from inspect import getmembers, isclass
+from rest_framework import serializers
+def generate_serializer_dicts(module):
+    """Gera automaticamente os dicionários Select e Table de um módulo"""
+    select_dict = {}
+    table_dict = {}
+
+    # Itera por todas as classes do módulo
+    for _, cls in getmembers(module, isclass):
+        if issubclass(cls, serializers.ModelSerializer) and hasattr(cls, 'Meta'):
+            model = cls.Meta.model
+            model_key = model._meta.db_table
+
+            # Verifica Select_ordened -> Select -> ignora
+            if hasattr(cls, 'Select_ordened') and callable(cls.Select_ordened):
+                select_dict[model_key] = cls.Select_ordened
+            elif hasattr(cls, 'Select'):
+                select_dict[model_key] = cls.Select
+
+            # Verifica Table
+            if hasattr(cls, 'Table'):
+                table_dict[model_key] = cls.Table
+    return {'Select': select_dict, 'Table': table_dict}

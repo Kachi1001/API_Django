@@ -116,7 +116,7 @@ class Colaborador(models.Model):
     fone = models.CharField(blank=True, null=True)
     ativo = models.BooleanField()
     equipe = models.CharField(blank=True, null=True)
-    avaliacao = models.ForeignKey(ColabAvaliacao, models.DO_NOTHING, db_column='avaliacao', blank=True, null=True)
+    colab_avaliacao = models.ForeignKey(ColabAvaliacao, models.DO_NOTHING, db_column='colab_avaliacao', blank=True, null=True)
     avaliacao_descricao = models.CharField(blank=True, null=True)
     avaliacao_recontratar = models.BooleanField(blank=True, null=True)
     pasta_servidor = models.CharField(blank=True, null=True)
@@ -332,7 +332,7 @@ class IntegracaoEpi(models.Model):
 
 
 class IntegracaoNr(models.Model):
-    nr = models.ForeignKey('IntegracaoNrTipo', models.DO_NOTHING, db_column='nr')
+    integracao_nr_tipo = models.ForeignKey('IntegracaoNrTipo', models.DO_NOTHING, db_column='integracao_nr_tipo')
     validade = models.DateField()
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     observacao = models.CharField(blank=True, null=True)
