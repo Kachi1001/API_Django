@@ -99,9 +99,6 @@ resources['colaborador'] = resources['colaborador_']
 resources['avaliacao'] = resources['colaborador_']
 resources['funcao'] = resources['funcao_']
 resources['funcao']['select'].append('categoria')
-resources['feriasutilizadas'] = resources['ferias_utilizadas'] 
-resources['feriasprocessadas'] = resources['ferias_processadas'] 
-resources['periodoaquisitivo'] = resources['periodo_aquisitivo'] 
 resources['ponto'] = resources['lembrete'] 
 resources['ponto']['select'].append('padrao') 
 resources['desligamento'] = {'text':['data', 'id']}

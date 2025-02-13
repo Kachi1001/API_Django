@@ -97,3 +97,19 @@ class CabecalhoFicha(models.Model):
     class Meta:
         managed = False
         db_table = 'cabecalho_ficha'
+
+class Movimentacao(models.Model):
+    id = models.IntegerField(primary_key=True)
+    colaborador = models.IntegerField()
+    ficha = models.IntegerField()
+    obra = models.IntegerField()
+    data_entrega = models.DateField()
+    reposicao = models.DateField()
+    produto = models.CharField()
+    ca = models.CharField()
+    quantidade = models.IntegerField()
+    tamanho = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'movimentacao'

@@ -268,7 +268,7 @@ class Setor_detail(util.RUD):
 
 class AreaAtuacaoSub_list(util.LC):
     serializer_class = serializers.AreaAtuacaoSub
-    queryset = serializer_class.Meta.model.objects.all()
+    queryset = serializer_class.Meta.model.objects.all().order_by('sub_area')
     filterset_fields = ['area_atuacao']
 class AreaAtuacaoSub_detail(util.RUD):
     serializer_class = serializers.AreaAtuacaoSub

@@ -202,8 +202,6 @@ class Feriado(models.Model):
 
 
 class FeriasProcessadas(models.Model):
-    id = models.IntegerField(primary_key=True)
-    
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     dias_processados = models.IntegerField()
     data_inicio = models.DateField(blank=True, null=True)
@@ -217,9 +215,7 @@ class FeriasProcessadas(models.Model):
         db_table = 'ferias_processadas'
 
 
-class FeriasUtilizadas(models.Model):
-    id = models.IntegerField(primary_key=True)
-    
+class FeriasUtilizadas(models.Model):    
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     dias_utilizados = models.IntegerField()
     data_inicio = models.DateField(blank=True, null=True)

@@ -200,7 +200,9 @@ def highlight_text(value, terms):
         return value
     for term in terms:
         regex = re.compile(re.escape(term), re.IGNORECASE)
-        value = regex.sub(f'<mark>{term.upper()}</mark>', value)
+        
+        term = term.strftime('%d-%m-%Y') if '-' in term else term.upper()
+        value = regex.sub(f'<mark>{term}</mark>', value)
     return value
     
 def buildTable(request, queryset, serializer):   
