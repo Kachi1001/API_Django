@@ -203,12 +203,37 @@ def highlight_text(value, terms):
         
         value = regex.sub(f'<mark>{term.upper()}</mark>', value)
     return value
-    
-from concurrent.futures import ThreadPoolExecutor
-from django.core.paginator import Paginator
 
-def buildTable(request, queryset, serializer):
-    # Configuração inicial (mesma da versão original)
+from concurrent.futures import ThreadPoolExecutor
+from django.db.models.query import QuerySet
+
+def process_chunk(chunk, serializer=None):
+    """Processa um chunk de dados em paralelo"""
+    if serializer:
+        return serializer(chunk, many=True).data
+    else:
+        if isinstance(chunk, QuerySet):
+            return list(chunk.values())
+        return chunk
+
+def parallel_serialize(queryset, serializer=None, chunk_size=100):
+    """Executa a serialização/transformação em paralelo"""
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        # Divide o queryset em chunks otimizados
+        chunks = [
+            queryset[i:i+chunk_size] 
+            for i in range(0, len(queryset), chunk_size)
+        ]
+        
+        # Processa os chunks em paralelo
+        results = executor.map(
+            lambda c: process_chunk(c, serializer),
+            chunks
+        )
+        
+    return [item for chunk in results for item in chunk]
+
+def buildTable(request, queryset, serializer):   
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
     search_value = request.GET.get('search', False)
     sort_order = request.GET.get('order', 'desc')
@@ -219,55 +244,54 @@ def buildTable(request, queryset, serializer):
     page_number = int(request.GET.get('offset', 1))
     page_size = int(request.GET.get('limit', 25))
 
-    # Ordenação (mesma lógica)
+    # Ordenando os dados
     if sort_order == 'asc':
         queryset = queryset.order_by(sort_field)
     else:
         queryset = queryset.order_by(f'-{sort_field}')
 
-    # Nova função para processamento paralelo
-    def process_row(row):
-        found_all_terms = True
-        for term in search_terms:
-            term_found = False
-            for field in fields:
-                keys = field.split('.')
-                value = row
-                for key in keys:
-                    value = value.get(key, '') if isinstance(value, dict) else ''
-                
-                if term in str(value).lower():
-                    term_found = True
-                    break
-            
-            if not term_found:
-                found_all_terms = False
-                break
-        
-        if found_all_terms:
-            for field in fields:
-                keys = field.split('.')
-                current = row
-                for key in keys[:-1]:
-                    current = current.get(key, {})
-                if keys[-1] in current:
-                    current[keys[-1]] = highlight_text(current[keys[-1]], search_terms)
-            return row
-        return None
-
-    # Lógica principal com threading
+    result = None
+    total = None
+    # Filtrar APÓS serialização
     if search_value:
-        rows = serializer(queryset, many=True).data if serializer else list(queryset.values())
+        print('oi')
+        rows = parallel_serialize(queryset, serializer) if serializer else parallel_serialize(queryset.values())
+        print('oi')
         search_value = search_value.strip().lower()
         search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
-        
-        # Processamento paralelo
-        with ThreadPoolExecutor(max_workers=4) as executor:  # Ajuste o número de workers
-            processed_rows = list(executor.map(process_row, rows))
-        
-        filtered_rows = [row for row in processed_rows if row is not None]
-        
-        # Paginação
+        filtered_rows = []
+        for row in rows:
+            found_all_terms = True  # Assume que todos os termos serão encontrados
+
+            for term in search_terms:
+                term_found = False  # Assume que o termo não foi encontrado ainda
+
+                for field in fields:
+                    keys = field.split('.')
+                    value = row
+                    for key in keys:
+                        value = value.get(key, '') if isinstance(value, dict) else ''
+                    
+                    if term in str(value).lower():  # Se o termo está presente no campo
+                        term_found = True
+                        break  # Para de procurar esse termo, pois já foi encontrado
+
+                if not term_found:  # Se um dos termos não foi encontrado, esse registro não serve
+                    found_all_terms = False
+                    break  # Não precisa verificar os outros termos
+
+            if found_all_terms:  # Se todos os termos foram encontrados, adiciona o registro
+            # Destacar os textos que correspondem à pesquisa
+                for field in fields:
+                    keys = field.split('.')
+                    value = row
+                    for key in keys:
+                        if isinstance(value, dict) and key in value:
+                            value[key] = highlight_text(value[key], search_terms)
+                        elif key in row:
+                            row[key] = highlight_text(row[key], search_terms)
+                filtered_rows.append(row)
+
         paginator = Paginator(filtered_rows, page_size)
         total = paginator.count
         result = paginator.get_page(page_number / page_size + 1).object_list
@@ -276,11 +300,12 @@ def buildTable(request, queryset, serializer):
         total = paginator.count
         result = paginator.get_page(page_number / page_size + 1).object_list
         result = serializer(result, many=True).data if serializer else result.values()
-    
-    return {
-        'total': total,
+        
+    data = {
+        'total': total,  # Atualiza o total após o filtro
         'rows': list(result)
     }
+    return data
 
 
 def get_resources(models):
