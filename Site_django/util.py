@@ -204,34 +204,38 @@ def highlight_text(value, terms):
         value = regex.sub(f'<mark>{term.upper()}</mark>', value)
     return value
 
-from concurrent.futures import ThreadPoolExecutor
-from django.db.models.query import QuerySet
+import os
+from concurrent.futures import ProcessPoolExecutor
+from django.db import models
+from django.core.paginator import Paginator
 
-def process_chunk(chunk, serializer=None):
-    """Processa um chunk de dados em paralelo"""
+def process_megachunk(megachunk, serializer=None):
+    """Processa blocos de 10k registros usando multiprocessing"""
     if serializer:
-        return serializer(chunk, many=True).data
+        return serializer(megachunk, many=True).data
     else:
-        if isinstance(chunk, QuerySet):
-            return list(chunk.values())
-        return chunk
+        return list(megachunk.values())
 
-def parallel_serialize(queryset, serializer=None, chunk_size=10000):
-    """Executa a serialização/transformação em paralelo"""
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        # Divide o queryset em chunks otimizados
-        chunks = [
-            queryset[i:i+chunk_size] 
-            for i in range(0, len(queryset), chunk_size)
-        ]
+def large_dataset_processor(queryset, serializer=None):
+    """Pipeline otimizado para datasets massivos"""
+    # Passo 1: Dividir o queryset em megachunks
+    chunk_size = 10_000  # 10k registros por chunk
+    total = len(queryset)
+    
+    # Passo 2: Processamento paralelo massivo
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+        futures = []
+        for i in range(0, total, chunk_size):
+            chunk = queryset[i:i+chunk_size]
+            futures.append(executor.submit(process_megachunk, chunk, serializer))
         
-        # Processa os chunks em paralelo
-        results = executor.map(
-            lambda c: process_chunk(c, serializer),
-            chunks
-        )
-        
-    return [item for chunk in results for item in chunk]
+        # Coletar resultados de forma incremental
+        results = []
+        for future in futures:
+            results.extend(future.result())
+    
+    return results
+
 
 def buildTable(request, queryset, serializer):   
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
@@ -255,7 +259,7 @@ def buildTable(request, queryset, serializer):
     # Filtrar APÓS serialização
     if search_value:
         print('oi')
-        rows = parallel_serialize(queryset, serializer) if serializer else list(queryset.values())
+        rows = large_dataset_processor(queryset, serializer) if serializer else list(queryset.values())
         print('oi')
         search_value = search_value.strip().lower()
         search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
