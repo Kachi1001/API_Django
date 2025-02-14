@@ -216,9 +216,9 @@ def process_chunk(chunk, serializer=None):
             return list(chunk.values())
         return chunk
 
-def parallel_serialize(queryset, serializer=None, chunk_size=1000):
+def parallel_serialize(queryset, serializer=None, chunk_size=10000):
     """Executa a serialização/transformação em paralelo"""
-    with ThreadPoolExecutor(max_workers=16) as executor:
+    with ThreadPoolExecutor(max_workers=8) as executor:
         # Divide o queryset em chunks otimizados
         chunks = [
             queryset[i:i+chunk_size] 
