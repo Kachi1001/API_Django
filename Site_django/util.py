@@ -204,35 +204,6 @@ def highlight_text(value, terms):
         value = regex.sub(f'<mark>{term.upper()}</mark>', value)
     return value
 
-from concurrent.futures import ThreadPoolExecutor
-from django.db.models.query import QuerySet
-
-def process_chunk(chunk, serializer=None):
-    """Processa um chunk de dados em paralelo"""
-    if serializer:
-        return serializer(chunk, many=True).data
-    else:
-        if isinstance(chunk, QuerySet):
-            return list(chunk.values())
-        return chunk
-
-def parallel_serialize(queryset, serializer=None, chunk_size=100):
-    """Executa a serialização/transformação em paralelo"""
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        # Divide o queryset em chunks otimizados
-        chunks = [
-            queryset[i:i+chunk_size] 
-            for i in range(0, len(queryset), chunk_size)
-        ]
-        
-        # Processa os chunks em paralelo
-        results = executor.map(
-            lambda c: process_chunk(c, serializer),
-            chunks
-        )
-        
-    return [item for chunk in results for item in chunk]
-
 def buildTable(request, queryset, serializer):   
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
     search_value = request.GET.get('search', False)
@@ -255,7 +226,7 @@ def buildTable(request, queryset, serializer):
     # Filtrar APÓS serialização
     if search_value:
         print('oi')
-        rows = parallel_serialize(queryset, serializer) if serializer else parallel_serialize(queryset.values())
+        rows = serializer(queryset, many=True).data if serializer else list(queryset.values())
         print('oi')
         search_value = search_value.strip().lower()
         search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
