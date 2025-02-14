@@ -206,8 +206,7 @@ def highlight_text(value, terms):
     
 def buildTable(request, queryset, serializer):   
     fields = request.GET.get('searchable', '').split('%2')[0].split(',')
-    search_value = request.GET.get('search', '').strip()
-    
+    search_value = request.GET.get('search', False)
     sort_order = request.GET.get('order', 'desc')
     sort_order = 'desc' if sort_order == 'undefined' else sort_order
     sort_field = request.GET.get('sort', 'pk') 
@@ -222,13 +221,12 @@ def buildTable(request, queryset, serializer):
     else:
         queryset = queryset.order_by(f'-{sort_field}')
 
-    # Paginação
-
-    # Serializar primeiro
-    rows = serializer(queryset, many=True).data if serializer else list(queryset.values())
+    result = None
+    total = None
     # Filtrar APÓS serialização
     if search_value:
-        search_value = search_value.lower()
+        rows = serializer(queryset, many=True).data if serializer else list(queryset.values())
+        search_value = search_value.strip().lower()
         search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
         filtered_rows = []
         for row in rows:
@@ -263,15 +261,16 @@ def buildTable(request, queryset, serializer):
                             row[key] = highlight_text(row[key], search_terms)
                 filtered_rows.append(row)
 
-
-        rows = filtered_rows  # Atualiza os dados com os filtrados
-
-    paginator = Paginator(rows, page_size)
-    page_obj = paginator.get_page(page_number / page_size + 1)
-    
+        paginator = Paginator(filtered_rows, page_size)
+        total = paginator.count
+        result = list(paginator.get_page(page_number / page_size + 1))
+    else:
+        paginator = Paginator(queryset, page_size)
+        total = paginator.count
+        result = serializer(paginator.get_page(page_number / page_size + 1), many=True).data
     data = {
-        'total': paginator.count,  # Atualiza o total após o filtro
-        'rows': list(page_obj)
+        'total': total,  # Atualiza o total após o filtro
+        'rows': result
     }
     return data
 

@@ -40,7 +40,11 @@ class Atividade(serializers.ModelSerializer):
     class Meta:
         model = models.Atividade
         fields = '__all__'  # Ou liste os campos que deseja expor na API
-        
+    class Table(serializers.ModelSerializer):
+        dia = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model= models.Atividade
+            fields = '__all__'
 
 class Diarioobra(serializers.ModelSerializer):
     class Meta:
@@ -83,7 +87,6 @@ class ValorHora(serializers.ModelSerializer):
 
 
 class TipoAtividadeSelect(serializers.ModelSerializer):
-    
     class Meta:
         model = models.TipoAtividade
         fields = '__all__'  # Ou liste os campos que deseja expor na API    

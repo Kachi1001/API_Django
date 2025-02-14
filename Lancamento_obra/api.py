@@ -7,8 +7,6 @@ from django.conf import settings
 from .models import *
 from .views import *
 import json
-from django.http import JsonResponse
-from .mani import *
 from .serializers import *
 from Site_django import media, util
     
@@ -70,6 +68,7 @@ def tabela(request, table):
     return util.get_table(request, table, dicts, serializer_dicts['Table'])
 
 serializer_dicts['Select']['encarregado'] = serializers.Colaborador.Select_encarregado 
+serializer_dicts['Select']['atividade'] = serializer_dicts['Select']['tipo_atividade'] 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def select(request, resource):
