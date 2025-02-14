@@ -91,7 +91,7 @@ from django.http import HttpResponse
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def diario_impressao(request):
-    obra = Obra.objects.get(id=request.GET['cr'])
+    obra = models.Obra.objects.get(id=request.GET['cr'])
 
     colabs = Localizacaoprogramada.objects.all().filter(obra=request.GET['cr'],iniciosemana=request.GET['data'])
         
