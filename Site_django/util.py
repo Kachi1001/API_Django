@@ -263,14 +263,16 @@ def buildTable(request, queryset, serializer):
 
         paginator = Paginator(filtered_rows, page_size)
         total = paginator.count
-        result = list(paginator.get_page(page_number / page_size + 1))
+        result = paginator.get_page(page_number / page_size + 1).object_list
     else:
         paginator = Paginator(queryset, page_size)
         total = paginator.count
-        result = serializer(paginator.get_page(page_number / page_size + 1), many=True).data
+        result = paginator.get_page(page_number / page_size + 1).object_list
+        result = serializer(result, many=True).data if serializer else result.values()
+        
     data = {
         'total': total,  # Atualiza o total após o filtro
-        'rows': result
+        'rows': list(result)
     }
     return data
 
