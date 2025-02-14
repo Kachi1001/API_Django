@@ -218,7 +218,7 @@ def process_chunk(chunk, serializer=None):
 
 def parallel_serialize(queryset, serializer=None, chunk_size=10000):
     """Executa a serialização/transformação em paralelo"""
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         # Divide o queryset em chunks otimizados
         chunks = [
             queryset[i:i+chunk_size] 
@@ -255,7 +255,7 @@ def buildTable(request, queryset, serializer):
     # Filtrar APÓS serialização
     if search_value:
         print('oi')
-        rows = parallel_serialize(queryset, serializer) if serializer else parallel_serialize(queryset.values())
+        rows = parallel_serialize(queryset, serializer) if serializer else list(queryset.values())
         print('oi')
         search_value = search_value.strip().lower()
         search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
