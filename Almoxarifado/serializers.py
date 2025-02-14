@@ -51,10 +51,7 @@ class EpiMovimentacao(serializers.ModelSerializer):
         class Meta:
             model = models.EpiMovimentacao
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
-    class Table(serializers.ModelSerializer):
-        class Meta:
-            model = views.Movimentacao
-            fields = '__all__'  # Ou liste os campos que deseja expor na API
+   
         
 class Numeracao(serializers.ModelSerializer):
     class Meta:
@@ -141,7 +138,8 @@ class Colaborador(serializers.ModelSerializer):
             fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
     def Select_ordened():
         return Colaborador.Select(Colaborador.Select.Meta.model.objects.all().order_by('nome'), many=True).data
-
+   
+        
 class EpisValidos():
     class Table(serializers.ModelSerializer):
         class Meta:
@@ -162,5 +160,4 @@ Select = {
 }    
 Table = {
     'epi_cadastro': EpiCadastro.Table,
-    'epi_movimentacao': EpiMovimentacao.Table
 }

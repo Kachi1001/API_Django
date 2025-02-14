@@ -201,8 +201,7 @@ def highlight_text(value, terms):
     for term in terms:
         regex = re.compile(re.escape(term), re.IGNORECASE)
         
-        term = term.strftime('%d-%m-%Y') if '-' in term else term.upper()
-        value = regex.sub(f'<mark>{term}</mark>', value)
+        value = regex.sub(f'<mark>{term.upper()}</mark>', value)
     return value
     
 def buildTable(request, queryset, serializer):   
@@ -259,7 +258,6 @@ def buildTable(request, queryset, serializer):
                     value = row
                     for key in keys:
                         if isinstance(value, dict) and key in value:
-                            print(key)
                             value[key] = highlight_text(value[key], search_terms)
                         elif key in row:
                             row[key] = highlight_text(row[key], search_terms)

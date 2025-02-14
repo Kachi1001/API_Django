@@ -26,14 +26,19 @@ def funcao(request, method):
 
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
+serializer_dicts = util.generate_serializer_dicts(serializers)
 
-table_models['colaborador'] = Depto_pessoal.models.Colaborador
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):
     dicts = table_models
     dicts.update(table_views)
-    return util.get_table(request, table, dicts, serializers.Table)
+    return util.get_table(request, table, dicts, serializer_dicts['Table'])
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def select(request, resource):
+    return util.create_select(request, resource,  serializer_dicts['Select'])
 
 resources = util.get_resources(models)
 resources.update(util.get_resources(views)) 
@@ -66,12 +71,6 @@ def grafico(request, resource):
     except ObjectDoesNotExist:
         return Response({'method':'Alerta de pesquisa','message': f'id não encontrada <{id}>' }, status=404)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
-def select(request, resource):
-    from .serializers import Select
-
-    return util.create_select(request, resource, Select)
         
 # Colaborador
 class colaborador(util.RUD):
@@ -206,6 +205,6 @@ def get_impressao(request):
     except FileNotFoundError as e:
         return Response({'message': f'Arquivo template não encontrado {str(e)}'}, status=500)
     except PermissionError:
-        return Response({'message': 'Permissão negada para escrever no diretório'}, status=500)
+        return Response({'message': f'Permissão negada para escrever no diretório {str(e)}'}, status=500)
     except Exception as e:
         return Response({'message': f'Erro interno: {str(e)}'}, status=500)
