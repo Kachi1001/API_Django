@@ -71,6 +71,7 @@ Select = {
 }    
 serializer_dicts = generate_serializer_dicts(serializers)
 Select.update(serializer_dicts['Select'])
+serializer_dicts['Table']['colaborador'] = serializer_dicts['Table']['colaborador_']
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 

@@ -5,14 +5,15 @@ from Obra import serializers as ObraSerializer
 from . import views
         
 class Colaborador(serializers.ModelSerializer):
-    # ferias_utilizadas = serializers.StringRelatedField(many=True)
-    # ferias_utilizadas = FeriasUtilizadasSerializer(many=True, read_only=True)
-    # periodos = PeriodoAquisitivoSerializer(many=True, read_only=True)
-    
     class Meta:
         model = models.Colaborador
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
            
+    class Table(serializers.ModelSerializer):
+        nascimento = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model =  models.Colaborador
+            fields = '__all__'  # Ou liste os campos que deseja expor na API  
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.CharField(source='nome')
@@ -22,7 +23,6 @@ class Colaborador(serializers.ModelSerializer):
             fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
     def Select_ordened():
         return Colaborador.Select(Colaborador.Select.Meta.model.objects.all().order_by('nome'), many=True).data
-
 class PeriodoAquisitivo(serializers.ModelSerializer):
     class Meta:
         model = models.PeriodoAquisitivo
@@ -34,6 +34,7 @@ class PeriodoAquisitivo(serializers.ModelSerializer):
             read_only=True,
             slug_field='nome'
         )
+        adquirido_em = serializers.DateField('%d/%m/%Y')
         class Meta:
             model = models.PeriodoAquisitivo
             fields = '__all__'  # Ou liste os campos que deseja expor na API
@@ -79,6 +80,7 @@ class FeriasProcessadas(serializers.ModelSerializer):
             read_only=True,
             slug_field='nome'
         )
+        data_inicio = serializers.DateField('%d/%m/%Y')
         class Meta:
             model = models.FeriasProcessadas
             fields = '__all__'  # Ou liste os campos que deseja expor na API
@@ -95,6 +97,7 @@ class FeriasUtilizadas(serializers.ModelSerializer):
             read_only=True,
             slug_field='nome'
         )
+        data_inicio = serializers.DateField('%d/%m/%Y')
         class Meta:
             model = models.FeriasUtilizadas
             fields = '__all__'  # Ou liste os campos que deseja expor na API
@@ -214,3 +217,24 @@ class Obra(serializers.ModelSerializer):
             model = models.Obra
             fields = ['value','text']
 
+class FeriasSaldos(serializers.ModelSerializer):
+    class Meta:
+        model = views.FeriasSaldos
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        adquirido_em = serializers.DateField('%d/%m/%Y')
+        data_limite_processar = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = views.FeriasSaldos
+            fields = '__all__'
+        
+class EpiNr(serializers.ModelSerializer):
+    class Meta:
+        model = views.EpiNr
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        validade = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = views.EpiNr
+            fields = '__all__'
+        

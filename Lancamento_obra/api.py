@@ -57,17 +57,24 @@ def funcao(request, funcao):
         return funçãoSQL(funcao+'()')
         
 
-from . import models, views, graficos
+from . import models, views, graficos, serializers
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
+serializer_dicts = util.generate_serializer_dicts(serializers)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):
     dicts = table_models
     dicts.update(table_views)
-    return util.get_table(request, table, dicts)
-    
+    return util.get_table(request, table, dicts, serializer_dicts['Table'])
+
+serializer_dicts['Select']['encarregado'] = serializers.Colaborador.Select_encarregado 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def select(request, resource):
+    return util.create_select(request, resource, serializer_dicts['Select'])
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def grafico(request, resource):
@@ -115,12 +122,7 @@ def diario_impressao(request):
 
     return response
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
-def select(request, resource):
-    from .serializers import Select
 
-    return util.create_select(request, resource, Select)
 
 resources = util.get_resources(models)
 resources['atividade']['select'].append('colaborador')
@@ -139,62 +141,54 @@ def resource(request, name):
 
 from rest_framework import status
 class Colaborador_list(util.LC):
-    serializer_class = ColaboradorSerializer
-    queryset = ColaboradorSerializer.Meta.model.objects.all().order_by('nome')
+    serializer_class = serializers.Colaborador
+    queryset = serializer_class.Meta.model.objects.all().order_by('nome')
     filterset_fields = {
         'demissao': ['isnull'],  # Permite filtrar por isnull e valores exatos
         'nome': ['exact', 'icontains'],       # Exemplo de filtro para nome
         'encarregado': ['exact'],       # Exemplo de filtro para nome
     }
-
-    
 class Colaborador_detail(util.RUD):
-    serializer_class = ColaboradorSerializer
-    queryset = ColaboradorSerializer.Meta.model.objects.all()
+    serializer_class = serializers.Colaborador
+    queryset = serializer_class.Meta.model.objects.all()
     
     
 class Obra_list(util.LC):
-    serializer_class = ObraSerializer
+    serializer_class = serializers.Obra
     queryset = serializer_class.Meta.model.objects.all().order_by('id')
     filterset_fields = ['finalizada']
 
 
 class Obra_detail(util.RUD):
-    serializer_class = ObraSerializer
-    queryset = serializer_class.Meta.model.objects.all()
-    
-class Funcao():
-    serializer_class = FuncaoSerializer
+    serializer_class = serializers.Obra
     queryset = serializer_class.Meta.model.objects.all()
 
-class Funcao_list(Funcao, util.LC):
-    pass
-
-class Funcao_detail(Funcao, util.RUD):
-    pass
+class Funcao_list(util.LC):
+    serializer_class = serializers.Funcao
+    queryset = serializer_class.Meta.model.objects.all()
+class Funcao_detail(util.RUD):
+    serializer_class = Funcao_list.serializer_class
+    queryset = serializer_class.Meta.model.objects.all()
 
 
 class Supervisor_list(util.LC):
-    serializer_class = SupervisorSerializer
+    serializer_class = serializers.Supervisor
     queryset = serializer_class.Meta.model.objects.all()
-
 class Supervisor_detail(util.RUD):
-    serializer_class = SupervisorSerializer
+    serializer_class = Supervisor_list.serializer_class
     queryset = serializer_class.Meta.model.objects.all()
     
 class Atividade_list(util.LC):
-    serializer_class = AtividadeSerializer
+    serializer_class = serializers.Atividade
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['colaborador','dia']
-    
-
 class Atividade_detail(util.RUD):
-    serializer_class = AtividadeSerializer
+    serializer_class = Atividade_list.serializer_class
     queryset = serializer_class.Meta.model.objects.all()
 
 from rest_framework.parsers import MultiPartParser, FormParser
 class Diarioobra_list(util.LC):
-    serializer_class = DiarioobraSerializer
+    serializer_class = serializers.Diarioobra
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['diario']
     parser_classes = [MultiPartParser, FormParser]
@@ -206,15 +200,13 @@ class Diarioobra_list(util.LC):
             return super().create(request, *args, **kwargs)
         else: 
             return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
-            
-    
 class Diarioobra_detail(util.RUD):
-    serializer_class = DiarioobraSerializer
+    serializer_class = Diarioobra_list.serializer_class
     queryset = serializer_class.Meta.model.objects.all()
     
 
 class Programacao_list(util.LC):
-    serializer_class = ProgramacaoSerializer
+    serializer_class = serializers.Programacao
     queryset = serializer_class.Meta.model.objects.all()
 
     @util.database_exception
@@ -226,7 +218,7 @@ class Programacao_list(util.LC):
                 a['iniciosemana'] = parametro.get('iniciosemana')
                 a['id'] = 'qualquer'
                 
-                programacao = ProgramacaoSerializer(data=a)
+                programacao = self.serializer_class(data=a)
                 if programacao.is_valid():
                     programacao.save()
                 else:
@@ -235,21 +227,19 @@ class Programacao_list(util.LC):
             return Response({'sucesso'},status=status.HTTP_201_CREATED) 
         else: 
             return Response(request,status=status.HTTP_406_NOT_ACCEPTABLE)
-        
 class Programacao_detail(util.RUD):
-    serializer_class = ProgramacaoSerializer
+    serializer_class = Programacao_list.serializer_class
     queryset = serializer_class.Meta.model.objects.all()
 
 
 class dia_list(util.LC):
-    serializer_class = DiaSerializer
+    serializer_class = serializers.Dia
     queryset = serializer_class.Meta.model.objects.all().order_by('-dia')
 
 
 class ValorHora_list(util.LC):
-    serializer_class = ValorHoraSerializer
+    serializer_class = serializers.ValorHora
     queryset = serializer_class.Meta.model.objects.all()
-
 class ValorHora_detail(util.RUD):
-    serializer_class = ValorHoraSerializer
+    serializer_class = ValorHora_list.serializer_class
     queryset = serializer_class.Meta.model.objects.all()
