@@ -226,9 +226,7 @@ def buildTable(request, queryset, serializer):
     total = None
     # Filtrar APÓS serialização
     if search_value:
-        print('oi')
         rows = serializer(queryset, many=True).data if serializer else list(queryset.values())
-        print('oi')
         search_value = search_value.strip().lower()
         search_terms = [term.strip() for term in search_value.split(',') if term.strip()]
         filtered_rows = []
