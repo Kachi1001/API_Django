@@ -204,7 +204,7 @@ def get_impressao(request):
 
     except FileNotFoundError as e:
         return Response({'message': f'Arquivo template não encontrado {str(e)}'}, status=500)
-    except PermissionError:
+    except PermissionError as e:
         return Response({'message': f'Permissão negada para escrever no diretório {str(e)}'}, status=500)
     except Exception as e:
         return Response({'message': f'Erro interno: {str(e)}'}, status=500)
