@@ -175,7 +175,7 @@ class IntegracaoNr(serializers.ModelSerializer):
     class Table(serializers.ModelSerializer):
         class Meta:
             model = models.IntegracaoNr 
-            fields =  ['id','validade','nr'] # Ou liste os campos que deseja expor na API
+            fields =  ['id','validade','integracao_nr_tipo'] # Ou liste os campos que deseja expor na API
 
 class IntegracaoEpi(serializers.ModelSerializer):
     class Meta:
