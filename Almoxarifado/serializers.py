@@ -150,14 +150,8 @@ class Erros(serializers.ModelSerializer):
     class Meta:
         model = models.Erros
         fields = '__all__'  # Ou liste os campos que deseja expor na API
-Select = {
-    'obra': Obra.Select,
-    'colaborador': Colaborador.Select_ordened,
-    'epi_movimentacao': EpiMovimentacao.Select,
-    'epi_cadastro': EpiCadastro.Select,
-    'produto': Produto.Select_ordened,
-    'ficha': Ficha.Select_ordened,
-}    
-Table = {
-    'epi_cadastro': EpiCadastro.Table,
-}
+
+class Digitalizacao(serializers.ModelSerializer):
+    class Meta:
+        model = models.Digitalizacao
+        fields = '__all__'

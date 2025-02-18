@@ -1,4 +1,3 @@
-import Depto_pessoal.models
 from . import models, views, serializers
 from rest_framework.response import Response
 from Site_django import util
@@ -168,43 +167,74 @@ def get_impressao(request):
     output_pdf = os.path.join(config('MEDIA_ROOT'), 'Almoxarifado', 'ficha_epi', f'{ficha}.pdf')
 
     try:
-        cab = views.CabecalhoFicha.objects.get(ficha=ficha)
-        
-        arquivo = load_workbook(original)
-        aba = arquivo.active
-        aba['J1'] = cab.nome[:1]
-        aba['C5'] = cab.nome
-        aba['C6'] = cab.funcao
-        aba['C7'] = f'RG:  {cab.rg}'
-        aba['F7'] = f'CTPS:  {cab.ctps}'
-        aba['A7'] = f'FICHA:  {cab.ficha}'
+        force = True if input_data.get('force') == 'true' else False
+        if not os.path.exists(output_pdf) or not models.Ficha.objects.get(id=ficha).completa or force:
+            cab = views.CabecalhoFicha.objects.get(ficha=ficha)
+            
+            arquivo = load_workbook(original)
+            aba = arquivo.active
+            aba['J1'] = cab.nome[:1]
+            aba['C5'] = cab.nome
+            aba['C6'] = cab.funcao
+            aba['C7'] = f'RG:  {cab.rg}'
+            aba['F7'] = f'CTPS:  {cab.ctps}'
+            aba['A7'] = f'FICHA:  {cab.ficha}'
 
-        try:
-            movs = models.EpiMovimentacao.objects.filter(ficha=ficha)
-            tick = 14
-            if len(movs) > 29:
-                return Response({'message': 'Número de movimentações excede o limite de 29'}, status=400)
-            for mov in movs:
-                aba[f'A{tick}'] = mov.quantidade
-                aba[f'B{tick}'] = mov.produto.produto
-                aba[f'D{tick}'] = mov.tamanho
-                aba[f'E{tick}'] = mov.data_entrega.strftime('%d/%m/%Y')
-                aba[f'G{tick}'] = mov.epi_cadastro.fabricante
-                aba[f'H{tick}'] = mov.epi_cadastro.ca
-                aba[f'I{tick}'] = mov.epi_cadastro.validade.strftime('%d/%m/%Y')
-                tick += 1
-        except models.EpiMovimentacao.DoesNotExist:
-            pass
+            try:
+                movs = models.EpiMovimentacao.objects.filter(ficha=ficha)
+                tick = 14
+                if len(movs) > 29:
+                    return Response({'message': 'Número de movimentações excede o limite de 29', 'count': len(movs)}, status=400)
+                for mov in movs:
+                    aba[f'A{tick}'] = mov.quantidade
+                    aba[f'B{tick}'] = mov.produto.produto
+                    aba[f'D{tick}'] = mov.tamanho
+                    aba[f'E{tick}'] = mov.data_entrega.strftime('%d/%m/%Y')
+                    aba[f'G{tick}'] = mov.epi_cadastro.fabricante
+                    aba[f'H{tick}'] = mov.epi_cadastro.ca
+                    aba[f'I{tick}'] = mov.epi_cadastro.validade.strftime('%d/%m/%Y')
+                    tick += 1
+            except models.EpiMovimentacao.DoesNotExist:
+                pass
 
-        
-        arquivo.save(copia)
-        util.excel_to_pdf_libreoffice(copia, output_pdf)
-        os.remove(copia)
-        return Response({'message': 'Arquivo processado', 'pdf_path': f'http://tecnikaengenharia.ddns.net/media/Almoxarifado/ficha_epi/{input_data['ficha']}.pdf'})
-
+            
+            arquivo.save(copia)
+            util.excel_to_pdf_libreoffice(copia, output_pdf)
+            os.remove(copia)
+        return Response({'message':'Sucesso ao criar arquivo!','tipo': 'pdf', 'url': f'http://tecnikaengenharia.ddns.net/media/Almoxarifado/ficha_epi/{input_data['ficha']}.pdf'})
     except FileNotFoundError as e:
         return Response({'message': f'Arquivo template não encontrado {str(e)}'}, status=500)
     except PermissionError as e:
         return Response({'message': f'Permissão negada para escrever no diretório {str(e)}'}, status=500)
     except Exception as e:
         return Response({'message': f'Erro interno: {str(e)}'}, status=500)
+
+from PIL import Image
+from django.utils import timezone
+class Digitalizacao_list(util.LC):
+    serializer_class = serializers.Digitalizacao
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['ficha']
+    
+    @util.database_exception
+    def create(self, request, *args, **kwargs):
+        reg = models.Digitalizacao.objects.create(ficha = models.Ficha.objects.get(pk = request.POST['ficha']), data = timezone.now())
+        img = Image.open(request.FILES['image']).convert('RGB')
+        
+        resource = 'Almoxarifado\\digitalizacao\\'
+        path = os.path.join(settings.MEDIA_ROOT, resource)
+        file = str(reg.id) + '.jpeg'
+        try:
+            img.save(path +  file,"JPEG",optimize=True, quality=50)
+        except FileExistsError:
+            return Response({'message':'Arquivo já existe!'},status=406)
+        except Exception as e:
+            reg.delete()
+            return Response({'message':f'Erro ao salvar o arquivo {str(e)}'},status=400)
+        else:
+            reg.url = f'{config('MEDIA_URL')}/{resource.replace('\\','/')}{file}'
+            reg.save()
+            return Response({},status=201) 
+class Digitalizacao_detail(util.RUD):
+    serializer_class = serializers.Digitalizacao
+    queryset = serializer_class.Meta.model.objects.all()

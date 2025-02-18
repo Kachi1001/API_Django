@@ -37,6 +37,8 @@ urlpatterns = [
   path('integracao/<str:pk>', Integracao_detail.as_view()),
   path('integracao_nr', IntegracaoNr_list.as_view()),
   path('integracao_nr/<str:pk>', IntegracaoNr_detail.as_view()),
+  path('integracao_nr_tipo', IntegracaoNrTipo_list.as_view()),
+  path('integracao_nr_tipo/<str:pk>', IntegracaoNrTipo_detail.as_view()),
   path('integracao_epi', IntegracaoEpi_list.as_view()),
   path('integracao_epi/<str:pk>', IntegracaoEpi_detail.as_view()),
   

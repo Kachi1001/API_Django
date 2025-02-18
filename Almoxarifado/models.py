@@ -134,3 +134,12 @@ class Erros(models.Model):
     class Meta:
         managed = False
         db_table = 'erros'
+        
+class Digitalizacao(models.Model):
+    ficha = models.ForeignKey('Ficha', models.DO_NOTHING, db_column='ficha', blank=True, null=True)
+    data = models.DateField()
+    url = models.CharField()
+    
+    class Meta:
+        managed = False
+        db_table = 'digitalizacao'

@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from . import models
-from Obra import serializers as ObraSerializer
+from . import models, views
 
-from . import views
+from Site_django import util
         
 class Colaborador(serializers.ModelSerializer):
     class Meta:
@@ -212,10 +211,12 @@ class Obra(serializers.ModelSerializer):
         fields = '__all__'
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
-        text = serializers.CharField(source='empresa')
+        text = serializers.CharField(source='tecnicon')
         class Meta:
             model = models.Obra
             fields = ['value','text']
+    def Select_ordened():
+        return util.Select_order_by(Obra.Select, 'empresa')
 
 class FeriasSaldos(serializers.ModelSerializer):
     class Meta:

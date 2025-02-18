@@ -296,16 +296,21 @@ class IntegracaoNr_list(util.LC):
     serializer_class = serializers.IntegracaoNr
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['colaborador','id']
-
 class IntegracaoNr_detail(util.RUD):
     serializer_class = serializers.IntegracaoNr
+    queryset = serializer_class.Meta.model.objects.all()
+    
+class IntegracaoNrTipo_list(util.LC):
+    serializer_class = serializers.IntegracaoNrTipo
+    queryset = serializer_class.Meta.model.objects.all()
+class IntegracaoNrTipo_detail(util.RUD):
+    serializer_class = serializers.IntegracaoNrTipo
     queryset = serializer_class.Meta.model.objects.all()
     
 class Integracao_list(util.LC):
     serializer_class = serializers.Integracao
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['colaborador','id']
-
 class Integracao_detail(util.RUD):
     serializer_class = serializers.Integracao
     queryset = serializer_class.Meta.model.objects.all()
