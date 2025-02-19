@@ -33,3 +33,13 @@ class pontuacao_experiencias(models.Model):
         managed = False
         db_table = 'pontuacao_experiencias'
 
+class revisar(models.Model):
+    candidato = models.IntegerField(primary_key=True)
+    nome = models.CharField(max_length=255)
+    revisar_experiencias = models.IntegerField(max_length=255)
+    sub_area = models.CharField()
+    
+    class Meta:
+        managed = False
+        db_table = 'revisar'
+
