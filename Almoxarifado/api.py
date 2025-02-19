@@ -92,6 +92,7 @@ class epimovimentacao_detail(util.RUD):
 class epicadastro_list(util.LC):
     serializer_class = serializers.EpiCadastro
     queryset = serializer_class.Meta.model.objects.all().order_by('-id')
+    filterset_fields = ['produto']
 
 class epicadastro_detail(util.RUD):
     serializer_class = serializers.EpiCadastro
