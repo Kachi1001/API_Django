@@ -138,7 +138,7 @@ class Anexos(serializers.ModelSerializer):
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
 
 
-class Indicacao():
+class Indicacao_colaboradores():
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='nome')
         class Meta:
@@ -220,7 +220,7 @@ Select = {
     'profissao': Profissoes.Select_ordered,
     'banco_talentos': Entrevista_classificacao.Select,
     'setor': Setor.Select,
-    'indicacao': Indicacao.Select,
+    'indicacao_colaboradores': Indicacao_colaboradores.Select,
     'estado': Estados.Select_ordered,
     'area_atuacao': AreaAtuacao.Select_ordered,
     'area_atuacao_sub': AreaAtuacaoSub.Select_ordered,

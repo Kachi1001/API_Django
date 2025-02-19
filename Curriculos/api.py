@@ -70,7 +70,7 @@ def tabela(request, table):
     return util.get_table(request, table, dicts)
 
 resources = util.get_resources(models)
-resources['candidato']['select'] += ['indicacao']
+resources['candidato']['select'] += ['indicacao_colaboradores']
 @api_view(['GET'])
 def resource(request, name):
     if resources.get(name):
@@ -82,6 +82,7 @@ def resource(request, name):
 from . import views
 graficos = {
     # 'ativos_rovatatividade': views.ativos_rotatividade,
+    
 }
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
