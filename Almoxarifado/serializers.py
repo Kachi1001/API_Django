@@ -155,3 +155,10 @@ class Digitalizacao(serializers.ModelSerializer):
     class Meta:
         model = models.Digitalizacao
         fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        ficha = Ficha.Table(many=False, read_only=True)
+        data = serializers.DateField('%d/%m/%Y')
+        
+        class Meta:
+            model = models.Digitalizacao
+            fields = '__all__'
