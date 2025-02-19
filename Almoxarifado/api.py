@@ -222,7 +222,7 @@ class Digitalizacao_list(util.LC):
         reg = models.Digitalizacao.objects.create(ficha = models.Ficha.objects.get(pk = request.POST['ficha']), data = timezone.now())
         img = Image.open(request.FILES['image']).convert('RGB')
         
-        resource = 'Almoxarifado\\digitalizacao\\'
+        resource = 'Almoxarifado/digitalizacao/'
         path = os.path.join(settings.MEDIA_ROOT, resource)
         file = str(reg.id) + '.jpeg'
         try:
@@ -233,7 +233,7 @@ class Digitalizacao_list(util.LC):
             reg.delete()
             return Response({'message':f'Erro ao salvar o arquivo {str(e)}'},status=400)
         else:
-            reg.url = f'{config('MEDIA_URL')}/{resource.replace('\\','/')}{file}'
+            reg.url = f'{config('MEDIA_URL')}/{resource}{file}'
             reg.save()
             return Response({},status=201) 
 class Digitalizacao_detail(util.RUD):
