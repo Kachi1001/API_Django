@@ -43,3 +43,13 @@ class revisar(models.Model):
         managed = False
         db_table = 'revisar'
 
+class IndicacoesExternas(models.Model):
+    indicacao = models.CharField(max_length=255)
+    candidato = models.CharField()
+    data_recebimento = models.DateField()    
+    situacao = models.CharField()
+    data_finalizacao = models.DateField()    
+    class Meta:
+        managed = False
+        db_table = 'indicacoes_externas'
+

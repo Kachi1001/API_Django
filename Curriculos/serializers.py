@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . import models
+from . import models, views
 from Site_django import util
         
         
@@ -11,11 +11,15 @@ class Candidato(serializers.ModelSerializer):
         
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
-        text = serializers.CharField(source='nome')
+        text = serializers.SerializerMethodField()
         class Meta:
             model = models.Candidato
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
-        
+    
+        def get_text(self, obj):
+            return f"{obj.nome}  -  rg: {obj.rg or 'Vazio'} | cpf: {obj.cpf or 'Vazio'}"
+    def Select_ordened():   
+        return util.Select_order_by(Candidato.Select, 'nome')
 class Escolaridade(serializers.ModelSerializer):
     class Meta:
         model = models.Escolaridade
@@ -27,7 +31,7 @@ class Escolaridade(serializers.ModelSerializer):
             model = models.EscolaridadeTipo
             fields = '__all__'  # Ou liste os campos que deseja expor na API
             
-    def Select_ordered():   
+    def Select_ordened():   
         return Escolaridade.Select(models.EscolaridadeTipo.objects.all().order_by('indice'), many=True).data
     
 class Experiencia(serializers.ModelSerializer):
@@ -70,7 +74,7 @@ class Profissoes(serializers.ModelSerializer):
         class Meta:
             model = models.Profissoes
             fields =  ['value','text']  # Ou liste os campos que deseja expor na API7
-    def Select_ordered():
+    def Select_ordened():
         response = Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data
         return response
     
@@ -153,7 +157,7 @@ class Estados():
         class Meta:
             model = models.Estados
             fields = ['value','text']
-    def Select_ordered(): 
+    def Select_ordened(): 
         return util.Select_order_by(Estados.Select, 'nome')
     
 class AreaAtuacao(serializers.ModelSerializer):
@@ -166,7 +170,7 @@ class AreaAtuacao(serializers.ModelSerializer):
         class Meta:
             model = models.AreaAtuacao
             fields = ['value','text']
-    def Select_ordered():   
+    def Select_ordened():   
         return util.Select_order_by(AreaAtuacao.Select, 'area')
         
 
@@ -180,7 +184,7 @@ class AreaAtuacaoSub(serializers.ModelSerializer):
         class Meta: 
             model = models.AreaAtuacaoSub
             fields = ['value','text']
-    def Select_ordered():   
+    def Select_ordened():   
         return AreaAtuacaoSub.Select(models.AreaAtuacaoSub.objects.all().order_by('sub_area'), many=True).data
     
     class Table(serializers.ModelSerializer):
@@ -211,17 +215,37 @@ class Classificacao(serializers.ModelSerializer):
         class Meta:
             model = models.Classificacao
             fields = '__all__'  # Ou liste os campos que deseja expor na API
-
+class Indicacoes(serializers.ModelSerializer):
+    class Meta:
+        model = models.Indicacoes
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        candidato = serializers.SlugRelatedField(many=False, read_only=True, slug_field='nome')
+        data_recebimento = serializers.DateField('%d/%m/%Y')
+        data_finalizacao = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = models.Indicacoes
+            fields = '__all__'
+class IndicacoesExternas(serializers.ModelSerializer):
+    class Meta:
+        model = views.IndicacoesExternas
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        data_recebimento = serializers.DateField('%d/%m/%Y')
+        data_finalizacao = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = views.IndicacoesExternas
+            fields = '__all__'
 Select = {
-    'candidato': Candidato.Select,
+    'candidato': Candidato.Select_ordened,
     'cnh': Cnh.Select,
     'estado_civil': EstadoCivil.Select,
-    'escolaridade': Escolaridade.Select_ordered,
-    'profissao': Profissoes.Select_ordered,
+    'escolaridade': Escolaridade.Select_ordened,
+    'profissao': Profissoes.Select_ordened,
     'banco_talentos': Entrevista_classificacao.Select,
     'setor': Setor.Select,
     'indicacao_colaboradores': Indicacao_colaboradores.Select,
-    'estado': Estados.Select_ordered,
-    'area_atuacao': AreaAtuacao.Select_ordered,
-    'area_atuacao_sub': AreaAtuacaoSub.Select_ordered,
+    'estado': Estados.Select_ordened,
+    'area_atuacao': AreaAtuacao.Select_ordened,
+    'area_atuacao_sub': AreaAtuacaoSub.Select_ordened,
 }    

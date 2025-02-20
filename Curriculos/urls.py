@@ -37,7 +37,10 @@ urlpatterns = [
   
   path('area_atuacao_sub', AreaAtuacaoSub_list.as_view()),
   path('area_atuacao_sub/<str:pk>', AreaAtuacaoSub_detail.as_view()),
-
+ 
+  path('indicacoes', Indicacoes_list.as_view()),
+  path('indicacoes/<str:pk>', Indicacoes_detail.as_view()),
+ 
   path('tabela', tabela_list),
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),

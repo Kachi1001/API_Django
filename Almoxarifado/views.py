@@ -113,3 +113,15 @@ class Movimentacao(models.Model):
     class Meta:
         managed = False
         db_table = 'movimentacao'
+
+class Digitalizar(models.Model):
+    id = models.CharField(primary_key=True)
+    colaborador = models.IntegerField()
+    nome = models.CharField()
+    pagina = models.IntegerField()
+    data_finalizado = models.DateField()
+    data_digitalizacao = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'digitalizar'

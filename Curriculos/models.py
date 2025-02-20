@@ -221,3 +221,14 @@ class Setor(models.Model):
     class Meta:
         managed = False
         db_table = 'setor'
+
+class Indicacoes(models.Model):
+    candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
+    indicacao = models.CharField(blank=False, null=False)
+    data_recebimento = models.DateField(blank=False, null=False)
+    data_finalizacao = models.DateField(blank=True, null=True)
+    observacao = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'indicacoes'

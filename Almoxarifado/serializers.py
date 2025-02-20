@@ -162,3 +162,14 @@ class Digitalizacao(serializers.ModelSerializer):
         class Meta:
             model = models.Digitalizacao
             fields = '__all__'
+            
+class Digitalizar(serializers.ModelSerializer):
+    class Meta:
+        model = views.Digitalizar
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        data_finalizado = serializers.DateField('%d/%m/%Y')
+        data_digitalizacao = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = views.Digitalizar
+            fields = '__all__'

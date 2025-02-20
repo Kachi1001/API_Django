@@ -143,3 +143,5 @@ class Digitalizacao(models.Model):
     class Meta:
         managed = False
         db_table = 'digitalizacao'
+        
+

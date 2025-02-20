@@ -55,19 +55,26 @@ def funcao(request, metodo):
 
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
+serial = util.generate_serializer_dicts(serializers)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela_list(request): 
     result = {'tabelas':table_models.keys(),'view':table_views.keys()}
     return Response(result)
-    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def select(request, resource):
+    from .serializers import Select
+
+    return util.create_select(request, resource, serial['Select'])
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):
     dicts = table_models
     dicts.update(table_views)
-    return util.get_table(request, table, dicts)
+    return util.get_table(request, table, dicts, serial['Table'])
 
 resources = util.get_resources(models)
 resources['candidato']['select'] += ['indicacao_colaboradores']
@@ -235,12 +242,6 @@ class Profissoes_detail(util.RUD):
     queryset = serializer_class.Meta.model.objects.all()
     
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
-def select(request, resource):
-    from .serializers import Select
-
-    return util.create_select(request, resource, Select)
         
 class Classificacao_list(util.LC):
     serializer_class = serializers.Classificacao
@@ -273,5 +274,13 @@ class AreaAtuacaoSub_list(util.LC):
     filterset_fields = ['area_atuacao']
 class AreaAtuacaoSub_detail(util.RUD):
     serializer_class = serializers.AreaAtuacaoSub
+    queryset = serializer_class.Meta.model.objects.all()
+    
+class Indicacoes_list(util.LC):
+    serializer_class = serializers.Indicacoes
+    queryset = serializer_class.Meta.model.objects.all()
+    filterset_fields = ['candidato']
+class Indicacoes_detail(util.RUD):
+    serializer_class = serializers.Indicacoes
     queryset = serializer_class.Meta.model.objects.all()
     
