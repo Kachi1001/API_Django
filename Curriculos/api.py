@@ -56,7 +56,6 @@ def funcao(request, metodo):
 table_models = util.get_classes(models)
 table_views = util.get_classes(views)
 serial = util.generate_serializer_dicts(serializers)
-print(serial)
 serial['Select']['indicacao_colaboradores'] = serializers.IndicacaoColaboradores.Select
 
 @api_view(['GET'])
