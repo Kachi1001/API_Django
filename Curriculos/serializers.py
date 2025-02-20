@@ -142,7 +142,7 @@ class Anexos(serializers.ModelSerializer):
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
 
 
-class Indicacao_colaboradores():
+class IndicacaoColaboradores():
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='nome')
         class Meta:
@@ -150,15 +150,19 @@ class Indicacao_colaboradores():
             model = Colaborador
             fields = ['value']
             
-class Estados():
+class Estado(serializers.ModelSerializer):
+    class Meta:
+        model = models.Estado
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.CharField(source='nome')
         class Meta:
-            model = models.Estados
+            model = models.Estado
             fields = ['value','text']
     def Select_ordened(): 
-        return util.Select_order_by(Estados.Select, 'nome')
+        return util.Select_order_by(Estado.Select, 'nome')
     
 class AreaAtuacao(serializers.ModelSerializer):
     class Meta:
@@ -236,16 +240,3 @@ class IndicacoesExternas(serializers.ModelSerializer):
         class Meta:
             model = views.IndicacoesExternas
             fields = '__all__'
-Select = {
-    'candidato': Candidato.Select_ordened,
-    'cnh': Cnh.Select,
-    'estado_civil': EstadoCivil.Select,
-    'escolaridade': Escolaridade.Select_ordened,
-    'profissao': Profissoes.Select_ordened,
-    'banco_talentos': Entrevista_classificacao.Select,
-    'setor': Setor.Select,
-    'indicacao_colaboradores': Indicacao_colaboradores.Select,
-    'estado': Estados.Select_ordened,
-    'area_atuacao': AreaAtuacao.Select_ordened,
-    'area_atuacao_sub': AreaAtuacaoSub.Select_ordened,
-}    

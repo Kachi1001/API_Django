@@ -62,6 +62,7 @@ class Ficha(models.Model):
     pagina = models.IntegerField()
     completa = models.BooleanField(blank=True, null=True)
     url = models.CharField(blank=True, null=True)
+    arquivado = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
