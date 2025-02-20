@@ -49,6 +49,8 @@ class IndicacoesExternas(models.Model):
     data_recebimento = models.DateField()    
     situacao = models.CharField()
     data_finalizacao = models.DateField()    
+    observacao = models.CharField()
+    
     class Meta:
         managed = False
         db_table = 'indicacoes_externas'

@@ -125,3 +125,12 @@ class Digitalizar(models.Model):
     class Meta:
         managed = False
         db_table = 'digitalizar'
+
+class Arquivar(models.Model):
+    id = models.CharField(primary_key=True)
+    nome = models.IntegerField()
+    pagina = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'arquivar'
