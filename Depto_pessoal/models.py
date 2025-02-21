@@ -333,7 +333,8 @@ class IntegracaoEpi(models.Model):
 
 class IntegracaoNr(models.Model):
     integracao_nr_tipo = models.ForeignKey('IntegracaoNrTipo', models.DO_NOTHING, db_column='integracao_nr_tipo')
-    validade = models.DateField()
+    emissao = models.DateField()
+    validade = models.DateField(null=True, blank=True)
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     observacao = models.CharField(blank=True, null=True)
 
@@ -344,6 +345,7 @@ class IntegracaoNr(models.Model):
 
 class IntegracaoNrTipo(models.Model):
     id = models.CharField(primary_key=True)
+    validade = models.IntegerField()
 
     class Meta:
         managed = False

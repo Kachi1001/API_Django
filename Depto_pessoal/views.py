@@ -50,6 +50,7 @@ class EpiNr(models.Model):
     emitido = models.BooleanField()
     validade = models.DateField()
     observacao = models.CharField()
+    situacao = models.CharField()
     
     class Meta:
         managed = False
