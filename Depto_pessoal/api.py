@@ -51,7 +51,7 @@ def funcao(request, metodo):
         
     try:
         funcoes = {
-            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('terceiro')},{format_sql('equipe')})',  #nova funcao sql
+            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('terceiro')},{format_sql('equipe')},{format_sql('diaria')},{format_sql('extra')})',  #nova funcao sql
             'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
             'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
@@ -104,6 +104,9 @@ resources['ponto'] = resources['lembrete']
 resources['ponto']['select'].append('padrao') 
 resources['desligamento'] = {'text':['data', 'id']}
 resources['integracao']['select'].append('obra')
+resources['gera_calendario'] = {'text':['data']}
+resources['integracao_epi'] = resources['integracao_aso']
+resources['readmissao'] = {'text':['id','colaborador','data_inicio','remuneracao','diaria'],'check':['terceiro','extra'],'select':['funcao','equipe']}
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
@@ -289,7 +292,7 @@ def app_menu(request, app):
 @api_view(['GET'])
 def app_feriado(request):
     try: feriados = models.Feriado.objects.get(id=util.get_hoje())
-    except models.Feriado.DoesNotExist: return Response(0)
+    except: return Response(0)
     else: return Response(1)
 
 class IntegracaoNr_list(util.LC):
@@ -379,5 +382,41 @@ def HorasPonto_import(request):
                 return Response({'Erro': f'Erro ao adicionar no banco, linha: {linha}'}, status=400)
             linha += 1 
         return Response({'Sucesso':'Importado com sucesso!'}, status=203)            
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+@util.database_exception 
+def GeraCalendario(request):
+    def format_sql(value):
+        value = request.data.get(value)
+        if value:
+            return "'" + str(value) + "'"
+        return 'null'
+    if format_sql('data') == 'null':
+        return Response({'DATA':'Este campo não pode ser nulo!'}, 500)
+    return funcao_sql(f'gera_calendario {format_sql('data')}')  
     
-        
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+@util.database_exception 
+def ReAdmitir(request):
+    data = request.data
+    resource = resources['readmissao']
+    def format_sql(value):
+        value = request.data.get(value)
+        if value:
+            return "'" + str(value) + "'"
+        return 'null'   
+    def format_bool(value):
+        value = request.data.get(value)
+        if value != None:
+            return str(value)
+        return 'null'
+    result = {}
+    campos = resource.get('text') + resource.get('select') + resource.get('check')
+    for x in campos:
+        if data.get(x) == None:
+            result[x.upper()] = 'Este campo não pode ser nulo!'
+    if len(result) > 0:
+        return Response(result, 500)
+    return funcao_sql(f'readmissao ({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')},{format_sql('funcao')},{format_bool('terceiro')},{format_sql('equipe')},{format_sql('diaria')},{format_bool('extra')})')  

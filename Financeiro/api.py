@@ -64,3 +64,37 @@ class ExtratoBancario_list(util.LC):
                 return Response(linha.errors,status=406)
         return Response({'Sucesso'},status=201)
     
+  
+from openpyxl import load_workbook
+from django.utils import timezone
+import pandas as pd
+from datetime import datetime
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@util.database_exception 
+def caixa_import(request):
+        csv = pd.read_csv(request.FILES['file'], delimiter=';')
+
+        row = 3
+        day = ''
+        while row < len(csv):
+            
+            date = datetime.strptime(csv.loc[row,'Data'],'%d/%m/%Y')
+            if day != date:
+                importacao = models.Importacao.objects.create(
+                    data_importacao = timezone.now(),
+                    data_movimentacao = date,
+                    usuario = request.POST['user']
+                )
+            models.ExtratoBancario.objects.create(
+                cod_conta = 99,
+                data = date,
+                historico = csv.loc[row, 'Histórico'],
+                debito = csv.loc[row, 'Saídas Débito'],
+                creditos = csv.loc[row, 'Entradas Crédito'],
+                importacao = importacao.id
+            )
+            row += 1
+        return Response({'Sucesso':'Importado com sucesso!'}, status=203)            
+    
+        

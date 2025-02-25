@@ -100,8 +100,12 @@ def database_exception(funcao):
         try:
             return funcao(*args, **kwargs)
         except DatabaseError as e:
+            e = str(e).split('CONTEXT')[0]
+            if 'duplicate key value' in e:
+                e = e.split('DETAIL:')[1].replace('(','').replace(')','').replace('Key', 'Chave <').replace('already exists.', '> já existe!')
+                pass
             return Response(
-                {"banco de dados": (str(e).split('CONTEXT')[0])},
+                {"banco de dados": (e)},
                 status=500
             )            
         

@@ -5,6 +5,7 @@ urlpatterns = [
   path('colaborador', colaborador_list.as_view()),
   path('colaborador/<int:pk>', colaborador_detail.as_view()),
   path('colaborador_desligamento', colaborador_desligamento),
+  path('readmissao', ReAdmitir),
 
   path('funcao', funcao_list.as_view()),
   path('funcao/<str:pk>', funcao_detail.as_view()),
@@ -48,6 +49,7 @@ urlpatterns = [
   # path('horas_ponto', HorasPonto_list.as_view()),
   path('horas_ponto_import', HorasPonto_import),
   # path('horas_ponto/<str:pk>', HorasPonto_detail.as_view()),
+  path('gera_calendario', GeraCalendario),
   
   path('tabela', tabela_list),
   path('tabela/<str:table>', tabela),

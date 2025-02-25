@@ -320,15 +320,13 @@ class IntegracaoEpi(models.Model):
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
     aso = models.BooleanField()
     aso_valid = models.DateField(blank=True, null=True)
-    epi = models.BooleanField()
-    epi_valid = models.DateField(blank=True, null=True)
     os = models.BooleanField()
     os_valid = models.DateField(blank=True, null=True)
     observacao = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'integracao_epi'
+        db_table = 'integracao_aso'
 
 
 class IntegracaoNr(models.Model):

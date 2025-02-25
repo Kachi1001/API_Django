@@ -8,7 +8,7 @@ urlpatterns = [
     # path('deletar', api.deletar),
     # path('update', api.update),
     path('extrato_bancario', api.ExtratoBancario_list.as_view()),
-    
+    path('caixa_import', api.caixa_import),
     # path('obra', api.Obra_list.as_view()),
     # path('obra/<str:pk>', api.Obra_detail.as_view()),
 

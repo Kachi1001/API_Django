@@ -183,7 +183,7 @@ class IntegracaoEpi(serializers.ModelSerializer):
     class Table(serializers.ModelSerializer):
         class Meta:
             model = models.IntegracaoEpi
-            fields = ['id','aso','aso_valid','epi','epi_valid','os','os_valid','observacao'] # Ou liste os campos que deseja expor na API
+            fields = ['id','aso','aso_valid','os','os_valid','observacao'] # Ou liste os campos que deseja expor na API
 
 class Integracao(serializers.ModelSerializer):
     class Meta:
