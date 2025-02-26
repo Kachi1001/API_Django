@@ -17,6 +17,9 @@ password = settings.DATABASES['default']['PASSWORD']
 host = settings.DATABASES['default']['HOST']
 port = settings.DATABASES['default']['PORT']
 
+@api_view(['GET'])
+def CalculoMO(request):
+    return Response(views.FechamentoDetalhado.objects.all().values())
 
 def funçãoSQL(funcao): 
     conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
@@ -60,6 +63,11 @@ table_models = util.get_classes(models)
 table_views = util.get_classes(views)
 serializer_dicts = util.generate_serializer_dicts(serializers)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def tabela_list(request): 
+    result = {'tabelas':table_models.keys(),'view':table_views.keys()}
+    return Response(result)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
 def tabela(request, table):

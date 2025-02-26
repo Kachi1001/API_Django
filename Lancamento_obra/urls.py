@@ -38,6 +38,9 @@ urlpatterns = [
     path('resource/<str:name>', api.resource),
     
     path('exec/<str:funcao>', api.funcao),
+    path('tabela', api.tabela_list),
     path('tabela/<str:table>', api.tabela),
     path('graficos/<str:resource>', api.grafico),
+
+    path('calculomo', api.CalculoMO)
 ]
