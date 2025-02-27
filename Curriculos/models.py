@@ -91,13 +91,13 @@ class Cnh(models.Model):
 
 class Entrevista(models.Model):
     candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
-    profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
+    # profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
     pretensao = models.DecimalField(max_digits=7, decimal_places=2)
     banco_talentos = models.ForeignKey('EntrevistaClassificacao', models.DO_NOTHING, db_column='banco_talentos')
     avaliacao_final = models.CharField()
     revisar_periodo = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
-    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    # area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
 
     class Meta:
         managed = False
