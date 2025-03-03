@@ -474,3 +474,12 @@ class Alimentacao_list(util.LC):
 class Alimentacao_detail(util.RUD):
     serializer_class = serializers.Alimentacao
     queryset = serializer_class.Meta.model.objects.all()
+        
+class Dia_list(util.LC):
+    serializer_class = serializers.Dia
+    queryset = serializer_class.Meta.model.objects.all()
+    # ordering_fields = ['id']
+
+class Dia_detail(util.RUD):
+    serializer_class = serializers.Dia
+    queryset = serializer_class.Meta.model.objects.all()

@@ -113,7 +113,6 @@ def database_exception(funcao):
 from rest_framework.permissions import IsAuthenticated  
 class RUD(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, )    
-    
     @database_exception
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -132,10 +131,11 @@ class RUD(generics.RetrieveUpdateDestroyAPIView):
         print(result)
         return result
 
-
+from rest_framework import filters
 class LC(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
-    
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = '__all__'
     @database_exception
     def list(self, request, *args, **kwargs):
         try: self.serializer_class = self.serializer_class.Table
@@ -275,7 +275,7 @@ def buildTable(request, queryset, serializer):
         total = paginator.count
         result = paginator.get_page(page_number / page_size + 1).object_list
         result = serializer(result, many=True).data if serializer else result.values()
-        
+     
     data = {
         'total': total,  # Atualiza o total após o filtro
         'rows': list(result)

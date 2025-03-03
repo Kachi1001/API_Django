@@ -306,3 +306,7 @@ class Alimentacao(serializers.ModelSerializer):
     class Meta:
         model = models.Alimentacao
         fields = '__all__'
+class Dia(serializers.ModelSerializer):
+    class Meta:
+        model = models.Dia
+        fields = '__all__'
