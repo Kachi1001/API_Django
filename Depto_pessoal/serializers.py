@@ -239,3 +239,70 @@ class EpiNr(serializers.ModelSerializer):
             model = views.EpiNr
             fields = '__all__'
         
+        
+class Empresa(serializers.ModelSerializer):
+    class Meta:
+        model = views.Empresa
+        fields = '__all__'
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='empresa')
+        text = serializers.SerializerMethodField()
+        class Meta:
+            model = views.Empresa
+            fields = ['value','text']
+        def get_text(self, obj): 
+            return f'{obj.empresa} - Contratos: {obj.contratos}'
+        
+class Competencia(serializers.ModelSerializer):
+    class Meta:
+        model = views.Competencia
+        fields = '__all__'
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='cpt')
+        text = serializers.CharField(source='cpt')
+        class Meta:
+            model = views.Competencia
+            fields = ['value','text']
+    def Select_ordened():
+        return util.Select_order_by(Competencia.Select, '-cpt')
+    
+class AdicionaisCustos(serializers.ModelSerializer):
+    class Meta:
+        model = models.AdicionaisCustos
+        fields = '__all__'
+
+class AdicionaisFolha(serializers.ModelSerializer):
+    class Meta:
+        model = models.AdicionaisFolha
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='nome'
+        )
+        class Meta:
+            model = models.AdicionaisFolha
+            fields = '__all__'
+class AdicionaisTrabalhista(serializers.ModelSerializer):
+    class Meta:
+        model = models.AdicionaisTrabalhista
+        fields = '__all__'
+
+class AdicionalPf(serializers.ModelSerializer):
+    class Meta:
+        model = models.AdicionalPf
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        colaborador = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='nome'
+        )
+        class Meta:
+            model = models.AdicionalPf
+            fields = '__all__'
+class Alimentacao(serializers.ModelSerializer):
+    class Meta:
+        model = models.Alimentacao
+        fields = '__all__'

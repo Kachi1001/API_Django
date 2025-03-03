@@ -134,3 +134,16 @@ class Arquivar(models.Model):
     class Meta:
         managed = False
         db_table = 'arquivar'
+
+class ValidadeCa(models.Model):
+    id = models.IntegerField(primary_key=True)
+    produto = models.CharField()
+    fabricante = models.CharField()
+    ca = models.IntegerField()
+    validade = models.DateField()
+    situacao = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'validade_ca'
+        

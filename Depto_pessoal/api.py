@@ -18,7 +18,7 @@ db = settings.DATABASES['default']
 def funcao_sql(sql): 
     conn = psycopg2.connect(dbname=app, user=db['USER'], password=db['PASSWORD'], host=db['HOST'], port=db['PORT'])
     cursor = conn.cursor()
-    print(sql)
+    print('Executando função de SQL:',sql)
     try:
         # Executando a função
         cursor.execute(f"SELECT {sql}")
@@ -103,10 +103,12 @@ resources['funcao']['select'].append('categoria')
 resources['ponto'] = resources['lembrete'] 
 resources['ponto']['select'].append('padrao') 
 resources['desligamento'] = {'text':['data', 'id']}
-resources['integracao']['select'].append('obra')
+resources['integracao']['select'].append('empresa')
 resources['gera_calendario'] = {'text':['data']}
+resources['gerar_folha_dp'] = {'text':[''],'select':['competencia']}
 resources['integracao_epi'] = resources['integracao_aso']
 resources['readmissao'] = {'text':['id','colaborador','data_inicio','remuneracao','diaria'],'check':['terceiro','extra'],'select':['funcao','equipe']}
+resources['adicionais_folha']['select'].append('competencia')
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
@@ -394,7 +396,7 @@ def GeraCalendario(request):
         return 'null'
     if format_sql('data') == 'null':
         return Response({'DATA':'Este campo não pode ser nulo!'}, 500)
-    return funcao_sql(f'gera_calendario {format_sql('data')}')  
+    return funcao_sql(f'gera_calendario ({format_sql('data')})')  
     
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
@@ -420,3 +422,55 @@ def ReAdmitir(request):
     if len(result) > 0:
         return Response(result, 500)
     return funcao_sql(f'readmissao ({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')},{format_sql('funcao')},{format_bool('terceiro')},{format_sql('equipe')},{format_sql('diaria')},{format_bool('extra')})')  
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+@util.database_exception 
+def GerarFolhaDp(request):
+    def format_sql(value):
+        value = request.data.get(value)
+        if value:
+            return "'" + str(value) + "'"
+        return 'null'
+    if format_sql('competencia') == 'null':
+        return Response({'DATA':'Este campo não pode ser nulo!'}, 500)
+    return funcao_sql(f'gerar_folha_dp ({format_sql('competencia')})')      
+    
+    
+    
+        
+class AdicionaisCustos_list(util.LC):
+    serializer_class = serializers.AdicionaisCustos
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionaisCustos_detail(util.RUD):
+    serializer_class = serializers.AdicionaisCustos
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class AdicionaisFolha_list(util.LC):
+    serializer_class = serializers.AdicionaisFolha
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionaisFolha_detail(util.RUD):
+    serializer_class = serializers.AdicionaisFolha
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class AdicionaisTrabalhista_list(util.LC):
+    serializer_class = serializers.AdicionaisTrabalhista
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionaisTrabalhista_detail(util.RUD):
+    serializer_class = serializers.AdicionaisTrabalhista
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class AdicionalPf_list(util.LC):
+    serializer_class = serializers.AdicionalPf
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionalPf_detail(util.RUD):
+    serializer_class = serializers.AdicionalPf
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class Alimentacao_list(util.LC):
+    serializer_class = serializers.Alimentacao
+    queryset = serializer_class.Meta.model.objects.all()
+class Alimentacao_detail(util.RUD):
+    serializer_class = serializers.Alimentacao
+    queryset = serializer_class.Meta.model.objects.all()

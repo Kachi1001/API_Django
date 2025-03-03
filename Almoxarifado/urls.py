@@ -29,6 +29,7 @@ urlpatterns = [
   path('colaborador/<int:pk>', colaborador.as_view()),
   
   
+  path('verifica_ca/<int:ca>', verificarCA),
   
   path('funcao/<str:method>', funcao),
   path('tabela/<str:table>', tabela),

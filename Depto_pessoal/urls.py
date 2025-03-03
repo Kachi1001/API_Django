@@ -45,10 +45,26 @@ urlpatterns = [
   
   path('insalubridade', Insalubridade_list.as_view()),
   path('insalubridade/<str:pk>', Insalubridade_detail.as_view()),
+  
+  path('adicionais_custos', AdicionaisCustos_list.as_view()),
+  path('adicionais_custos/<str:pk>', AdicionaisCustos_detail.as_view()),
+
+  path('adicionais_folha', AdicionaisFolha_list.as_view()),
+  path('adicionais_folha/<str:pk>', AdicionaisFolha_detail.as_view()),
+
+  path('adicionais_trabalhista', AdicionaisTrabalhista_list.as_view()),
+  path('adicionais_trabalhista/<str:pk>', AdicionaisTrabalhista_detail.as_view()),
+
+  path('adicional_pf', AdicionalPf_list.as_view()),
+  path('adicional_pf/<str:pk>', AdicionalPf_detail.as_view()),
+
+  path('alimentacao', Alimentacao_list.as_view()),
+  path('alimentacao/<str:pk>', Alimentacao_detail.as_view()),
 
   # path('horas_ponto', HorasPonto_list.as_view()),
   path('horas_ponto_import', HorasPonto_import),
   # path('horas_ponto/<str:pk>', HorasPonto_detail.as_view()),
+  path('gerar_folha_dp', GerarFolhaDp),
   path('gera_calendario', GeraCalendario),
   
   path('tabela', tabela_list),

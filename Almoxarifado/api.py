@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from Site_django import util
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-import Depto_pessoal
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated]) 
@@ -239,3 +238,42 @@ class Digitalizacao_list(util.LC):
 class Digitalizacao_detail(util.RUD):
     serializer_class = serializers.Digitalizacao
     queryset = serializer_class.Meta.model.objects.all()
+
+
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+@api_view(['GET'])
+def verificarCA(request, ca):
+    # URL do site que você quer raspar
+    url = f"https://consultaca.com/{ca}"
+    
+    # Simula headers para evitar bloqueio
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    # Faz a requisição HTTP
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        result = {}
+        # Busca o elemento usando o seletor CSS
+        result['nome'] = soup.select_one('#box_result > div:nth-child(16)')
+        print(result['nome'].get_text())
+        result['nome'] = result['nome'].get_text(strip=True).split(':') if result['nome'] else ''
+        try:
+            result['nome'] = result['nome'][result['nome'].index('Nome Fantasia') + 1]
+        except:
+            result['nome'] = ''
+            
+        result['desc'] = soup.select_one('#box_result > div:nth-child(15) > p')
+        result['desc'] = result['desc'].get_text(strip=True).replace('Nome Fantasia:','') if result['desc'] else ''
+        
+        result['vencimento'] = soup.select_one('#box_result > p:nth-child(9) > span.validade_ca.regular')
+        result['vencimento'] = result['vencimento'].get_text(strip=True) if result['vencimento'] else soup.select_one('#box_result > p:nth-child(9) > span.validade_ca.vencido').get_text(strip=True)
+        result['vencimento'] = datetime.strptime(result['vencimento'], '%d/%m/%Y').strftime('%Y-%m-%d')
+        if result['vencimento']:
+            return Response(result, 200)
+    return Response({'Método indisponível.':'Tente novamente mais tarde, ou entre em contato com a equipe de TI.'},500)

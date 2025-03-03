@@ -107,8 +107,7 @@ def database_exception(funcao):
             return Response(
                 {"banco de dados": (e)},
                 status=500
-            )            
-        
+            )    
     return wrapper
 
 from rest_framework.permissions import IsAuthenticated  
@@ -129,7 +128,9 @@ class RUD(generics.RetrieveUpdateDestroyAPIView):
 
     @database_exception
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        result = super().destroy(request, *args, **kwargs)
+        print(result)
+        return result
 
 
 class LC(generics.ListCreateAPIView):

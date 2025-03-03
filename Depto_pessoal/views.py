@@ -73,3 +73,22 @@ class AvisoRetornoFerias(models.Model):
         db_table = 'aviso_retorno_ferias'
         
         
+class Empresa(models.Model):
+    empresa = models.CharField(primary_key=True)
+    contratos = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'empresa'
+        
+        
+        
+class Competencia(models.Model):
+    cpt = models.CharField(primary_key=True)
+    contar = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'competencia'
+        
+        

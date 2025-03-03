@@ -28,11 +28,23 @@ class AdicionaisFolha(models.Model):
     competencia = models.CharField(max_length=7)
     valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     descricao = models.CharField(blank=True, null=True)
-    horas = models.DurationField(blank=True, null=True)
-
+    horas = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    minutos = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    desconto = models.BooleanField(blank=False, null=False)
+    intervalo = models.DurationField(blank=True, null=True)
+    
     class Meta:
         managed = False
         db_table = 'adicionais_folha'
+        
+class AdicionaisTrabalhista(models.Model):
+    id = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    descricao = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'adicionais_trabalhista'
 
 
 class AdicionalPf(models.Model):
@@ -185,6 +197,8 @@ class FechamentoMensal(models.Model):
     total_menos_quentes = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
     saldo_negativo_acumulado = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
     valor_pagar = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    adicional = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
+    total = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -306,9 +320,10 @@ class Insalubridade(models.Model):
 
 class Integracao(models.Model):
     colaborador = models.ForeignKey(Colaborador, models.DO_NOTHING, db_column='colaborador')
-    obra = models.IntegerField()
-    validade = models.DateField(blank=True, null=True)
+    validade = models.DateField(default=None)
     descricao = models.CharField(blank=True, null=True)
+    data_integracao = models.DateField(blank=True, null=True)
+    empresa = models.CharField()
 
     class Meta:
         managed = False

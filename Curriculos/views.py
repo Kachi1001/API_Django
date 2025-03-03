@@ -11,7 +11,7 @@ class resumo(models.Model):
     anos_exp = models.IntegerField()
     avaliacao_final = models.CharField(max_length=255)
     experiencia = models.CharField(max_length=255)
-    revisar_dp = models.BooleanField()
+    cidade = models.CharField()
     
     class Meta:
         managed = False
