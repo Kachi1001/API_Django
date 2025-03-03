@@ -130,12 +130,13 @@ class RUD(generics.RetrieveUpdateDestroyAPIView):
         result = super().destroy(request, *args, **kwargs)
         print(result)
         return result
-
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 class LC(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
     ordering_fields = '__all__'
+    
     @database_exception
     def list(self, request, *args, **kwargs):
         try: self.serializer_class = self.serializer_class.Table
