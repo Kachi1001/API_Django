@@ -37,3 +37,14 @@ class SaldoInicial(models.Model):
     class Meta:
         managed = False
         db_table = 'saldo_inicial'
+
+
+class Importacao(models.Model):
+    data_movimentacao = models.DateField(blank=False, null=False)
+    data_importacao = models.DateField(blank=False, null=False)
+    usuario = models.CharField(null=False,blank=False)
+    quantidade = models.IntegerField(null=False, blank=False)
+    
+    class Meta:
+        managed = False
+        db_table = 'importacao'    

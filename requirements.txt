@@ -16,3 +16,4 @@ channels
 channels-redis
 httpx==0.28.1
 uvicorn==0.34.0
+django-db-logger==0.1.13

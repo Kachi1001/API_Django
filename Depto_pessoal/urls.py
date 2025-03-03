@@ -5,6 +5,7 @@ urlpatterns = [
   path('colaborador', colaborador_list.as_view()),
   path('colaborador/<int:pk>', colaborador_detail.as_view()),
   path('colaborador_desligamento', colaborador_desligamento),
+  path('readmissao', ReAdmitir),
 
   path('funcao', funcao_list.as_view()),
   path('funcao/<str:pk>', funcao_detail.as_view()),
@@ -17,18 +18,15 @@ urlpatterns = [
   path('ocupacao_dissidio', ocupacao_dissidio),
   path('ocupacao/<str:pk>', ocupacao_detail.as_view()),
 
-  path('feriasprocessadas', FeriasProcessadas_list.as_view()),
-  path('feriasprocessadas/<str:pk>', FeriasProcessadas_detail.as_view()),
+  path('ferias_processadas', FeriasProcessadas_list.as_view()),
+  path('ferias_processadas/<str:pk>', FeriasProcessadas_detail.as_view()),
 
-  path('periodoaquisitivo', PeriodoAquisitivo_list.as_view()),
-  path('periodoaquisitivo_funcao', PeriodoAquisitivo_funcao),
-  path('periodoaquisitivo/<str:pk>', PeriodoAquisitivo_detail.as_view()),
+  path('periodo_aquisitivo', PeriodoAquisitivo_list.as_view()),
+  path('periodo_aquisitivo_funcao', PeriodoAquisitivo_funcao),
+  path('periodo_aquisitivo/<str:pk>', PeriodoAquisitivo_detail.as_view()),
   
-  path('feriasutilizadas', FeriasUtilizadas_list.as_view()),
-  path('feriasutilizadas/<str:pk>', FeriasUtilizadas_detail.as_view()),
-
-  path('avaliacao', Avaliacao_list.as_view()),
-  path('avaliacao/<str:pk>', Avaliacao_detail.as_view()),
+  path('ferias_utilizadas', FeriasUtilizadas_list.as_view()),
+  path('ferias_utilizadas/<str:pk>', FeriasUtilizadas_detail.as_view()),
 
   path('tipoavaliacao', TipoAvaliacao_list.as_view()),
   path('tipoavaliacao/<str:pk>', TipoAvaliacao_detail.as_view()),
@@ -40,16 +38,39 @@ urlpatterns = [
   path('integracao/<str:pk>', Integracao_detail.as_view()),
   path('integracao_nr', IntegracaoNr_list.as_view()),
   path('integracao_nr/<str:pk>', IntegracaoNr_detail.as_view()),
+  path('integracao_nr_tipo', IntegracaoNrTipo_list.as_view()),
+  path('integracao_nr_tipo/<str:pk>', IntegracaoNrTipo_detail.as_view()),
   path('integracao_epi', IntegracaoEpi_list.as_view()),
   path('integracao_epi/<str:pk>', IntegracaoEpi_detail.as_view()),
   
   path('insalubridade', Insalubridade_list.as_view()),
   path('insalubridade/<str:pk>', Insalubridade_detail.as_view()),
+  
+  path('adicionais_custos', AdicionaisCustos_list.as_view()),
+  path('adicionais_custos/<str:pk>', AdicionaisCustos_detail.as_view()),
+
+  path('adicionais_folha', AdicionaisFolha_list.as_view()),
+  path('adicionais_folha/<str:pk>', AdicionaisFolha_detail.as_view()),
+
+  path('adicionais_trabalhista', AdicionaisTrabalhista_list.as_view()),
+  path('adicionais_trabalhista/<str:pk>', AdicionaisTrabalhista_detail.as_view()),
+
+  path('adicional_pf', AdicionalPf_list.as_view()),
+  path('adicional_pf/<str:pk>', AdicionalPf_detail.as_view()),
+
+  path('alimentacao', Alimentacao_list.as_view()),
+  path('alimentacao/<str:pk>', Alimentacao_detail.as_view()),
+
+  path('dia', Dia_list.as_view()),
+  path('dia/<str:pk>', Dia_detail.as_view()),
 
   # path('horas_ponto', HorasPonto_list.as_view()),
   path('horas_ponto_import', HorasPonto_import),
   # path('horas_ponto/<str:pk>', HorasPonto_detail.as_view()),
+  path('gerar_folha_dp', GerarFolhaDp),
+  path('gera_calendario', GeraCalendario),
   
+  path('tabela', tabela_list),
   path('tabela/<str:table>', tabela),
   path('resource/<str:name>', resource),
   path('select/<str:resource>', select),

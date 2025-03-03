@@ -50,6 +50,7 @@ class EpiNr(models.Model):
     emitido = models.BooleanField()
     validade = models.DateField()
     observacao = models.CharField()
+    situacao = models.CharField()
     
     class Meta:
         managed = False
@@ -63,5 +64,31 @@ class Lembrete2(models.Model):
     class Meta:
         managed = False
         db_table = 'lembrete_'
+        
+class AvisoRetornoFerias(models.Model):
+    texto = models.CharField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'aviso_retorno_ferias'
+        
+        
+class Empresa(models.Model):
+    empresa = models.CharField(primary_key=True)
+    contratos = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'empresa'
+        
+        
+        
+class Competencia(models.Model):
+    cpt = models.CharField(primary_key=True)
+    contar = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'competencia'
         
         

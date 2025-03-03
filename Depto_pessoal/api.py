@@ -3,10 +3,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import psycopg2
 from django.conf import settings
-from .models import *
-from .tables import buildTable
 from Site_django import util 
-from . import models, views
+from . import models, views, serializers
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
 retorno404 = Response({'message':'Registro não encontrado'}, status=404)
@@ -20,7 +18,7 @@ db = settings.DATABASES['default']
 def funcao_sql(sql): 
     conn = psycopg2.connect(dbname=app, user=db['USER'], password=db['PASSWORD'], host=db['HOST'], port=db['PORT'])
     cursor = conn.cursor()
-    print(sql)
+    print('Executando função de SQL:',sql)
     try:
         # Executando a função
         cursor.execute(f"SELECT {sql}")
@@ -53,7 +51,7 @@ def funcao(request, metodo):
         
     try:
         funcoes = {
-            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('terceiro')},{format_sql('equipe')})',  #nova funcao sql
+            'muda_cargo': f'muda_cargo({format_sql('id')},{format_sql('data_inicio')},{format_sql('data_fim')},{format_sql('remuneracao')},{format_sql('funcao')},{format_sql('terceiro')},{format_sql('equipe')},{format_sql('diaria')},{format_sql('extra')})',  #nova funcao sql
             'dissidio': f'dissidio({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')})',
             'desligamento': f'desligamento({format_sql('data')},{format_sql('id')})',
         }
@@ -62,57 +60,59 @@ def funcao(request, metodo):
         return funcao_sql(metodo+'()')
 
     return funcao_sql(sql)
+    
+from Site_django.util import generate_serializer_dicts 
+Select = {
+    'colaborador': serializers.Colaborador.Select,
+    'funcao': serializers.Funcao.Select,
+    'avaliacao': serializers.TipoAvaliacao.Select,
+    'categoria': [{'value':'1'},{'value':'2'},{'value':'3'},{'value':'TERCEIRO'},{'value':'ESTAGIARIO'}],
+    'padrao': [{'value':'07:25, 17:55','text':'Colaborador'},{'value':'07:25, 15:25'},{'value':'13:25, 17:25'}],
+}    
+serializer_dicts = generate_serializer_dicts(serializers)
+Select.update(serializer_dicts['Select'])
+serializer_dicts['Table']['colaborador'] = serializer_dicts['Table']['colaborador_']
 
-from .serializers import *
-dictModels = {
-    'funcao': Funcao,
-    'colaborador': Colaborador,
-    'equipe': Equipe,
-    'periodoaquisitivo': PeriodoAquisitivo,
-    'feriasutilizadas': FeriasUtilizadas,
-    'feriasprocessadas': FeriasProcessadas,
-    'feriassaldos': views.FeriasSaldos.objects.all(),
-    'ocupacao': Ocupacao,
-    'ponto': Lembrete,
-    'avaliacao': Colaborador.objects.all().filter(avaliacao__isnull=False),
-    'feriasmensagem': views.FeriasMensagem.objects.all(),
-    'integracao_epi': IntegracaoEpi.objects.all(),
-    'integracao_nr': IntegracaoNr.objects.all(),
-    'integracao': Integracao.objects.all(),
-    'epi_nr': views.EpiNr,
-    'fechamentomensal': FechamentoMensal,
-}
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def select(request, resource):
+    return util.create_select(request, resource, Select)
+table_models = util.get_classes(models)
+table_views = util.get_classes(views)
+table_models['colaborador'] = table_models['colaborador_']
+table_models['avaliacao'] = table_models['colaborador_']
    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated]) 
-def tabela(request, table): 
-    # return util.get_table(request, table, dictModels)
-    try:
-        return Response(buildTable(request, table, dictModels.get(table).objects.all()))
-    except:
-        return Response(buildTable(request, table, dictModels.get(table)))
+def tabela_list(request): 
+    result = {'tabelas':table_models.keys(),'view':table_views.keys()}
+    return Response(result)
 
-from . import models
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) 
+def tabela(request, table):
+    dicts = table_models
+    dicts.update(table_views)
+    return util.get_table(request, table, dicts, serializer_dicts['Table'])
+
 resources = util.get_resources(models)
 resources['colaborador'] = resources['colaborador_']
 resources['avaliacao'] = resources['colaborador_']
-resources['tipoavaliacao'] = resources['colab_avaliacao']
 resources['funcao'] = resources['funcao_']
 resources['funcao']['select'].append('categoria')
-resources['feriasutilizadas'] = resources['ferias_utilizadas'] 
-resources['feriasprocessadas'] = resources['ferias_processadas'] 
-resources['periodoaquisitivo'] = resources['periodo_aquisitivo'] 
 resources['ponto'] = resources['lembrete'] 
 resources['ponto']['select'].append('padrao') 
 resources['desligamento'] = {'text':['data', 'id']}
-resources['integracao']['select'].append('obra')
+resources['integracao']['select'].append('empresa')
+resources['gera_calendario'] = {'text':['data']}
+resources['gerar_folha_dp'] = {'text':[''],'select':['competencia']}
+resources['integracao_epi'] = resources['integracao_aso']
+resources['readmissao'] = {'text':['id','colaborador','data_inicio','remuneracao','diaria'],'check':['terceiro','extra'],'select':['funcao','equipe']}
+resources['adicionais_folha']['select'].append('competencia')
 @api_view(['GET'])
 def resource(request, name):
     return Response(resources.get(name))
 
-  
-from . import views
 graficos = {
     'rotatividade': views.ativos_rotatividade,
 }
@@ -130,13 +130,12 @@ def grafico(request, resource):
 
 # Colaborador
 class colaborador_list(util.LC):
-    queryset = Colaborador.objects.all()
-    serializer_class = ColaboradorSerializer
-
+    serializer_class = serializers.Colaborador
+    queryset = serializer_class.Meta.model.objects.all()
 
 class colaborador_detail(util.RUD):
-    queryset = Colaborador.objects.all()
-    serializer_class = ColaboradorSerializer
+    serializer_class = serializers.Colaborador
+    queryset = serializer_class.Meta.model.objects.all()
 
     @util.database_exception
     def destroy(self, request, *args, **kwargs):
@@ -154,32 +153,33 @@ def colaborador_desligamento(request):
 
 # Função
 class funcao_list(util.LC):
-    queryset = Funcao.objects.all()
-    serializer_class = FuncaoSerializer
+    serializer_class = serializers.Funcao
+    queryset = serializer_class.Meta.model.objects.all()
+
 
 class funcao_detail(util.RUD):
-    queryset = Funcao.objects.all()
-    serializer_class = FuncaoSerializer
+    serializer_class = serializers.Funcao
+    queryset = serializer_class.Meta.model.objects.all()
     
     
 # Equipe
 class equipe_list(util.LC):
-    queryset = Equipe.objects.all()
-    serializer_class = EquipeSerializer
+    serializer_class = serializers.Equipe
+    queryset = serializer_class.Meta.model.objects.all()
 
 class equipe_detail(util.RUD):
-    queryset = Equipe.objects.all()
-    serializer_class = EquipeSerializer
+    serializer_class = serializers.Equipe
+    queryset = serializer_class.Meta.model.objects.all()
     
 # 
 # Ocupação
 class ocupacao_list(util.LC):
-    serializer_class = OcupacaoSerializer
+    serializer_class = serializers.Ocupacao
     queryset = serializer_class.Meta.model.objects.all().order_by('-data_inicio')
     filterset_fields = ['colaborador','id']
 
 class ocupacao_detail(util.RUD):
-    serializer_class = OcupacaoSerializer
+    serializer_class = serializers.Ocupacao
     queryset = serializer_class.Meta.model.objects.all()
     
     
@@ -187,33 +187,35 @@ from django.shortcuts import get_object_or_404
 @api_view(['POST','GET'])
 @permission_classes([IsAuthenticated]) 
 def ocupacao_alterar(request):
+    serializer = serializers.Ocupacao
     match request.method:
         case 'POST':
             return funcao(request.data, 'muda_cargo')
         case 'GET':
-            queryset = Ocupacao.objects.all()
-            return Response(OcupacaoSerializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
+            queryset = serializer.Meta.model.objects.all()
+            return Response(serializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
             
 @api_view(['POST','GET'])
 @permission_classes([IsAuthenticated]) 
 def ocupacao_dissidio(request):
+    serializer = serializers.Ocupacao
     match request.method:
         case 'POST':
             return funcao(request.data, 'dissidio')
         case 'GET':
-            queryset = Ocupacao.objects.all()
-            return Response(OcupacaoSerializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
+            queryset = serializer.Meta.model.objects.all()
+            return Response(serializer(get_object_or_404(queryset, pk=request.GET['id'])).data)
     
 #   
 # Periodo aquisitivo
 class PeriodoAquisitivo_list(util.LC):
-    serializer_class = PeriodoAquisitivoSerializer
+    serializer_class = serializers.PeriodoAquisitivo
     queryset = serializer_class.Meta.model.objects.all().order_by('-adquirido_em')
     filterset_fields = ['colaborador']
     
     
 class PeriodoAquisitivo_detail(util.RUD):
-    serializer_class = PeriodoAquisitivoSerializer
+    serializer_class = serializers.PeriodoAquisitivo
     queryset = serializer_class.Meta.model.objects.all()
     
 @api_view(['POST'])
@@ -225,61 +227,45 @@ def PeriodoAquisitivo_funcao(request):
 #   
 # Ferias processadas
 class FeriasProcessadas_list(util.LC):
-    serializer_class = FeriasProcessadasSerializer
-    queryset = FeriasProcessadas.objects.all().order_by('-id')
-    
+    serializer_class = serializers.FeriasProcessadas
+    queryset = serializer_class.Meta.model.objects.all().order_by('-id')
     filterset_fields = ['colaborador']
-
-            
 class FeriasProcessadas_detail(util.RUD):
-    queryset = FeriasProcessadas.objects.all()
-    serializer_class = FeriasProcessadasSerializer
-
+    serializer_class = serializers.FeriasProcessadas
+    queryset = serializer_class.Meta.model.objects.all()
 # 
 # Ferias utilizadas
 class FeriasUtilizadas_list(util.LC):
-    serializer_class = FeriasUtilizadasSerializer
-    queryset = FeriasUtilizadas.objects.all().order_by('-id')
-    
+    serializer_class = serializers.FeriasUtilizadas
+    queryset = serializer_class.Meta.model.objects.all().order_by('-id')
     filterset_fields = ['colaborador']
-            
 class FeriasUtilizadas_detail(util.RUD):
-    queryset = FeriasUtilizadas.objects.all()
-    serializer_class = FeriasUtilizadasSerializer
-    
+    serializer_class = serializers.FeriasUtilizadas
+    queryset = serializer_class.Meta.model.objects.all()
 
 # Lembrete
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 class Lembrete_list(util.LC):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = LembreteSerializer
+    serializer_class = serializers.Lembrete
     queryset = serializer_class.Meta.model.objects.all()
         
 class Lembrete_detail(util.RUD):
-    serializer_class = LembreteSerializer    
+    serializer_class = serializers.Lembrete
     queryset = serializer_class.Meta.model.objects.all()
 
 # Feriado
 class Feriado_list(util.LC):
-    serializer_class = FeriadoSerializer
+    serializer_class = serializers.Feriado
     queryset = serializer_class.Meta.model.objects.all()
         
 class Feriado_detail(util.RUD):
-    serializer_class = FeriadoSerializer    
+    serializer_class = serializers.Feriado
     queryset = serializer_class.Meta.model.objects.all()
-    
-class Avaliacao():
-    serializer_class = AvaliacaoSerializer
-    queryset = serializer_class.Meta.model.objects.all().filter(avaliacao__isnull=False)
 
-class Avaliacao_list(Avaliacao,util.LC):
-    pass
-
-class Avaliacao_detail(Avaliacao,util.RUD):
-    pass
     
 class TipoAvaliacao():
-    serializer_class = TipoAvaliacaoSerializer
+    serializer_class = serializers.TipoAvaliacao
     queryset = serializer_class.Meta.model.objects.all()
 
 class TipoAvaliacao_list(TipoAvaliacao,util.LC):
@@ -288,13 +274,7 @@ class TipoAvaliacao_list(TipoAvaliacao,util.LC):
 class TipoAvaliacao_detail(TipoAvaliacao,util.RUD):
     pass
     
-        
-@api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
-def select(request, resource):
-    from .serializers import Select
 
-    return util.create_select(request, resource, Select)
         
 from django.core.cache import cache
         
@@ -313,47 +293,52 @@ def app_menu(request, app):
         
 @api_view(['GET'])
 def app_feriado(request):
-    try: feriados = Feriado.objects.get(id=util.get_hoje())
-    except Feriado.DoesNotExist: return Response(0)
+    try: feriados = models.Feriado.objects.get(id=util.get_hoje())
+    except: return Response(0)
     else: return Response(1)
 
 class IntegracaoNr_list(util.LC):
-    serializer_class = IntegracaoNrSerializer
+    serializer_class = serializers.IntegracaoNr
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['colaborador','id']
-
 class IntegracaoNr_detail(util.RUD):
-    serializer_class = IntegracaoNrSerializer    
+    serializer_class = serializers.IntegracaoNr
+    queryset = serializer_class.Meta.model.objects.all()
+    
+class IntegracaoNrTipo_list(util.LC):
+    serializer_class = serializers.IntegracaoNrTipo
+    queryset = serializer_class.Meta.model.objects.all()
+class IntegracaoNrTipo_detail(util.RUD):
+    serializer_class = serializers.IntegracaoNrTipo
     queryset = serializer_class.Meta.model.objects.all()
     
 class Integracao_list(util.LC):
-    serializer_class = IntegracaoSerializer
+    serializer_class = serializers.Integracao
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['colaborador','id']
-
 class Integracao_detail(util.RUD):
-    serializer_class = IntegracaoSerializer    
+    serializer_class = serializers.Integracao
     queryset = serializer_class.Meta.model.objects.all()
     
 class IntegracaoEpi_list(util.LC):
-    serializer_class = IntegracaoEpiSerializer
+    serializer_class = serializers.IntegracaoEpi
     queryset = serializer_class.Meta.model.objects.all()
     filterset_fields = ['colaborador','id']
 
 class IntegracaoEpi_detail(util.RUD):
-    serializer_class = IntegracaoEpiSerializer    
+    serializer_class = serializers.IntegracaoEpi
     queryset = serializer_class.Meta.model.objects.all()
     
 # Feriado
 class Lembrete(util.LC):
-    serializer_class = LembreteSerial
+    serializer_class = serializers.Lembrete
     queryset = serializer_class.Meta.model.objects.all()
         
 class Insalubridade_list(util.LC):
-    serializer_class = InsalubridadeSerializer
+    serializer_class = serializers.Insalubridade
     queryset = serializer_class.Meta.model.objects.all()
 class Insalubridade_detail(util.RUD):
-    serializer_class = InsalubridadeSerializer
+    serializer_class = serializers.Insalubridade
     queryset = serializer_class.Meta.model.objects.all()
 
     
@@ -366,23 +351,25 @@ def HorasPonto_import(request):
         arquivo = load_workbook(request.FILES['file'])
         try:
             tabela = arquivo['Relatório xlsx']
-        except KeyError:
-            return Response({'Arquivo':'Arquivo não compatível!'}, status=406)
+        except KeyError as e:
+            return Response({'Arquivo':'Arquivo não compatível!','detalhe':str(e)}, status=406)
         colabs = {}
-        for colab in Colaborador.objects.all().values():
+        for colab in models.Colaborador.objects.all().values():
             colabs[colab.get('nome')] = colab.get('id')
 
         conflito = []
         linha = 2
-        while tabela[f'A{linha}'].value:
+        while tabela[f'A{linha}'].value and tabela[f'A{linha}'].value != 'Resumo':
             colab = tabela[f'A{linha}'].value
-            if not colab in colabs:
+            if not (colab in colabs) and not (colab in conflito):
                 conflito.append(colab)
             linha += 1
             
         if len(conflito) > 0:
-            conflito = ', '.join(conflito)
-            return Response({'Conflito':f'Colaboradores com nomes em conflito: {conflito}'}, status=406)
+            result = {}
+            for x in conflito:
+                result[x] = 'Colaborador não encontrado!'
+            return Response(result, status=406)
         
         limite = linha
         linha = 2
@@ -391,11 +378,108 @@ def HorasPonto_import(request):
                 data = datetime.strptime(tabela[f'B{linha}'].value.split(', ')[1], '%d/%m/%Y')
                 queryset_colab = models.Colaborador.objects.all()
                 colab = queryset_colab.get(id = colabs.get(tabela[f'A{linha}'].value))
-                models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)
+                lanc = models.HorasPonto.objects.create(colaborador=colab, extras=tabela[f'H{linha}'].value, data=data)        
             except Exception as e:
                 print(e)
                 return Response({'Erro': f'Erro ao adicionar no banco, linha: {linha}'}, status=400)
             linha += 1 
         return Response({'Sucesso':'Importado com sucesso!'}, status=203)            
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+@util.database_exception 
+def GeraCalendario(request):
+    def format_sql(value):
+        value = request.data.get(value)
+        if value:
+            return "'" + str(value) + "'"
+        return 'null'
+    if format_sql('data') == 'null':
+        return Response({'DATA':'Este campo não pode ser nulo!'}, 500)
+    return funcao_sql(f'gera_calendario ({format_sql('data')})')  
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+@util.database_exception 
+def ReAdmitir(request):
+    data = request.data
+    resource = resources['readmissao']
+    def format_sql(value):
+        value = request.data.get(value)
+        if value:
+            return "'" + str(value) + "'"
+        return 'null'   
+    def format_bool(value):
+        value = request.data.get(value)
+        if value != None:
+            return str(value)
+        return 'null'
+    result = {}
+    campos = resource.get('text') + resource.get('select') + resource.get('check')
+    for x in campos:
+        if data.get(x) == None:
+            result[x.upper()] = 'Este campo não pode ser nulo!'
+    if len(result) > 0:
+        return Response(result, 500)
+    return funcao_sql(f'readmissao ({format_sql('id')},{format_sql('data_inicio')},{format_sql('remuneracao')},{format_sql('funcao')},{format_bool('terceiro')},{format_sql('equipe')},{format_sql('diaria')},{format_bool('extra')})')  
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated]) 
+@util.database_exception 
+def GerarFolhaDp(request):
+    def format_sql(value):
+        value = request.data.get(value)
+        if value:
+            return "'" + str(value) + "'"
+        return 'null'
+    if format_sql('competencia') == 'null':
+        return Response({'DATA':'Este campo não pode ser nulo!'}, 500)
+    return funcao_sql(f'gerar_folha_dp ({format_sql('competencia')})')      
+    
+    
     
         
+class AdicionaisCustos_list(util.LC):
+    serializer_class = serializers.AdicionaisCustos
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionaisCustos_detail(util.RUD):
+    serializer_class = serializers.AdicionaisCustos
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class AdicionaisFolha_list(util.LC):
+    serializer_class = serializers.AdicionaisFolha
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionaisFolha_detail(util.RUD):
+    serializer_class = serializers.AdicionaisFolha
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class AdicionaisTrabalhista_list(util.LC):
+    serializer_class = serializers.AdicionaisTrabalhista
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionaisTrabalhista_detail(util.RUD):
+    serializer_class = serializers.AdicionaisTrabalhista
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class AdicionalPf_list(util.LC):
+    serializer_class = serializers.AdicionalPf
+    queryset = serializer_class.Meta.model.objects.all()
+class AdicionalPf_detail(util.RUD):
+    serializer_class = serializers.AdicionalPf
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class Alimentacao_list(util.LC):
+    serializer_class = serializers.Alimentacao
+    queryset = serializer_class.Meta.model.objects.all()
+class Alimentacao_detail(util.RUD):
+    serializer_class = serializers.Alimentacao
+    queryset = serializer_class.Meta.model.objects.all()
+        
+class Dia_list(util.LC):
+    serializer_class = serializers.Dia
+    queryset = serializer_class.Meta.model.objects.all()
+    # ordering_fields = ['id']
+
+class Dia_detail(util.RUD):
+    serializer_class = serializers.Dia
+    queryset = serializer_class.Meta.model.objects.all()

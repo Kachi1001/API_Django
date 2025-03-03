@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from . import models
-
+from . import models, views
+from Site_django import util
         
         
 
@@ -11,11 +11,15 @@ class Candidato(serializers.ModelSerializer):
         
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
-        text = serializers.CharField(source='nome')
+        text = serializers.SerializerMethodField()
         class Meta:
             model = models.Candidato
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
-        
+    
+        def get_text(self, obj):
+            return f"{obj.nome}  -  rg: {obj.rg or 'Vazio'} | cpf: {obj.cpf or 'Vazio'}"
+    def Select_ordened():   
+        return util.Select_order_by(Candidato.Select, 'nome')
 class Escolaridade(serializers.ModelSerializer):
     class Meta:
         model = models.Escolaridade
@@ -27,7 +31,7 @@ class Escolaridade(serializers.ModelSerializer):
             model = models.EscolaridadeTipo
             fields = '__all__'  # Ou liste os campos que deseja expor na API
             
-    def Select_ordered():   
+    def Select_ordened():   
         return Escolaridade.Select(models.EscolaridadeTipo.objects.all().order_by('indice'), many=True).data
     
 class Experiencia(serializers.ModelSerializer):
@@ -35,24 +39,19 @@ class Experiencia(serializers.ModelSerializer):
         model = models.Experiencia
         fields = '__all__'  # Ou liste os campos que deseja expor na API
     class Table(serializers.ModelSerializer):
-        profissao = serializers.SlugRelatedField(
-            many=False,
-            read_only=True,
-            slug_field='funcao'
-        )
-        candidato = serializers.SlugRelatedField(
-            many=False,
-            read_only=True,
-            slug_field='nome'
-        )
         area_atuacao = serializers.SlugRelatedField(
             many=False,
             read_only=True,
             slug_field='area'
         )
+        area_atuacao_sub = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='sub_area'
+        )
         class Meta:
             model = models.Experiencia
-            fields = '__all__'  # Ou liste os campos que deseja expor na API
+            fields = ['id','candidato','area_atuacao','area_atuacao_sub','empresa','data_inicio','data_fim','tempo_anos','data_cadastro','revisar'] # Ou liste os campos que deseja expor na API
         
 class Questionario(serializers.ModelSerializer):
     class Meta:
@@ -75,7 +74,7 @@ class Profissoes(serializers.ModelSerializer):
         class Meta:
             model = models.Profissoes
             fields =  ['value','text']  # Ou liste os campos que deseja expor na API7
-    def Select_ordered():
+    def Select_ordened():
         response = Profissoes.Select(models.Profissoes.objects.all().order_by('funcao'), many=True).data
         return response
     
@@ -143,7 +142,7 @@ class Anexos(serializers.ModelSerializer):
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
 
 
-class Indicacao():
+class IndicacaoColaboradores():
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='nome')
         class Meta:
@@ -151,14 +150,20 @@ class Indicacao():
             model = Colaborador
             fields = ['value']
             
-class Estado():
+class Estado(serializers.ModelSerializer):
+    class Meta:
+        model = models.Estado
+        fields = '__all__'  # Ou liste os campos que deseja expor na API  
+
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.CharField(source='nome')
         class Meta:
-            model = models.Estados
+            model = models.Estado
             fields = ['value','text']
-            
+    def Select_ordened(): 
+        return util.Select_order_by(Estado.Select, 'nome')
+    
 class AreaAtuacao(serializers.ModelSerializer):
     class Meta:
         model = models.AreaAtuacao
@@ -169,7 +174,33 @@ class AreaAtuacao(serializers.ModelSerializer):
         class Meta:
             model = models.AreaAtuacao
             fields = ['value','text']
+    def Select_ordened():   
+        return util.Select_order_by(AreaAtuacao.Select, 'area')
         
+
+class AreaAtuacaoSub(serializers.ModelSerializer):
+    class Meta:
+        model = models.AreaAtuacaoSub
+        fields = '__all__'  # Ou liste os campos que deseja expor na API 
+    class Select(serializers.ModelSerializer):
+        value = serializers.CharField(source='id')
+        text = serializers.CharField(source='sub_area')
+        class Meta: 
+            model = models.AreaAtuacaoSub
+            fields = ['value','text']
+    def Select_ordened():   
+        return AreaAtuacaoSub.Select(models.AreaAtuacaoSub.objects.all().order_by('sub_area'), many=True).data
+    
+    class Table(serializers.ModelSerializer):
+        area_atuacao = serializers.SlugRelatedField(
+            many=False,
+            read_only=True,
+            slug_field='area'
+        )
+        class Meta:
+            model = models.AreaAtuacaoSub
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
+            
 class Classificacao(serializers.ModelSerializer):
     class Meta:
         model = models.Classificacao
@@ -188,16 +219,24 @@ class Classificacao(serializers.ModelSerializer):
         class Meta:
             model = models.Classificacao
             fields = '__all__'  # Ou liste os campos que deseja expor na API
-
-Select = {
-    'candidato': Candidato.Select,
-    'cnh': Cnh.Select,
-    'estado_civil': EstadoCivil.Select,
-    'escolaridade': Escolaridade.Select_ordered,
-    'profissao': Profissoes.Select_ordered,
-    'banco_talentos': Entrevista_classificacao.Select,
-    'setor': Setor.Select,
-    'indicacao': Indicacao.Select,
-    'estado': Estado.Select,
-    'area_atuacao': AreaAtuacao.Select
-}    
+class Indicacoes(serializers.ModelSerializer):
+    class Meta:
+        model = models.Indicacoes
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        candidato = serializers.SlugRelatedField(many=False, read_only=True, slug_field='nome')
+        data_recebimento = serializers.DateField('%d/%m/%Y')
+        data_finalizacao = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = models.Indicacoes
+            fields = '__all__'
+class IndicacoesExternas(serializers.ModelSerializer):
+    class Meta:
+        model = views.IndicacoesExternas
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        data_recebimento = serializers.DateField('%d/%m/%Y')
+        data_finalizacao = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = views.IndicacoesExternas
+            fields = '__all__'

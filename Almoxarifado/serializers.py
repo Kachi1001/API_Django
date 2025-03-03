@@ -1,10 +1,6 @@
 from rest_framework import serializers
 
-import Obra.models
-from . import models
-
-from Depto_pessoal import serializers as depto
-from Obra import serializers as obra     
+from . import models, views
         
 class Produto(serializers.ModelSerializer):
     class Meta:
@@ -18,6 +14,8 @@ class Produto(serializers.ModelSerializer):
         class Meta:
             model = models.Produto  
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
+    def Select_ordened():
+        return Produto.Select(Produto.Select.Meta.model.objects.all().order_by('produto'), many=True).data
 
 class EpiCadastro(serializers.ModelSerializer):
     class Meta:
@@ -34,13 +32,10 @@ class EpiCadastro(serializers.ModelSerializer):
 
         def get_text(self, obj):
             # Personalize a string combinando os atributos desejados
-            return f"{obj.id} | CA {obj.ca} | {obj.tamanho} | {obj.fabricante}"
+            return f"{obj.id} | {('CA ' + obj.ca) if obj.ca != 'S/CA' else obj.ca} | {obj.fabricante}"
             
     class Table(serializers.ModelSerializer):
-        produto = Produto(
-            many=False,
-            read_only=True,
-        )
+        produto = serializers.SlugRelatedField(many=False,read_only=True, slug_field='produto')
         class Meta:
             model = models.EpiCadastro
             fields = '__all__'  # Ou liste os campos que deseja expor na API
@@ -56,11 +51,8 @@ class EpiMovimentacao(serializers.ModelSerializer):
         class Meta:
             model = models.EpiMovimentacao
             fields = ['value', 'text']  # Ou liste os campos que deseja expor na API 
-    class Table(serializers.ModelSerializer):
-        epi_cadastro = EpiCadastro.Table(many=False,read_only=True)
-        class Meta:
-            model = models.EpiMovimentacao
-            fields = '__all__'  # Ou liste os campos que deseja expor na API
+   
+        
 class Numeracao(serializers.ModelSerializer):
     class Meta:
         model = models.Numeracao
@@ -79,7 +71,7 @@ class Numeracao(serializers.ModelSerializer):
             fields = '__all__'  # Ou liste os campos que deseja expor na API
     
         def get_colaborador(self, obj):
-            colabs = depto.Colaborador.objects.all()
+            colabs = models.Colaborador.objects.all()
             return f"{colabs.get(id=obj.colaborador).nome}"
 class Ficha(serializers.ModelSerializer):
     class Meta:
@@ -94,6 +86,9 @@ class Ficha(serializers.ModelSerializer):
         def get_text(self, obj):
             comp = 'Completa' if obj.completa else 'Incompleta'
             return f"Página - {obj.pagina} | {comp}" 
+    def Select_ordened():
+        classe = Ficha.Select
+        return classe(classe.Meta.model.objects.all().order_by('-pagina'), many=True).data
     class Table(serializers.ModelSerializer):
         colaborador = serializers.SerializerMethodField()
         class Meta:
@@ -101,42 +96,36 @@ class Ficha(serializers.ModelSerializer):
             fields = ['id','colaborador','pagina','completa']  # Ou liste os campos que deseja expor na API
 
         def get_colaborador(self, obj):
-            colabs = depto.Colaborador.objects.all()
+            colabs = models.Colaborador.objects.all()
             return f"{colabs.get(id=obj.colaborador).nome}"
-    class Almoxarifado():
-        def select():
-            class Select(serializers.ModelSerializer):
-                value = serializers.CharField(source='id')
-                text = serializers.SerializerMethodField()
-                
-                class Meta:
-                    model = models.Obra
-                    fields = ['value', 'text']
-
-                def get_text(self, obj):
-                    # Personalize a string combinando os atributos desejados
-                    return f"{obj.id} || {obj.cliente} - {obj.cidade}"
+        
+class FichaPadrao(serializers.ModelSerializer):
+    class Meta:
+        model = models.FichaPadrao
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+    class Table(serializers.ModelSerializer):
+        produto = serializers.SlugRelatedField(many=False,read_only=True, slug_field='produto')
+        class Meta:
+            model = models.FichaPadrao
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
 class Obra(serializers.ModelSerializer):
     class Meta:
-        from Obra.models import Obra   
-        model = Obra
+        model = models.Obra
         fields = '__all__'  # Ou liste os campos que deseja expor na API
     class Select(serializers.ModelSerializer):
         value = serializers.CharField(source='id')
         text = serializers.SerializerMethodField()
         
         class Meta:
-            from Obra.models import Obra   
-            model = Obra
+            model = models.Obra
             fields = ['value', 'text']
 
         def get_text(self, obj):
             # Personalize a string combinando os atributos desejados
-            return f"{obj.id} || {obj.cliente} - {obj.cidade}"
+            return f"{obj.id} || {obj.empresa} - {obj.cidade}"
 class Colaborador(serializers.ModelSerializer):
     class Meta:
-        from Depto_pessoal.models import Colaborador
-        model = Colaborador
+        model =  models.Colaborador
         fields = '__all__'  # Ou liste os campos que deseja expor na API  
            
 
@@ -145,19 +134,42 @@ class Colaborador(serializers.ModelSerializer):
         text = serializers.CharField(source='nome')
 
         class Meta:
-            from Depto_pessoal.models import Colaborador
-            model = Colaborador
+            model = models.Colaborador
             fields = ['value','text','ativo']  # Ou liste os campos que deseja expor na API    
+    def Select_ordened():
+        return Colaborador.Select(Colaborador.Select.Meta.model.objects.all().order_by('nome'), many=True).data
+   
+        
+class EpisValidos():
+    class Table(serializers.ModelSerializer):
+        class Meta:
+            model = views.EpisValidos
+            fields = '__all__'  # Ou liste os campos que deseja expor na API
 
-Select = {
-    'obra': Obra.Select,
-    'colaborador': Colaborador.Select,
-    'epi_movimentacao': EpiMovimentacao.Select,
-    'epi_cadastro': EpiCadastro.Select,
-    'produto': Produto.Select,
-    'ficha': Ficha.Select,
-}    
-Table = {
-    'epi_cadastro': EpiCadastro.Table,
-    'epi_movimentacao': EpiMovimentacao.Table
-}
+class Erros(serializers.ModelSerializer):
+    class Meta:
+        model = models.Erros
+        fields = '__all__'  # Ou liste os campos que deseja expor na API
+
+class Digitalizacao(serializers.ModelSerializer):
+    class Meta:
+        model = models.Digitalizacao
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        ficha = Ficha.Table(many=False, read_only=True)
+        data = serializers.DateField('%d/%m/%Y')
+        
+        class Meta:
+            model = models.Digitalizacao
+            fields = '__all__'
+            
+class Digitalizar(serializers.ModelSerializer):
+    class Meta:
+        model = views.Digitalizar
+        fields = '__all__'
+    class Table(serializers.ModelSerializer):
+        data_finalizado = serializers.DateField('%d/%m/%Y')
+        data_digitalizacao = serializers.DateField('%d/%m/%Y')
+        class Meta:
+            model = views.Digitalizar
+            fields = '__all__'

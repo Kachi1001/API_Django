@@ -149,6 +149,25 @@ class Log(models.Model):
         db_table = 'log'
 
 
+class LogEntry(models.Model):
+    ip_address = models.GenericIPAddressField()
+    username = models.CharField(max_length=150, blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    endpoint = models.CharField(max_length=255, blank=True, null=True)
+    method = models.CharField(max_length=10, blank=True, null=True)
+    status_code = models.IntegerField(blank=True, null=True)
+    response_time = models.FloatField(blank=True, null=True)
+    server = models.CharField(max_length=5, blank=True, null=True)
+    version = models.CharField(max_length=5, blank=True, null=True)
+    response = models.CharField(max_length=255000, blank=True, null=True)
+    log_api = models.ForeignKey(Log, models.DO_NOTHING, db_column='log_api', blank=True, null=True)
+    query_params = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'log_entry'
+
+
 class Pendencia(models.Model):
     password_change = models.BooleanField(blank=True, null=True)
     user = models.OneToOneField(AuthUser, models.DO_NOTHING, primary_key=True)

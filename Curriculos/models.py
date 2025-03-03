@@ -28,6 +28,15 @@ class AreaAtuacao(models.Model):
         db_table = 'area_atuacao'
 
 
+class AreaAtuacaoSub(models.Model):
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    sub_area = models.CharField()
+
+    class Meta:
+        managed = False
+        db_table = 'area_atuacao_sub'
+
+
 class AvaliacaoTipo(models.Model):
     id = models.CharField(primary_key=True)
 
@@ -52,7 +61,9 @@ class Candidato(models.Model):
     data_cadastro = models.DateField(blank=True, null=True)
     indicacao = models.CharField(max_length=255, blank=True, null=True)
     idade = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    estado = models.ForeignKey('Estados', models.DO_NOTHING, db_column='estado', blank=True, null=True)
+    estado = models.ForeignKey('Estado', models.DO_NOTHING, db_column='estado', blank=True, null=True)
+    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao', blank=True, null=True)
+    area_atuacao_sub = models.ForeignKey(AreaAtuacaoSub, models.DO_NOTHING, db_column='area_atuacao_sub', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -78,24 +89,15 @@ class Cnh(models.Model):
         db_table = 'cnh'
 
 
-class Conversao(models.Model):
-    area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
-    area_relacionada = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_relacionada', related_name='conversao_area_relacionada_set')
-    porcentagem = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'conversao'
-
-
 class Entrevista(models.Model):
     candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
-    profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
+    # profissao = models.ForeignKey('Profissoes', models.DO_NOTHING, db_column='profissao')
     pretensao = models.DecimalField(max_digits=7, decimal_places=2)
     banco_talentos = models.ForeignKey('EntrevistaClassificacao', models.DO_NOTHING, db_column='banco_talentos')
     avaliacao_final = models.CharField()
     revisar_periodo = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
+    # area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
 
     class Meta:
         managed = False
@@ -139,13 +141,13 @@ class EstadoCivil(models.Model):
         db_table = 'estado_civil'
 
 
-class Estados(models.Model):
+class Estado(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     nome = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'estados'
+        db_table = 'estado'
 
 
 class Experiencia(models.Model):
@@ -159,6 +161,7 @@ class Experiencia(models.Model):
     revisar = models.BooleanField(blank=True, null=True)
     data_cadastro = models.DateField(blank=True, null=True)
     area_atuacao = models.ForeignKey(AreaAtuacao, models.DO_NOTHING, db_column='area_atuacao')
+    area_atuacao_sub = models.ForeignKey(AreaAtuacaoSub, models.DO_NOTHING, db_column='area_atuacao_sub')
 
     class Meta:
         managed = False
@@ -205,6 +208,7 @@ class Questionario(models.Model):
     possui_trabalhista = models.BooleanField(blank=True, null=True)
     possui_criminal = models.BooleanField(blank=True, null=True)
     teve_acidente = models.BooleanField(blank=True, null=True)
+    consome_alcool = models.BooleanField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -217,3 +221,14 @@ class Setor(models.Model):
     class Meta:
         managed = False
         db_table = 'setor'
+
+class Indicacoes(models.Model):
+    candidato = models.ForeignKey(Candidato, models.DO_NOTHING, db_column='candidato')
+    indicacao = models.CharField(blank=False, null=False)
+    data_recebimento = models.DateField(blank=False, null=False)
+    data_finalizacao = models.DateField(blank=True, null=True)
+    observacao = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'indicacoes'

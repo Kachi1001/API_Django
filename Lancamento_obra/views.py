@@ -96,22 +96,28 @@ class Indicadores(models.Model):
         db_table = 'indicadores'
         managed = False
 
-class Fechamento_Revisao(models.Model):
-    obra = models.IntegerField(blank=True, null=False, primary_key=True)
+class FechamentoDetalhado(models.Model):
+    obra = models.IntegerField(primary_key=True)
+    dia = models.DateField(max_length=20, blank=True, null=True)
+    semana = models.IntegerField(max_length=20, blank=True, null=True)
+    ano = models.IntegerField(max_length=20, blank=True, null=True)
     orcamento = models.CharField(max_length=20, blank=True, null=True)
-    descricao = models.CharField(max_length=500, blank=True, null=True)
-    horas_normais = models.DurationField(blank=True, null=True)
-    horas_extra_50 = models.DurationField(blank=True, null=True)
-    horas_extra_100 = models.DurationField(blank=True, null=True)
-    total_horas = models.DurationField(blank=True, null=True)
-    valor_normal = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    valor_extra_50 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    valor_extra_100 = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    total_rs = models.DecimalField(max_digits=65535, decimal_places=65535, blank=True, null=True)
-    revisao = models.TextField(blank=True, null=True)
-    nomes = models.TextField(blank=True, null=True)
+    colaborador = models.CharField(max_length=500, blank=True, null=True)
+    descricao = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    normal = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    extra50 = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    extra100 = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total_horas = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total_normal = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total_50 = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total_100 = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    total_rs = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
+    por_hora_normal = models.IntegerField(blank=True, null=True)
+    por_hora_50 = models.IntegerField(blank=True, null=True)
+    por_hora_100 = models.IntegerField(blank=True, null=True)
+    competencia = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'fechamento'
+        db_table = 'fechamento_detalhado'
 
