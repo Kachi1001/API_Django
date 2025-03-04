@@ -36,7 +36,7 @@ class pontuacao_experiencias(models.Model):
 class revisar(models.Model):
     candidato = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=255)
-    revisar_experiencias = models.IntegerField(max_length=255)
+    revisar_experiencias = models.IntegerField()
     sub_area = models.CharField()
     
     class Meta:
@@ -54,4 +54,15 @@ class IndicacoesExternas(models.Model):
     class Meta:
         managed = False
         db_table = 'indicacoes_externas'
+
+class IndicacoesInternas(models.Model):
+    nome = models.CharField(max_length=255)
+    indicacao = models.CharField()
+    banco_talentos = models.CharField()    
+    area = models.CharField()
+    sub_area = models.CharField()    
+    
+    class Meta:
+        managed = False
+        db_table = 'indicacoes_internas'
 

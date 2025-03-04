@@ -99,8 +99,8 @@ class Indicadores(models.Model):
 class FechamentoDetalhado(models.Model):
     obra = models.IntegerField(primary_key=True)
     dia = models.DateField(max_length=20, blank=True, null=True)
-    semana = models.IntegerField(max_length=20, blank=True, null=True)
-    ano = models.IntegerField(max_length=20, blank=True, null=True)
+    semana = models.IntegerField(blank=True, null=True)
+    ano = models.IntegerField(blank=True, null=True)
     orcamento = models.CharField(max_length=20, blank=True, null=True)
     colaborador = models.CharField(max_length=500, blank=True, null=True)
     descricao = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
@@ -120,4 +120,19 @@ class FechamentoDetalhado(models.Model):
     class Meta:
         managed = False
         db_table = 'fechamento_detalhado'
+
+class NovosColaboradores(models.Model):
+    id = models.DateField(primary_key=True)
+    nome = models.CharField(blank=True, null=True)
+    funcao = models.CharField(blank=True, null=True)
+    categoria = models.CharField(blank=True, null=True)
+    data_inicio = models.DateField(blank=True, null=True)
+    data_fim = models.DateField(blank=True, null=True)
+    terceiro = models.BooleanField(blank=True, null=True)
+    continuo = models.BooleanField(blank=True, null=True)
+    diaria = models.DecimalField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'novos_colaboradores'
 
