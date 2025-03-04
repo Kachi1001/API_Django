@@ -36,7 +36,7 @@ class pontuacao_experiencias(models.Model):
 class revisar(models.Model):
     candidato = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=255)
-    revisar_experiencias = models.IntegerField(max_length=255)
+    revisar_experiencias = models.IntegerField()
     sub_area = models.CharField()
     
     class Meta:

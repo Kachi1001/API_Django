@@ -99,8 +99,8 @@ class Indicadores(models.Model):
 class FechamentoDetalhado(models.Model):
     obra = models.IntegerField(primary_key=True)
     dia = models.DateField(max_length=20, blank=True, null=True)
-    semana = models.IntegerField(max_length=20, blank=True, null=True)
-    ano = models.IntegerField(max_length=20, blank=True, null=True)
+    semana = models.IntegerField(blank=True, null=True)
+    ano = models.IntegerField(blank=True, null=True)
     orcamento = models.CharField(max_length=20, blank=True, null=True)
     colaborador = models.CharField(max_length=500, blank=True, null=True)
     descricao = models.DecimalField(max_digits=6, decimal_places=1, blank=True, null=True)
