@@ -55,3 +55,14 @@ class IndicacoesExternas(models.Model):
         managed = False
         db_table = 'indicacoes_externas'
 
+class IndicacoesInternas(models.Model):
+    nome = models.CharField(max_length=255)
+    indicacao = models.CharField()
+    banco_talentos = models.CharField()    
+    area = models.CharField()
+    sub_area = models.CharField()    
+    
+    class Meta:
+        managed = False
+        db_table = 'indicacoes_internas'
+
