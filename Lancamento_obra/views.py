@@ -121,3 +121,18 @@ class FechamentoDetalhado(models.Model):
         managed = False
         db_table = 'fechamento_detalhado'
 
+class NovosColaboradores(models.Model):
+    id = models.DateField(primary_key=True)
+    nome = models.CharField(blank=True, null=True)
+    funcao = models.CharField(blank=True, null=True)
+    categoria = models.CharField(blank=True, null=True)
+    data_inicio = models.DateField(blank=True, null=True)
+    data_fim = models.DateField(blank=True, null=True)
+    terceiro = models.BooleanField(blank=True, null=True)
+    continuo = models.BooleanField(blank=True, null=True)
+    diaria = models.DecimalField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'novos_colaboradores'
+
