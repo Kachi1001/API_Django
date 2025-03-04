@@ -10,7 +10,7 @@ requests
 gunicorn
 openpyxl
 pandas
-django-redis
+django-redis==5.4.0
 django-filter
 channels 
 channels-redis

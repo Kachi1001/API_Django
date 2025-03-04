@@ -6,7 +6,6 @@ from datetime import datetime
 from Site_django import whatsapp
 import random
 from django.core.cache import cache
-import asyncio
 
 retorno200 = Response({'message':'Sucesso'}, status=200)
 retorno400 = Response({'message':'Método não encontrado'}, status=400)
